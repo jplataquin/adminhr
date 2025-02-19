@@ -1,0 +1,62 @@
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.drawer_modal_background{
+    opacity: 30%;
+    position:absolute;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:800;
+    display: none;
+}
+  
+.drawer_modal{
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    height:0px;
+    overflow-y:hidden;
+    width:100%;
+    margin:auto;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    z-index:800;
+}
+
+.drawer_modal_body{
+    height:100%;
+    overflow-y: auto;
+}
+
+
+.drawer_modal_header{
+    min-height: 50px;
+}
+
+.drawer_modal.drawer_modal_open {
+    transition: 0.5s;
+    height:85vh;
+    padding-bottom:30px;
+}
+
+.drawer_modal_background.drawer_modal_open {
+    display:block;
+}
+
+  
+
+input:disabled, select:disabled, textarea:disabled {
+    border-top: none !important;
+    border-right: none !important;
+    border-radius: 0px !important;
+}
+
+select:disabled {
+    background: none !important;
+}
+    
