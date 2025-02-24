@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
 use App\Models\LedgerEntry;
+use Carbon\Carbon;
 
 
 class LedgerEntryController extends Controller
@@ -29,6 +30,18 @@ class LedgerEntryController extends Controller
                 'data'      => [
                     'Ledger' =>[
                         'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger->status != 'APRV'){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger' =>[
+                        'Status not yet approved'
                     ]
                 ]
             ]);
@@ -266,6 +279,47 @@ class LedgerEntryController extends Controller
         ]);
     }
 
+    public function _request_delete(Request $request){
+
+        $id = (int) $request->input('id');
+
+        $ledger_entry = LedgerEntry::find($id);
+
+        if(!$ledger_entry){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger Entry' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger_entry->status != 'APRV'){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Entry cannot be updated (status: '.$ledger_entry->status.')',
+                'data'      => []
+            ]);
+        }
+
+
+        $user_id = Auth::user()->id;
+        
+        $ledger_entry->status            = 'RDEL';
+        $ledger_entry->request_delete_by = $user_id;
+        $ledger_entry->request_delete_at = Carbon::now();
+        
+        $ledger_entry->save();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
 
     public function _delete(Request $request){
         
@@ -297,9 +351,7 @@ class LedgerEntryController extends Controller
         
         $ledger_entry->deleted_by = $user_id;
         
-        $ledger_entry->save();
-
-        $ledger_entry->delete();
+        $ledger_entry->forceDelete();
 
         return response()->json([
             'status'    => 1,

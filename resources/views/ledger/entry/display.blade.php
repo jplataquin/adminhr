@@ -72,15 +72,32 @@
 
         <div class="p-6 border-t border-gray-200 rounded-b flow-root">
              
-            @if($ledger_entry->status == 'PEND')
-                <x-display-controls></x-display-controls>
-            @endif
+            <x-display-controls status="{{$ledger_entry->status}}">
+                @if($ledger_entry->status == 'PEND')
+                    <x-slot:right>
+                        <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
+                    </x-slot>
+                @endif
+            </x-display-controls>
+            
         </div>
 
     </div>
 
     <script type="module">
         import {$q} from '/adarna.js';
+
+        if(typeof reviewLinkBtn != 'undefined'){
+
+            reviewLinkBtn.onclick = async ()=>{
+                let test = await $copyToClipboard('{{ url("/review/ledger/entry/".$ledger_entry->id); }}');
+                if(test){
+                    alert('Review Link for "Ledger Entry: {{$ledger_entry->id}}" copied!');
+                }else{
+                    alert('Failed to copy');
+                }
+            }
+        }
 
         $numbersOnlyInput([
             quantity,
@@ -101,6 +118,34 @@
            calculate();
         }
 
+        
+        controls.onCancelClick = ()=>{
+            $url('/ledger/{{$ledger->id}}');
+        }
+
+
+        controls.onRequestDeleteClick = ()=>{
+            $ui.blockUI();
+            $ui.confirm('Request Delete for this Ledger Entry?').then(action=>{
+
+                if(!action.isConfirmed){
+                    return false;
+                }
+
+                $_POST('/api/ledger/entry/request/delete/',{
+                    id: '{{$ledger_entry->id}}'
+                }).then(reply=>{
+
+                    $ui.unblockUI();
+                    
+                    if(reply.status <= 0){
+                        return $ui.showError(reply);
+                    }
+
+                    $reload();
+                });
+            });
+        }
 
         @if($ledger_entry->status == 'PEND')
 
@@ -147,18 +192,24 @@
             controls.onDeleteClick = ()=>{
                 
                 $ui.blockUI();
-                    
-                $_POST('/api/ledger/entry/delete/',{
-                    id: '{{$ledger_entry->id}}'
-                }).then(reply=>{
+                $ui.confirm('Delete this Ledger Entry?').then(action=>{
 
-                    $ui.unblockUI();
-                    
-                    if(reply.status <= 0){
-                        return $ui.showError(reply);
+                    if(!action.isConfirmed){
+                        return false;
                     }
 
-                    $url('/ledger/{{$ledger->id}}');
+                    $_POST('/api/ledger/entry/delete/',{
+                        id: '{{$ledger_entry->id}}'
+                    }).then(reply=>{
+
+                        $ui.unblockUI();
+                        
+                        if(reply.status <= 0){
+                            return $ui.showError(reply);
+                        }
+
+                        $url('/ledger/{{$ledger->id}}');
+                    });
                 });
             }
 

@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
 use App\Models\LedgerEntry;
+use Illuminate\Support\Facades\DB;
 
 
 class LedgerController extends Controller
@@ -32,6 +33,18 @@ class LedgerController extends Controller
                 ]
             ]);
         }
+
+        // if($ledger_account->status != 'APRV'){
+        //     return response()->json([
+        //         'status'    => -2,
+        //         'message'   => 'Failed Validation',
+        //         'data'      => [
+        //             'Account Ledger' =>[
+        //                 'Status not yet approved'
+        //             ]
+        //         ]
+        //     ]);
+        // }
 
         $validator = Validator::make($request->all(),[
             'name' => [
@@ -216,12 +229,27 @@ class LedgerController extends Controller
 
         $user_id = Auth::user()->id;
         
-        $ledger->deleted_by = $user_id;
-        
-        $ledger->save();
+        DB::beginTransaction();
 
-        $ledger->delete();
+        try{
 
+            $ledger->Entries()->where('ledger_id',$ledger->id)->upadte([
+                'deleted_by' => $user_id
+            ]);
+
+            $ledger->Entries()->delete();
+
+            $ledger->deleted_by = $user_id;
+            
+            $ledger->save();
+
+            $ledger->delete();
+            
+            DB::commit();
+            
+        }catch(\Exception $e){
+            DB::rollback();
+        }
         return response()->json([
             'status'    => 1,
             'message'   => '',

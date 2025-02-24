@@ -10,6 +10,10 @@
         
         </div>
 
+        <div class="pt-6 ps-6 pe-6 space-y-6">
+            <x-text-input id="search" mode="2" label="Search"></x-text-input>
+        </div>
+
         <div class="p-6 space-y-6">
             <div id="list"></div>
         </div>
@@ -34,7 +38,7 @@
             order      = 'DESC';
             orderBy    = 'id';
             $el.clear(list);
-            
+            showMoreBtn.classList.remove('hidden');
         }
 
         function renderRows(data){
@@ -59,7 +63,7 @@
 
 
             $_GET('/api/review/ledgers',{
-                query: '',
+                query: search.value,
                 page: page,
                 order: order,
                 order_by: orderBy,
@@ -78,7 +82,7 @@
                 if(reply.data.rows.length){
                     renderRows(reply.data.rows); 
                 }else{
-                    showMoreBtn.style.display = 'none';
+                    showMoreBtn.classList.add('hidden');
                 }
             });
         }
@@ -91,6 +95,27 @@
 
         showMoreBtn.onclick = ()=>{
             pageDoc.showData();
+        }
+
+        let searchThrottle = null;
+
+        search.onkeyup = (e)=>{
+
+            if(searchThrottle){
+                clearTimeout(searchThrottle);
+            }
+
+            if(e.keyCode == 13){
+
+                pageDoc.reinitalize();
+                pageDoc.showData();
+                return false;
+            }
+
+            searchThrottle = setTimeout(()=>{
+                pageDoc.reinitalize();
+                pageDoc.showData();
+            },1000);
         }
 
         // sortSelect.onchange = ()=>{

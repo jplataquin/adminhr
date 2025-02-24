@@ -2,7 +2,7 @@
     'record' => null,
 ])
 
-<div>
+<div class="dark:text-white text-xs">
     <div>
         @if($record)
             @if($record->created_by && $record->created_at)
@@ -17,6 +17,11 @@
                     </div>
             @endif
 
+            @if($record->request_delete_by && $record->request_delete_at)
+                    <div>
+                        Updated By {{$record->RequestDeleteByUser()->name}} at {{$record->request_delete_at}}
+                    </div>
+            @endif
 
             @if($record->deleted_by && $record->deleted_at)
                     <div>

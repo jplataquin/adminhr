@@ -72,25 +72,40 @@
                     
                 }
 
+                controls.onApproveDeleteClick = ()=>{
+                    alert('approve');
+                }
+                
+                controls.onRejectDeleteClick  = ()=>{
+                    alert('delete');
+                }
+
                 controls.onRejectClick = ()=>{
                     
                     $ui.blockUI();
 
-                    $_POST('/api/review/ledger/reject',{
-                        id: '{{$ledger->id}}'
-                    }).then(reply=>{
-                        $ui.unblockUI();
+                    $ui.confirm('Reject this Ledger?').then(action=>{
 
-                        if(reply.status <= 0){
-                            return $ui.showError(reply);
+                        if(!action.isConfirmed){
+                            return false;
                         }
 
-                        $reload();
+                        $_POST('/api/review/ledger/reject',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
                     });
                 }
                 
                 controls.onCancelClick = ()=>{
-
+                    $url('/review/ledgers');
                 }
 
             </script>

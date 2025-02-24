@@ -10,24 +10,32 @@
         @endif
         
         @if($status == 'APRV')
-            <x-primary-button class="me-2 hidden" id="{{$namespace}}deleteBtn">Request Delete</x-primary-button>
+            <x-primary-button class="me-2" id="{{$namespace}}requestDeleteBtn">Request Delete</x-primary-button>
         @endif
 
 
-        @if(isset($right))
-            {{$right}}
-        @endif
-    </div>
-    <div class="float-right">
         @if(isset($left))
             {{$left}}
         @endif
-        <x-primary-button class="me-2" id="{{$namespace}}editBtn">Edit</x-primary-button>
-        <x-primary-button class="hidden me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
+    </div>
+    <div class="float-right">
+        @if(isset($right))
+            {{$right}}
+        @endif
+
+        @if($status == 'PEND')
+            <x-primary-button class="me-2" id="{{$namespace}}editBtn">Edit</x-primary-button>
+            <x-primary-button class="hidden me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
+        @endif
         <x-secondary-button class="" id="{{$namespace}}cancelBtn">Cancel</x-secondary-button>
     </div>
 </div>
 <script type="module">
+    
+    let {{$namespace}}editBtn           = $id('{{$namespace}}editBtn',document.createElement('button'));
+    let {{$namespace}}updateBtn         = $id('{{$namespace}}updateBtn',document.createElement('button'));
+    let {{$namespace}}deleteBtn         = $id('{{$namespace}}deleteBtn',document.createElement('button'));
+    let {{$namespace}}requestDeleteBtn  = $id('{{$namespace}}requestDeleteBtn',document.createElement('button'));
 
     let callback = [];
     let state = 'edit';
@@ -39,11 +47,12 @@
         });
     }
 
-    {{$namespace}}controls.onCancelClick         = ()=>{};
-    {{$namespace}}controls.onUpdateCancel        = ()=>{};
-    {{$namespace}}controls.onDeleteClick         = ()=>{};
-    {{$namespace}}controls.onEditClick           = ()=>{};
-    {{$namespace}}controls.onUpdateClick         = ()=>{};
+    {{$namespace}}controls.onCancelClick                = ()=>{};
+    {{$namespace}}controls.onUpdateCancel               = ()=>{};
+    {{$namespace}}controls.onDeleteClick                = ()=>{};
+    {{$namespace}}controls.onEditClick                  = ()=>{};
+    {{$namespace}}controls.onUpdateClick                = ()=>{};
+    {{$namespace}}controls.onRequestDeleteClick         = ()=>{};
 
     {{$namespace}}editBtn.addEventListener('click',()=>{
         
@@ -61,6 +70,14 @@
          changeState('update','update:click');
 
         {{$namespace}}controls.onUpdateClick();
+    });
+
+
+    {{$namespace}}requestDeleteBtn.addEventListener('click',()=>{
+
+        changeState('request_delete','request_delete:click');
+
+        {{$namespace}}controls.onRequestDeleteClick();
     });
 
     {{$namespace}}cancelBtn.addEventListener('click',()=>{

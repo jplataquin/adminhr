@@ -100,4 +100,36 @@ class LedgerEntry extends Model
         return $user;
     }
 
+    public function RequestDeleteByUser(){   
+
+        $user = User::find($this->request_delete_by);
+
+        if(!$user){
+            return User::defaultAttirbutes();
+        }
+
+        return $user;
+    }
+
+    public function RejectDeleteByUser(){   
+
+        $user = User::find($this->reject_request_delete_by);
+
+        if(!$user){
+            return User::defaultAttirbutes();
+        }
+
+        return $user;
+    }
+
+    public function ApproveDeleteByUser(){   
+
+        $user = User::find($this->approve_request_delete_by);
+
+        if(!$user){
+            return User::defaultAttirbutes();
+        }
+
+        return $user;
+    }
 }

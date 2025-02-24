@@ -44,9 +44,27 @@
 
         <div class="p-6 border-t border-gray-200 rounded-b flow-root">
             
-            <x-display-controls></x-display-controls>
+            <x-display-controls status="{{$ledger->status}}">
+                @if($ledger->status == 'PEND')
+                    <x-slot:right>
+                        <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
+                    </x-slot>
+                @endif
+            </x-display-controls>
             <script type="module">
                 import {$q} from '/adarna.js';
+
+                if(typeof reviewLinkBtn != 'undefined'){
+
+                    reviewLinkBtn.onclick = async ()=>{
+                        let test = await $copyToClipboard('{{ url("/review/ledger/".$ledger->id); }}');
+                        if(test){
+                            alert('Review Link for "Ledger: {{$ledger->id}}" copied!');
+                        }else{
+                            alert('Failed to copy');
+                        }
+                    }
+                }
 
                 controls.onEditClick = ()=>{
                     $q('.editable').items().map(item=>{
@@ -97,6 +115,10 @@
 
                         $url('/ledger/account/{{$ledger_account->id}}');
                     });
+                }
+
+                controls.onCancelClick =() =>{
+                    $url('/ledger/account/{{$ledger_account->id}}');
                 }
 
             </script>
@@ -320,7 +342,10 @@
         }
 
         printBtn.onclick = (e) => {
-            $url('/ledger/print/{{$ledger->id}}')
+            let win = window.open('/ledger/print/{{$ledger->id}}','','width=600,height=600');
+
+            win.focus();
+           
         }
         
         /****************************************/

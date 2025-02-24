@@ -28,7 +28,8 @@
                 import {$q} from '/adarna.js';
 
                 controls.onCancelClick = ()=>{
-                    alert('adadad');
+                    $url('/ledger/accounts');
+                    return false;
                 }
 
                 controls.onEditClick = ()=>{
@@ -98,6 +99,10 @@
             <button class="float-right text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createBtn">Create Ledger</button>
         
         </div>
+            
+        <div class="pt-6 ps-6 pe-6 space-y-6">
+            <x-text-input id="search" mode="2" label="Search"></x-text-input>
+        </div>
 
         <div class="p-6 space-y-6">
             <div id="list"></div>
@@ -118,14 +123,15 @@
         let page            = 1;
         let order           = 'DESC';
         let orderBy         = 'id';
-
+        
+        search.value = '';
 
         pageDoc.reinitalize = ()=>{
             page       = 1;
             order      = 'DESC';
             orderBy    = 'id';
             $el.clear(list);
-            
+            showMoreBtn.classList.remove('hidden');
         }
 
         function renderRows(data){
@@ -134,6 +140,7 @@
 
                 let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
                     t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
+                    t.span({class:'text-xs dark:text-white'},item.status);
                 });
 
                 row.onclick = ()=>{
@@ -150,7 +157,7 @@
 
 
             $_GET('/api/ledgers',{
-                query: '',
+                query: search.value,
                 page: page,
                 order: order,
                 order_by: orderBy,
@@ -170,19 +177,35 @@
                 if(reply.data.rows.length){
                     renderRows(reply.data.rows); 
                 }else{
-                    showMoreBtn.style.display = 'none';
+                    showMoreBtn.classList.add('hidden');
                 }
             });
         }
 
-        // searchBtn.onclick = ()=>{
-        //     showMoreBtn.style.display = 'block';
-        //     reinitalize();
-        //     showData();
-        // }
-
         showMoreBtn.onclick = ()=>{
             pageDoc.showData();
+        }
+
+
+        let searchThrottle = null;
+
+        search.onkeyup = (e)=>{
+
+            if(searchThrottle){
+                clearTimeout(searchThrottle);
+            }
+
+            if(e.keyCode == 13){
+
+                pageDoc.reinitalize();
+                pageDoc.showData();
+                return false;
+            }
+
+            searchThrottle = setTimeout(()=>{
+                pageDoc.reinitalize();
+                pageDoc.showData();
+            },1000);
         }
 
         // sortSelect.onchange = ()=>{

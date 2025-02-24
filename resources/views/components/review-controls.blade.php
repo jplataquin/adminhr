@@ -7,8 +7,11 @@
         
         @if($record->status == 'PEND')
             <x-primary-button class="me-2" id="{{$namespace}}rejectBtn">Reject</x-primary-button>
-        @else
-            <x-primary-button class="me-2 hidden" id="{{$namespace}}rejectBtn">Reject</x-primary-button>
+        @endif
+
+        
+        @if($record->status == 'RDEL')
+            <x-primary-button class="me-2" id="{{$namespace}}approveDeleteBtn">Approve Delete</x-primary-button>
         @endif
 
         @if(isset($right))
@@ -22,13 +25,21 @@
 
         @if($record->status == 'PEND')
             <x-primary-button class="me-2" id="{{$namespace}}approveBtn">Approve</x-primary-button>
-        @else
-            <x-primary-button class="me-2 hidden" id="{{$namespace}}approveBtn">Approve</x-primary-button>    
+        @endif
+
+        
+        @if($record->status == 'RDEL')
+            <x-primary-button class="me-2" id="{{$namespace}}rejectDeleteBtn">Reject Delete</x-primary-button>
         @endif
         <x-secondary-button class="" id="{{$namespace}}cancelBtn">Cancel</x-secondary-button>
     </div>
 </div>
 <script type="module">
+    
+    let approveDeleteBtn = $id('{{$namespace}}approveDeleteBtn',document.createElement('button'));
+    let rejectDeleteBtn  = $id('{{$namespace}}rejectDeleteBtn',document.createElement('button'));
+    let approveBtn       = $id('{{$namespace}}approveBtn',document.createElement('button'));
+    let rejectBtn        = $id('{{$namespace}}rejectBtn',document.createElement('button'));
     
     let callback = [];
     let state = 'review';
@@ -43,6 +54,25 @@
     {{$namespace}}controls.onApproveClick        = ()=>{};
     {{$namespace}}controls.onRejectClick         = ()=>{};
     {{$namespace}}controls.onCancelClick         = ()=>{};
+    
+    {{$namespace}}controls.onApproveDeleteClick        = ()=>{};
+    {{$namespace}}controls.onRejectDeleteClick         = ()=>{};
+    
+
+    approveDeleteBtn.addEventListener('click',()=>{
+        
+        changeState('delete','delete:approve');
+
+        {{$namespace}}controls.onApproveDeleteClick();
+    });
+
+
+    rejectDeleteBtn.addEventListener('click',()=>{
+        
+        changeState('delete','delete:reject');
+
+        {{$namespace}}controls.onRejectDeleteClick();
+    });
 
     {{$namespace}}approveBtn.addEventListener('click',()=>{
         

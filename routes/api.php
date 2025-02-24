@@ -30,7 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/ledger/entry/update/{id}',[App\Http\Controllers\LedgerEntryController::class, '_update']);
     Route::post('/ledger/entry/delete',[App\Http\Controllers\LedgerEntryController::class, '_delete']);
     Route::get('/ledger/{ledger_id}/entries',[App\Http\Controllers\LedgerEntryController::class, '_list']);
-    
+    Route::post('/ledger/entry/request/delete',[App\Http\Controllers\LedgerEntryController::class, '_request_delete']);
+
     /****** REVIEW *****/
     Route::prefix('review')->group(function () {
         
@@ -39,5 +40,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/ledgers', [App\Http\Controllers\Review\LedgerController::class, '_list']);
         Route::post('/ledger/approve', [App\Http\Controllers\Review\LedgerController::class, '_approve']);
         Route::post('/ledger/reject',[App\Http\Controllers\Review\LedgerController::class, '_reject']);
+
+        //Ledger Entries
+        Route::get('/ledger/entries', [App\Http\Controllers\Review\LedgerEntryController::class, '_list']);
+        Route::post('/ledger/entry/approve', [App\Http\Controllers\Review\LedgerEntryController::class, '_approve']);
+        Route::post('/ledger/entry/reject',[App\Http\Controllers\Review\LedgerEntryController::class, '_reject']);     
+        Route::post('/ledger/entry/delete/approve',[App\Http\Controllers\Review\LedgerEntryController::class, '_approve_request_delete']);
+        Route::post('/ledger/entry/delete/reject',[App\Http\Controllers\Review\LedgerEntryController::class, '_reject_request_delete']);
     });
 });

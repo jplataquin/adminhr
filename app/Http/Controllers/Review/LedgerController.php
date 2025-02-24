@@ -63,7 +63,7 @@ class LedgerController extends Controller
     public function _reject(Request $request){
         
         $id             = (int) $request->input('id');
-        $ledger_account = Ledger::find($id);
+        $ledger         = Ledger::find($id);
 
         if(!$ledger){
             return response()->json([
@@ -86,8 +86,6 @@ class LedgerController extends Controller
         }
         
         $user_id = Auth::user()->id;
-
-        $ledger = new Ledger();
 
         $ledger->status          = 'REJC';
         $ledger->rejected_by     = $user_id;

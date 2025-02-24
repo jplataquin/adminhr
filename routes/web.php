@@ -43,11 +43,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/review',function(){
 
         return view('/review/dashboard');
+
     })->name('review');
 
-    Route::prefix('review')->group(function () {
+    Route::prefix('/review')->group(function () {
+        
+        
+        //Ledger Entries
+        Route::get('/ledger/entry/{id}', [App\Http\Controllers\Review\LedgerEntryController::class, 'display'])->name('review');
+        Route::get('/ledger/entries', [App\Http\Controllers\Review\LedgerEntryController::class, 'list'])->name('review');
+
+        
+        //Ledgers
         Route::get('/ledgers', [App\Http\Controllers\Review\LedgerController::class, 'list'])->name('review');
         Route::get('/ledger/{id}', [App\Http\Controllers\Review\LedgerController::class, 'display'])->name('review');
+        
+        
+
+        
     });
 });
 

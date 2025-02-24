@@ -175,5 +175,9 @@
                 </tr>
                 @endforeach
             </table>
+
+            <script>
+                window.print();
+            </script>
     </body>
 </html>

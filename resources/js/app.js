@@ -159,7 +159,14 @@ window.$roundUp = function(num,decimalPlaces = 0){
     return (f >= .5 - e) ? Math.ceil(n) / p : Math.floor(n) / p;
 }
 
+window.$id = function(id,def = {},dom = document){
 
+    let target = dom.getElementById(id);
+
+    if(!target) return def;
+
+    return target;
+}
 window.$numberFormat = function(val,fractionDigits){
 
     if(!fractionDigits){
@@ -483,3 +490,37 @@ window.$dateOnlyInput = function(arr){
         }
     });
 };
+
+
+window.$copyToClipboard = async function(textToCopy) {
+    // Navigator clipboard api needs a secure context (https)
+    return new Promise(async (resolve,reject)=>{
+
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textToCopy);
+            resolve(true);
+
+        } else {
+            // Use the 'out of viewport hidden text area' trick
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+                
+            // Move textarea out of the viewport so it's not visible
+            textArea.style.position = "none";
+                
+            document.body.prepend(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+            } catch (error) {
+                console.error(error);
+                resolve(false);
+            } finally {
+                textArea.remove();
+                resolve(true);
+            }
+        } 
+
+    });
+}
