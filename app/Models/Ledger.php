@@ -117,7 +117,7 @@ class Ledger extends Model
         return $user;
     }
 
-    public function getTotalCredit(Array $tag = [],Array $status = []){
+    public function getTotalCredit(Array $status = [],Array $tag = []){
 
         $entries = $this->Entries()->where('type','CRED');
 
@@ -132,7 +132,7 @@ class Ledger extends Model
         return $entries->sum(\DB::raw('quantity * unit_amount'));
     }
 
-    public function getTotalDebit(Array $tag = [],Array $status = []){
+    public function getTotalDebit(Array $status = [],Array $tag = []){
         
         $entries = $this->Entries()->where('type','DEBI');
         
@@ -148,7 +148,7 @@ class Ledger extends Model
     }
 
 
-    public function getTotalQuantity(Array $tag = [],Array $status = []){
+    public function getTotalQuantity(Array $status = [],Array $tag = []){
         
         $entries = $this->Entries();
         
