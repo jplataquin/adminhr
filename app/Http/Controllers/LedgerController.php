@@ -46,12 +46,14 @@ class LedgerController extends Controller
         //     ]);
         // }
 
-        echo 'id '.$id;exit;
+        DB::enableQueryLog();
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
                 'max:255',
-                Rule::unique('ledgers','name')->where(function (Builder $query) use ($id) { $query->where('ledger_account_id', $id); })
+                Rule::unique('ledgers','name')->where(function (Builder $query) use ($id) { 
+                    $query->where('ledger_account_id', $id); 
+                })
             ],
             'description' => [
                 'required',
@@ -67,6 +69,8 @@ class LedgerController extends Controller
             
         ]);
 
+        dd(DB::getQueryLog());
+        exit;
         if ($validator->fails()) {
             return response()->json([
                 'status'    => -2,
