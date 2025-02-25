@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('ledgers', function (Blueprint $table) {
-            $table->string('email')->unique(false)->change();
+            $table->string('name')->unique(false)->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('ledgers', function (Blueprint $table) {
-            $table->string('email')->unique(true)->change();
+            $table->string('name')->unique(true)->change();
         });
     }
 };
