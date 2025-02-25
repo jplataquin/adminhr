@@ -50,7 +50,7 @@ class LedgerController extends Controller
             'name' => [
                 'required',
                 'max:255',
-                Rule::unique('ledgers','name')->where(fn (Builder $query) => $query->where('ledger_account_id', $id))
+                Rule::unique('ledgers','name')->where(function (Builder $query) use ($id) { $query->where('ledger_account_id', $id); })
             ],
             'description' => [
                 'required',
