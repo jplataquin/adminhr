@@ -46,7 +46,6 @@ class LedgerController extends Controller
         //     ]);
         // }
 
-        DB::enableQueryLog();
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
@@ -78,8 +77,6 @@ class LedgerController extends Controller
         }
 
         
-        dd(DB::getQueryLog());
-        exit;
         $name           = $request->input('name');
         $description    = $request->input('description');
         $template       = $request->input('template');
