@@ -46,6 +46,7 @@ class LedgerController extends Controller
         //     ]);
         // }
 
+        echo 'id '.$id;exit;
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
