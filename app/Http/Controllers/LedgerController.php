@@ -69,8 +69,6 @@ class LedgerController extends Controller
             
         ]);
 
-        dd(DB::getQueryLog());
-        exit;
         if ($validator->fails()) {
             return response()->json([
                 'status'    => -2,
@@ -79,6 +77,9 @@ class LedgerController extends Controller
             ]);
         }
 
+        
+        dd(DB::getQueryLog());
+        exit;
         $name           = $request->input('name');
         $description    = $request->input('description');
         $template       = $request->input('template');
