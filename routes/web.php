@@ -27,16 +27,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/employee/bulk/review', [App\Http\Controllers\EmployeeController::class, 'bulk_review']);
 
     //Ledger Account
-    Route::get('/ledger/accounts', [App\Http\Controllers\LedgerAccountController::class, 'list'])->name('account_ledger');
-    Route::get('/ledger/account/create', [App\Http\Controllers\LedgerAccountController::class, 'create'])->name('account_ledger');
-    Route::get('/ledger/account/{id}', [App\Http\Controllers\LedgerAccountController::class, 'display'])->name('account_ledger');
+    Route::get('/ledger/accounts', [App\Http\Controllers\LedgerAccountController::class, 'list'])->name('ledger');
+    Route::get('/ledger/account/create', [App\Http\Controllers\LedgerAccountController::class, 'create'])->name('ledger');
+    Route::get('/ledger/account/{id}', [App\Http\Controllers\LedgerAccountController::class, 'display'])->name('ledger');
 
     //Ledger
-    Route::get('/ledger/{id}', [App\Http\Controllers\LedgerController::class, 'display'])->name('account_ledger');
-    Route::get('/ledger/print/{id}',[App\Http\Controllers\LedgerController::class, 'print'])->name('account_ledger');
+    Route::get('/ledger/{id}', [App\Http\Controllers\LedgerController::class, 'display'])->name('ledger');
+    Route::get('/ledger/print/{id}',[App\Http\Controllers\LedgerController::class, 'print'])->name('ledger');
 
     //Ledger Entry
-    Route::get('/ledger/entry/{id}', [App\Http\Controllers\LedgerEntryController::class, 'display'])->name('account_ledger');;
+    Route::get('/ledger/entry/{id}', [App\Http\Controllers\LedgerEntryController::class, 'display'])->name('ledger');;
 
 
     /****** REVIEW *****/
@@ -47,7 +47,10 @@ Route::middleware('auth')->group(function () {
     })->name('review');
 
     Route::prefix('/review')->group(function () {
-        
+
+        Route::get('/ledger/account/{id}', [App\Http\Controllers\Review\LedgerAccountController::class, 'display'])->name('review');
+        Route::get('/ledger/accounts', [App\Http\Controllers\Review\LedgerAccountController::class, 'list'])->name('review');
+
         
         //Ledger Entries
         Route::get('/ledger/entry/{id}', [App\Http\Controllers\Review\LedgerEntryController::class, 'display'])->name('review');
@@ -58,7 +61,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ledgers', [App\Http\Controllers\Review\LedgerController::class, 'list'])->name('review');
         Route::get('/ledger/{id}', [App\Http\Controllers\Review\LedgerController::class, 'display'])->name('review');
         
-        
+
 
         
     });

@@ -14,6 +14,10 @@
             <x-primary-button class="me-2" id="{{$namespace}}approveDeleteBtn">Approve Delete</x-primary-button>
         @endif
 
+        @if($record->status == 'APRV' || $record->status == 'REJC')
+            <x-primary-button class="me-2" id="{{$namespace}}revertBtn">Revert</x-primary-button>
+        @endif
+
         @if(isset($right))
             {{$right}}
         @endif
@@ -40,6 +44,7 @@
     let rejectDeleteBtn  = $id('{{$namespace}}rejectDeleteBtn',document.createElement('button'));
     let approveBtn       = $id('{{$namespace}}approveBtn',document.createElement('button'));
     let rejectBtn        = $id('{{$namespace}}rejectBtn',document.createElement('button'));
+    let revertBtn        = $id('{{$namespace}}revertBtn',document.createElement('button'));
     
     let callback = [];
     let state = 'review';
@@ -58,6 +63,7 @@
     {{$namespace}}controls.onApproveDeleteClick        = ()=>{};
     {{$namespace}}controls.onRejectDeleteClick         = ()=>{};
     
+    {{$namespace}}controls.onRevertClick         = ()=>{};
 
     approveDeleteBtn.addEventListener('click',()=>{
         
@@ -66,6 +72,11 @@
         {{$namespace}}controls.onApproveDeleteClick();
     });
 
+    revertBtn.addEventListener('click',()=>{
+        changeState('update','update:revert');
+
+        {{$namespace}}controls.onRevertClick();
+    });
 
     rejectDeleteBtn.addEventListener('click',()=>{
         
@@ -74,21 +85,21 @@
         {{$namespace}}controls.onRejectDeleteClick();
     });
 
-    {{$namespace}}approveBtn.addEventListener('click',()=>{
+    approveBtn.addEventListener('click',()=>{
         
         changeState('update','update:approve');
 
         {{$namespace}}controls.onApproveClick();
     });
 
-    {{$namespace}}rejectBtn.addEventListener('click',()=>{
+    rejectBtn.addEventListener('click',()=>{
         
         changeState('update','update:reject');
 
         {{$namespace}}controls.onRejectClick();
     });
 
-    {{$namespace}}cancelBtn.addEventListener('click',()=>{
+    cancelBtn.addEventListener('click',()=>{
         
         {{$namespace}}controls.onCancelClick();
     });

@@ -20,8 +20,8 @@
                         Review
                     </x-nav-link>
 
-                    <x-nav-link href="/ledger/accounts" :active="request()->routeIs('account_ledger')">
-                        Account Ledger
+                    <x-nav-link href="/ledger/accounts" :active="request()->routeIs('ledger')">
+                        Ledger
                     </x-nav-link>
 
                 </div>

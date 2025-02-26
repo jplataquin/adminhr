@@ -213,27 +213,32 @@ class LedgerEntryController extends Controller
 
     public function _list(Request $request){
         
-        $page               = (int) $request->input('page')     ?? 1;
-        $limit              = (int) $request->input('limit')    ?? 10;
-        $orderBy            = $request->input('order_by')       ?? 'id';
-        $order              = $request->input('order')          ?? 'DESC';
-        $query              = $request->input('query')          ?? '';
-        $status             = $request->input('status')         ?? '';
+        $page               = (int) $request->input('page')         ?? 1;
+        $limit              = (int) $request->input('limit')        ?? 10;
+        $orderBy            = $request->input('order_by')           ?? 'id';
+        $order              = $request->input('order')              ?? 'DESC';
+        $query              = $request->input('query')              ?? '';
+        $status             = $request->input('status')             ?? '';
+        $ledger_account_id  = $request->input('ledger_account_id')  ?? 0;
+        $ledger_id          = $request->input('ledger_id')          ?? 0;
         $result     = [];
 
         $table = new LedgerEntry();
 
-
-        // if($query != ''){
-        //     $table = $table->where('name','LIKE','%'.$query.'%');
-        // }
-
+        if($query != ''){
+            $table = $table->where('particular','LIKE','%'.$query.'%');
+        }
         
+        $table = $table->where('status','PEND')->orWhere('status','RDEL')->with('Ledger');
+        
+        if($ledger_id){
+            $table = $table->where('ledger_id',$ledger_id);
+        }
 
-        if($status != ''){
-            $table = $table->where('status','=',$status)->with('Ledger');
-        }else{
-            $table = $table->where('status','PEND')->orWhere('status','RDEL')->with('Ledger');
+        if($ledger_account_id){
+
+            $in = DB::table('ledgers')->select('id')->where('ledger_account_id', $ledger_account_id);
+            $table = $table->whereIn('ledger_id',$in);
         }
 
         if($limit > 0){

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
+use Carbon\Carbon;
 
 
 class LedgerAccountController extends Controller
@@ -114,7 +115,6 @@ class LedgerAccountController extends Controller
 
     }
 
-
     public function _update(Request $request, $id){
         
         $id = (int) $id;
@@ -166,4 +166,174 @@ class LedgerAccountController extends Controller
             'data'      => []
         ]);
     }
+
+    public function _revert(Request $request){
+        
+        $id                     = (int) $request->input('id');
+        $ledger_account         = LedgerAccount::find($id);
+
+        if(!$ledger_account){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger Account' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if(!in_array($ledger_account->status,['APRV'])){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot update Ledger Account (Status:'.$ledger_account->status.')',
+                'data'      => []
+            ]);
+        }
+        
+        $user_id = Auth::user()->id;
+
+
+        $ledger_account->status          = 'PEND';
+        $ledger_account->save();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
+
+    public function _request_delete(Request $request){
+
+        $id = (int) $request->input('id');
+
+        $ledger_account = LedgerAccount::find($id);
+
+        if(!$ledger_account){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger Account' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger_account->status != 'APRV'){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot update Ledger Account (status: '.$ledger_entry->status.')',
+                'data'      => []
+            ]);
+        }
+
+
+        $user_id = Auth::user()->id;
+        
+        $ledger_account->status            = 'RDEL';
+        $ledger_account->request_delete_by = $user_id;
+        $ledger_account->request_delete_at = Carbon::now();
+        
+        $ledger_account->save();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
+
+
+    public function _delete(Request $request){
+        
+        $id = (int) $request->input('id');
+
+        $ledger_account = LedgerAccount::find($id);
+
+        if(!$ledger_account){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger Account' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger_account->status != 'PEND'){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Ledger Account cannot be updated (status: '.$ledger_account->status.')',
+                'data'      => []
+            ]);
+        }
+
+
+        $ledgers = $ledger_account->Ledgers();
+
+        if($ledgers){
+
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot delete Ledger Account with existing ledgers, Try to request delete instead',
+                'data'      => []
+            ]);
+        }
+
+        $user_id = Auth::user()->id;
+        
+        DB::beginTransaction();
+
+        
+        
+        try{
+
+         
+
+            foreach($ledgers as $ledger){
+                
+                //Delete all Entries
+                $entries = $ledger->Entries();
+
+                foreach($entries as $entry){
+                    $entry->status     = 'DELE';
+                    $entry->deleted_by = $user_id;
+                    $entry->save();
+                    $entry->delete();
+                }
+
+                //Delete all Ledgers
+                $ledger->status     = 'DELE';
+                $ledger->deleted_by = $user_id;
+                $ledger->save();
+                $ledger->delete();
+            }
+
+
+            //Delete Ledger Account
+            $ledger_account->status     = 'DELE';
+            $ledger_account->deleted_by = $user_id;
+            
+            $ledger_account->save();
+
+            $ledger_account->delete();
+            
+            DB::commit();
+            
+        }catch(\Exception $e){
+            DB::rollback();
+        }
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
+
 }

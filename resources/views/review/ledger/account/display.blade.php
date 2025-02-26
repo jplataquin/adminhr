@@ -4,7 +4,7 @@
 
         <div class="flex items-start justify-between p-5 border-b rounded-t">
             <h3 class="text-xl font-semibold dark:text-white">
-                Ledger Account
+                Review Ledger Account
             </h3>
         </div>
 
@@ -25,50 +25,35 @@
         </div>
 
         <div class="p-6 border-t border-gray-200 rounded-b flow-root">
-       
-            <x-display-controls status="{{$ledger_account->status}}"></x-display-controls>
+            
+            <x-review-controls :record='$ledger_account'></x-review-controls>
             <script type="module">
-                import {$q} from '/adarna.js';
-
-                controls.onCancelClick = ()=>{
-                    $url('/ledger/accounts');
-                    return false;
-                }
-
-                controls.onEditClick = ()=>{
-                    $q('.editable').items().map(item=>{
-                        item.prevValue = item.value;
-                        item.disabled = false;
-                    });
-                }
-
-                controls.onUpdateCancel = ()=>{
+                controls.onApproveClick = ()=>{
                     
-                    $q('.editable').items().map(item=>{
-                        item.value      = item.prevValue;
-                        item.prevValue  = '';
-                        item.disabled   = true;
-                    });
-                }
+                    $ui.confirm('Approve this Ledger Account?').then(action=>{
 
-
-                controls.onUpdateClick = ()=>{
-
-                    $ui.blockUI();
-
-                    $_POST('/api/ledger/account/update/{{$ledger_account->id}}',form).then(reply=>{
-
-                        $ui.unblockUI();
-
-                        if(reply.status <= 0){
-                            return $ui.showError(reply);
+                        if(!action.isConfirmed){
+                            return false;
                         }
 
-                        $reload();
+                        $ui.blockUI();
+
+                        $_POST('/api/review/ledger/account/approve',{
+                            id: '{{$ledger_account->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
                     });
+
+                    
                 }
 
-                
                 controls.onRevertClick = () =>{
                     $ui.confirm('This will revert the Ledger Account to status Pending?').then(action=>{
 
@@ -78,7 +63,7 @@
 
                         $ui.blockUI();
 
-                        $_POST('/api/ledger/account/revert',{
+                        $_POST('/api/review/ledger/account/revert',{
                             id: '{{$ledger_account->id}}'
                         }).then(reply=>{
                             $ui.unblockUI();
@@ -92,40 +77,64 @@
                     });
                 }
 
+                controls.onApproveDeleteClick = ()=>{
 
-                controls.onDeleteClick = ()=>{
-
-                    $ui.blockUI();
-                        
-                    $_POST('/api/ledger/account/delete/',{
-                        id: '{{$ledger_account->id}}'
-                    }).then(reply=>{
-
-                        $ui.unblockUI();
-                        
-                        if(reply.status <= 0){
-                            return $ui.showError(reply);
-                        }
-
-                        $url('/ledger/accounts');
-                    });
-                }
-
-
-                controls.onRequestDeleteClick = ()=>{
-                    $ui.blockUI();
-                    $ui.confirm('You want to request the deletion of this Ledger Account?').then(action=>{
+                    $ui.confirm('You want to delete this Ledger Account and all of its contents?').then(action=>{
 
                         if(!action.isConfirmed){
                             return false;
                         }
 
-                        $_POST('/api/ledger/account/request/delete/',{
+                        $ui.blockUI();
+
+                        $_POST('/api/review/ledger/account/delete/approve',{
                             id: '{{$ledger_account->id}}'
                         }).then(reply=>{
-
                             $ui.unblockUI();
-                            
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $url('/review/ledger/accounts');
+                        });
+                    });
+                }
+                
+                controls.onRejectDeleteClick  = ()=>{
+                    
+                
+                    $ui.blockUI();
+
+                    $_POST('/api/review/ledger/account/delete/reject',{
+                        id: '{{$ledger_account->id}}'
+                    }).then(reply=>{
+                        $ui.unblockUI();
+
+                        if(reply.status <= 0){
+                            return $ui.showError(reply);
+                        }
+
+                        $reload();
+                    });
+                    
+                }
+
+                controls.onRejectClick = ()=>{
+                    
+                    $ui.blockUI();
+
+                    $ui.confirm('Reject this Ledger Account?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $_POST('/api/review/ledger/account/reject',{
+                            id: '{{$ledger_account->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
                             if(reply.status <= 0){
                                 return $ui.showError(reply);
                             }
@@ -133,6 +142,10 @@
                             $reload();
                         });
                     });
+                }
+                
+                controls.onCancelClick = ()=>{
+                    $url('/review/ledger/accounts');
                 }
 
             </script>
@@ -148,8 +161,6 @@
                 Ledgers
             </h3>
 
-            <button class="float-right text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createBtn">Create Ledger</button>
-        
         </div>
             
         <div class="pt-6 ps-6 pe-6 space-y-6">
@@ -197,7 +208,7 @@
                 });
 
                 row.onclick = ()=>{
-                    $url('/ledger/'+item.id);
+                    $url('/review/ledger/'+item.id);
                 }
 
                 $el.append(row).to(list);
@@ -292,79 +303,4 @@
         pageDoc.showData();
     </script>
 
-    <script type="module">
-        import {Template} from '/adarna.js';
-
-        const t = new Template();
-
-        const ledger_name           = $t.text_input();
-        const ledger_description    = $t.textarea();
-        const ledger_template       = $t.textarea();
-        const ledger_unit           = $t.text_input();
-        const create_ledger_btn     = $t.button('Create');
-        
-        create_ledger_btn.classList.add('float-right');
-
-        const create_ledger_form = t.div(()=>{
-
-            t.div({class:'mb-3'},(el)=>{
-                el.append($t.label('Name'));
-                el.append(ledger_name);
-            });
-
-            t.div({class:'mb-5'},(el)=>{
-                el.append($t.label('Description'));
-
-                el.append(ledger_description);
-            });
-
-            t.div({class:'mb-5'},(el)=>{
-                el.append($t.label('Template'));
-
-                el.append(ledger_template);
-            });
-
-            t.div({class:'mb-5'},(el)=>{
-                el.append($t.label('Unit'));
-
-                el.append(ledger_unit);
-            });
-
-            t.div({},(el)=>{
-                el.append(create_ledger_btn);
-            });
-        });
-
-        createBtn.onclick = ()=>{
-
-            ledger_name.value           = '';
-            ledger_description.value    = '';
-            $drawerModal.content('Create Ledger',create_ledger_form);
-            $drawerModal.open();
-        }
-
-
-        create_ledger_btn.onclick = ()=>{
-
-            $_POST('/api/ledger/{{$ledger_account->id}}/create',{
-                name: ledger_name.value,
-                description: ledger_description.value,
-                template: ledger_template.value,
-                unit: ledger_unit.value
-            }).then(reply=>{
-
-                if(reply.status <= 0){
-                    $ui.showError(reply);
-                    return false;
-                }
-
-                
-                $drawerModal.close();
-                
-                pageDoc.reinitalize();
-                pageDoc.showData();
-
-            });
-        }
-    </script>
 </x-app-layout>

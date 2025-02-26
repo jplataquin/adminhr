@@ -342,17 +342,27 @@ class LedgerEntryController extends Controller
         if($ledger_entry->status != 'PEND'){
             return response()->json([
                 'status'    => 0,
-                'message'   => 'Entry cannot be updated (status: '.$ledger_entry->status.')',
+                'message'   => 'Ledger Entry cannot be updated (status: '.$ledger_entry->status.')',
                 'data'      => []
             ]);
         }
 
         $user_id = Auth::user()->id;
         
-        $ledger_entry->deleted_by = $user_id;
-        
-        $ledger_entry->forceDelete();
+        DB::beginTransaction();
 
+        try{
+    
+            //Delete Ledger Entry
+            $ledger_entry->deleted_by = $user_id;
+            $ledger_entry->save();
+            $ledger_entry->delete();
+            
+            DB::commit();
+            
+        }catch(\Exception $e){
+            DB::rollback();
+        }
         return response()->json([
             'status'    => 1,
             'message'   => '',

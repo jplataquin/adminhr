@@ -17,9 +17,15 @@
                     </div>
             @endif
 
+            @if($record->approved_by && $record->approved_at)
+                    <div>
+                        Approved By {{$record->ApprovedByUser()->name}} at {{$record->approved_at}}
+                    </div>
+            @endif
+
             @if($record->request_delete_by && $record->request_delete_at)
                     <div>
-                        Updated By {{$record->RequestDeleteByUser()->name}} at {{$record->request_delete_at}}
+                        Request Delete By {{$record->RequestDeleteByUser()->name}} at {{$record->request_delete_at}}
                     </div>
             @endif
 
@@ -29,12 +35,6 @@
                     </div>
             @endif
 
-
-            @if($record->approved_by && $record->approved_at)
-                    <div>
-                        Approved By {{$record->ApprovedByUser()->name}} at {{$record->approved_at}}
-                    </div>
-            @endif
 
         @endif
        

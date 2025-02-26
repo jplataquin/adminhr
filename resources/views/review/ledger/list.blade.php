@@ -46,7 +46,9 @@
             data.map(item=>{
 
                 let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
+                    t.h2({class:'font-semibold dark:text-white'},item.account.name);
                     t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
+                    t.span({class:'text-xs dark:text-white'},item.status);
                 });
 
                 row.onclick = ()=>{

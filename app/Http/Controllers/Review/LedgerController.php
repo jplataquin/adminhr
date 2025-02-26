@@ -142,15 +142,12 @@ class LedgerController extends Controller
 
         $table = new Ledger();
 
-        $table = $table->where('status','PEND');
+        $table = $table->where('status','PEND')->orWhere('status','RDEL')->with('Account');
 
         if($query != ''){
             $table = $table->where('name','LIKE','%'.$query.'%');
         }
 
-        if($status != ''){
-            $table = $table->where('status','=',$status);
-        }
 
         if($limit > 0){
             $page   = ($page-1) * $limit;
@@ -174,44 +171,4 @@ class LedgerController extends Controller
     }
 
 
-    public function _delete(Request $request){
-        
-        $id = (int) $request->input('id');
-
-        $ledger = Ledger::find($id);
-
-        if(!$ledger_entry){
-            return response()->json([
-                'status'    => -2,
-                'message'   => 'Failed Validation',
-                'data'      => [
-                    'Ledger' =>[
-                        'Record not found'
-                    ]
-                ]
-            ]);
-        }
-
-        if($ledger->status != 'PEND'){
-            return response()->json([
-                'status'    => 0,
-                'message'   => 'Ledger cannot be updated (status: '.$ledger->status.')',
-                'data'      => []
-            ]);
-        }
-
-        $user_id = Auth::user()->id;
-        
-        $ledger->deleted_by = $user_id;
-        
-        $ledger->save();
-
-        $ledger->delete();
-
-        return response()->json([
-            'status'    => 1,
-            'message'   => '',
-            'data'      => []
-        ]);
-    }
 }

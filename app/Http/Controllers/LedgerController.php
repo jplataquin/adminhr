@@ -34,17 +34,17 @@ class LedgerController extends Controller
             ]);
         }
 
-        // if($ledger_account->status != 'APRV'){
-        //     return response()->json([
-        //         'status'    => -2,
-        //         'message'   => 'Failed Validation',
-        //         'data'      => [
-        //             'Account Ledger' =>[
-        //                 'Status not yet approved'
-        //             ]
-        //         ]
-        //     ]);
-        // }
+        if($ledger_account->status != 'APRV'){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger Account' =>[
+                        'Status not yet approved'
+                    ]
+                ]
+            ]);
+        }
 
         $validator = Validator::make($request->all(),[
             'name' => [
@@ -210,7 +210,7 @@ class LedgerController extends Controller
 
         $ledger = Ledger::find($id);
 
-        if(!$ledger_entry){
+        if(!$ledger){
             return response()->json([
                 'status'    => -2,
                 'message'   => 'Failed Validation',
@@ -235,17 +235,21 @@ class LedgerController extends Controller
         DB::beginTransaction();
 
         try{
+    
+            //Delete all Entries
+            $entries = $ledger->Entries();
 
-            $ledger->Entries()->where('ledger_id',$ledger->id)->upadte([
-                'deleted_by' => $user_id
-            ]);
+            foreach($entries as $entry){
+                $entry->status     = 'DELE';
+                $entry->deleted_by = $user_id;
+                $entry->save();
+                $entry->delete();
+            }
 
-            $ledger->Entries()->delete();
-
+            //Delete Ledger
+            $ledger->status     = 'DELE';
             $ledger->deleted_by = $user_id;
-            
             $ledger->save();
-
             $ledger->delete();
             
             DB::commit();

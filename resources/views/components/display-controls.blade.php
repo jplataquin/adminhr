@@ -12,7 +12,10 @@
         @if($status == 'APRV')
             <x-primary-button class="me-2" id="{{$namespace}}requestDeleteBtn">Request Delete</x-primary-button>
         @endif
-
+        
+        @if($status == 'APRV')
+            <x-primary-button class="me-2" id="{{$namespace}}revertBtn">Revert</x-primary-button>
+        @endif
 
         @if(isset($left))
             {{$left}}
@@ -32,10 +35,11 @@
 </div>
 <script type="module">
     
-    let {{$namespace}}editBtn           = $id('{{$namespace}}editBtn',document.createElement('button'));
-    let {{$namespace}}updateBtn         = $id('{{$namespace}}updateBtn',document.createElement('button'));
-    let {{$namespace}}deleteBtn         = $id('{{$namespace}}deleteBtn',document.createElement('button'));
-    let {{$namespace}}requestDeleteBtn  = $id('{{$namespace}}requestDeleteBtn',document.createElement('button'));
+    let editBtn           = $id('{{$namespace}}editBtn',document.createElement('button'));
+    let updateBtn         = $id('{{$namespace}}updateBtn',document.createElement('button'));
+    let deleteBtn         = $id('{{$namespace}}deleteBtn',document.createElement('button'));
+    let requestDeleteBtn  = $id('{{$namespace}}requestDeleteBtn',document.createElement('button'));
+    let revertBtn         = $id('{{$namespace}}revertBtn',document.createElement('button'));
 
     let callback = [];
     let state = 'edit';
@@ -53,8 +57,16 @@
     {{$namespace}}controls.onEditClick                  = ()=>{};
     {{$namespace}}controls.onUpdateClick                = ()=>{};
     {{$namespace}}controls.onRequestDeleteClick         = ()=>{};
+    {{$namespace}}controls.onRevertClick                = ()=>{};
 
-    {{$namespace}}editBtn.addEventListener('click',()=>{
+    revertBtn.addEventListener('click',()=>{
+
+        changeState('update','update:revert');
+
+        {{$namespace}}controls.onRevertClick();
+    });
+
+    editBtn.addEventListener('click',()=>{
         
         {{$namespace}}editBtn.classList.add('hidden');
         {{$namespace}}updateBtn.classList.remove('hidden');
@@ -65,7 +77,7 @@
         {{$namespace}}controls.onEditClick();
     });
 
-    {{$namespace}}updateBtn.addEventListener('click',()=>{
+    updateBtn.addEventListener('click',()=>{
          
          changeState('update','update:click');
 
@@ -73,14 +85,14 @@
     });
 
 
-    {{$namespace}}requestDeleteBtn.addEventListener('click',()=>{
+    requestDeleteBtn.addEventListener('click',()=>{
 
         changeState('request_delete','request_delete:click');
 
         {{$namespace}}controls.onRequestDeleteClick();
     });
 
-    {{$namespace}}cancelBtn.addEventListener('click',()=>{
+    cancelBtn.addEventListener('click',()=>{
 
         if(state == 'update'){
             {{$namespace}}editBtn.classList.remove('hidden');
@@ -101,7 +113,7 @@
 
     });
 
-    {{$namespace}}deleteBtn.addEventListener('click',()=>{
+    deleteBtn.addEventListener('click',()=>{
 
         changeState(state,'delete:click');
         
