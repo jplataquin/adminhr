@@ -169,6 +169,122 @@ class LedgerController extends Controller
         ]);
 
     }
+     
+    public function _reject_request_delete(Request $request){
+        
+        $id         = (int) $request->input('id');
+        $ledger     = Ledger::find($id);
+
+        if(!$ledger){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger->status != 'RDEL'){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot update Ledger (Status:'.$ledger->status.')',
+                'data'      => []
+            ]);
+        }
+        
+        $user_id = Auth::user()->id;
+
+        $ledger->status                         = 'APRV';
+        $ledger->rejected_request_delete_by     = $user_id;
+        $ledger->rejected_request_delete_at     = Carbon::now();
+
+        $ledger->save();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
+
+    public function _approve_request_delete(Request $request){
+        
+        $id         = (int) $request->input('id');
+        $ledger     = Ledger::find($id);
+
+        if(!$ledger){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if($ledger->status != 'RDEL'){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot update Ledger Account (Status:'.$ledger->status.')',
+                'data'      => []
+            ]);
+        }
+        
+        $user_id = Auth::user()->id;
+
+        $ledger->status         = 'DELE';
+        $ledger->deleted_by     = $user_id;
+        $ledger->save();
+        
+        $ledger->delete();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
+
+    public function _revert(Request $request){
+        
+        $id             = (int) $request->input('id');
+        $ledger         = Ledger::find($id);
+
+        if(!$ledger){
+            return response()->json([
+                'status'    => -2,
+                'message'   => 'Failed Validation',
+                'data'      => [
+                    'Ledger' =>[
+                        'Record not found'
+                    ]
+                ]
+            ]);
+        }
+
+        if(!in_array($ledger->status,['APRV','REJC'])){
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Cannot update Ledger (Status:'.$ledger->status.')',
+                'data'      => []
+            ]);
+        }
+        
+        $user_id = Auth::user()->id;
 
 
+        $ledger->status          = 'PEND';
+        $ledger->save();
+
+        return response()->json([
+            'status'    => 1,
+            'message'   => '',
+            'data'      => []
+        ]);
+    }
 }

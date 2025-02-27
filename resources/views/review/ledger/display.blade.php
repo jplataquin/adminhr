@@ -73,11 +73,70 @@
                 }
 
                 controls.onApproveDeleteClick = ()=>{
-                    alert('approve');
-                }
-                
-                controls.onRejectDeleteClick  = ()=>{
-                    alert('delete');
+
+                    $ui.confirm('You want to delete this Ledger and all of its contents?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $ui.blockUI();
+
+                        $_POST('/api/review/ledger/delete/approve',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                                if(reply.status <= 0){
+                                    return $ui.showError(reply);
+                                }
+
+                                $url('/review/ledgers');
+                            });
+                        });
+                    }
+
+                    controls.onRejectDeleteClick  = ()=>{
+
+
+                        $ui.blockUI();
+
+                        $_POST('/api/review/ledger/delete/reject',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
+
+                    }
+
+                    controls.onRejectClick = ()=>{
+
+                    $ui.blockUI();
+
+                    $ui.confirm('Reject this Ledger Account?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $_POST('/api/review/ledger/reject',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
+                    });
                 }
 
                 controls.onRejectClick = ()=>{

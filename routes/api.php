@@ -49,6 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/ledgers', [App\Http\Controllers\Review\LedgerController::class, '_list']);
         Route::post('/ledger/approve', [App\Http\Controllers\Review\LedgerController::class, '_approve']);
         Route::post('/ledger/reject',[App\Http\Controllers\Review\LedgerController::class, '_reject']);
+        Route::post('/ledger/account/revert',[App\Http\Controllers\Review\LedgerController::class, '_revert']);
+        Route::post('/ledger/account/delete/approve',[App\Http\Controllers\Review\LedgerController::class, '_approve_request_delete']);
+        Route::post('/ledger/account/delete/reject',[App\Http\Controllers\Review\LedgerController::class, '_reject_request_delete']);
+   
 
         //Ledger Entries
         Route::get('/ledger/entries', [App\Http\Controllers\Review\LedgerEntryController::class, '_list']);

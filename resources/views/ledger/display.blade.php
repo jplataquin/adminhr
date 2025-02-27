@@ -121,6 +121,53 @@
                     $url('/ledger/account/{{$ledger_account->id}}');
                 }
 
+
+                controls.onRequestDeleteClick = ()=>{
+                    $ui.blockUI();
+                    $ui.confirm('You want to request the deletion of this Ledger?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $_POST('/api/ledger/request/delete/',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+
+                            $ui.unblockUI();
+                            
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
+                    });
+                }
+                
+                controls.onRevertClick = () =>{
+                    $ui.confirm('This will revert the Ledger to status Pending?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $ui.blockUI();
+
+                        $_POST('/api/ledger/revert',{
+                            id: '{{$ledger->id}}'
+                        }).then(reply=>{
+                            $ui.unblockUI();
+
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
+                    });
+                }
+
             </script>
         </div>
 
