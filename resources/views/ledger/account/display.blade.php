@@ -68,6 +68,28 @@
                     });
                 }
 
+                controls.onRequestDeleteClick = ()=>{
+                    $ui.blockUI();
+                    $ui.confirm('You want to request the deletion of this Ledger Account?').then(action=>{
+
+                        if(!action.isConfirmed){
+                            return false;
+                        }
+
+                        $_POST('/api/ledger/account/request/delete/',{
+                            id: '{{$ledger_account->id}}'
+                        }).then(reply=>{
+
+                            $ui.unblockUI();
+                            
+                            if(reply.status <= 0){
+                                return $ui.showError(reply);
+                            }
+
+                            $reload();
+                        });
+                    });
+                }
                 
                 controls.onRevertClick = () =>{
                     $ui.confirm('This will revert the Ledger Account to status Pending?').then(action=>{
@@ -112,28 +134,7 @@
                 }
 
 
-                controls.onRequestDeleteClick = ()=>{
-                    $ui.blockUI();
-                    $ui.confirm('You want to request the deletion of this Ledger Account?').then(action=>{
-
-                        if(!action.isConfirmed){
-                            return false;
-                        }
-
-                        $_POST('/api/ledger/account/request/delete/',{
-                            id: '{{$ledger_account->id}}'
-                        }).then(reply=>{
-
-                            $ui.unblockUI();
-                            
-                            if(reply.status <= 0){
-                                return $ui.showError(reply);
-                            }
-
-                            $reload();
-                        });
-                    });
-                }
+              
 
             </script>
         </div>

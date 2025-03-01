@@ -1,13 +1,119 @@
 <x-app-layout>
-    <div id="view" class="p-5"></div>
+    <div id="view" style="width:50%;margin-left:100px;background-color:grey" class="p-5"></div>
     
     <script type="module">
-        import { ComponentV2,Template } from '/adarna.js';
+        import {ComponentV2,Template,$q} from '/adarna.js';
+
+        class ContextMenu extends ComponentV2{
+
+            model(){
+                return {
+                    backdropZIndex:5,
+                    menuZIndex:6,
+                    menuBackgroundColor:'rgb(153, 152, 152)',
+                    itemHighlightColor:'rgb(223, 220, 220)',
+                    items:[]
+                }
+            }
+
+            view(){
+
+                const t = new Template();
+
+                this.el.backdrop = t.div({style:{
+                    minWidth:'100%',
+                    minHeight:'100%',
+                    width:'100%',
+                    height:'100%',
+                    position:'absolute',
+                    top:'0px',
+                    left:'0px',
+                    zIndex:this._model.backdropZIndex,
+                    backgroundColor:'rgba(255, 255, 255, 0)'
+                }});
+
+                this.el.menu = t.div({
+                    style:{
+                        backgroundColor:this._model.menuBackgroundColor,
+                        position:'absolute',
+                        zIndex:this._model.menuZIndex,
+                        height:'200px',
+                        maxWidth:'200px',
+                        minWidth:'200px'
+                    }
+                });
+
+                this._model.items.map(item=>{
+                    this.el.menu.appendChild(this.parseItem(item));
+                });
+
+                this.el.backdrop.appendChild(this.el.menu);
+
+                return this.el.backdrop;
+            }
+
+            parseItem(data){
+                const t = new Template();
+
+                const item = t.div({
+                    class:'item',
+                    style:{
+                        borderBottom:'1px solid rgba(25,25,25,0.5)',
+                        width:'100%',
+                        padding:'2px',
+                        cursor:'pointer'
+                    }
+                },data.name);
+
+                item.onclick = data.onclick;
+
+                return item;
+            }
+
+            controller(){
+
+                this._dom.handler.setMenuPos = (x,y)=>{
+                    
+                    this.el.menu.style.left = x+'px';
+                    this.el.menu.style.top  = y+'px';
+                }
+
+                this._dom.handler.show = (x,y)=>{
+
+                    this._dom.handler.setMenuPos(x,y);
+
+                    document.body.appendChild(this._dom);
+                }
+
+                this._dom.handler.hide = ()=>{
+                    document.body.removeChild(this._dom);
+                }
+
+                this.el.backdrop.onclick = ()=>{
+                    this._dom.handler.hide();
+                }
+            }
+
+            style(){
+                return {
+                    '.item:hover' :{
+                        backgroundColor: this._model.itemHighlightColor
+                    }
+                }
+            }
+        }
+
+        function contextMenu(data){
+            return new ContextMenu(data);
+        }
 
         class Item extends ComponentV2 {
 
             state(){
                 return {
+                    skipClose:{
+                        value:false
+                    },
                     loading: {
                         value:false
                     },
@@ -21,11 +127,7 @@
                         },
                         onEvent: (e,val)=>{
 
-                            val = !val;
-
-                            this.toggleContainer(val);
-
-                            return val;
+                            return this.toggleContainer(val);
                                        
                         }
                     }
@@ -38,7 +140,9 @@
                     name: '',
                     status: '',
                     type:'',
-                    open: ()=>{ return ''; }
+                    open: ()=>{ return ''; },
+                    onScreen: ()=>{ console.log('On Screen') },
+                    parentContainer: null
                 }
             }
 
@@ -50,20 +154,20 @@
 
                 this.el.indicator = t.label({
                     style:{
-                        fontSize:'20px'
+                        fontSize:'20px',
                     }
                 },'>');
 
                 this.el.status = t.label({
                     style:{
                         fontSize:'20px',
-                        color:'green'
+                        color:'green',
                     }
                 },'•');
 
                 this.el.label = t.label({
                     style:{
-                        cursor:'pointer'
+                        cursor:'pointer',
                     }
                 },this._model.name);
 
@@ -71,20 +175,29 @@
                     style:{
                         marginLeft:'24px',
                         display:'none',
-                        borderLeft:'1px solid rgba(0,0,0,.55)'
+                        borderLeft:'1px solid rgba(0,0,0,.55)',
                     }
                 });
 
+               
+                this.el.contextMenu = this.createContextMenu(this._model.type);
          
-                const v = t.div({},(el)=>{
-
+                const v = t.div({
+                    style:{
+                      position:'relative',
+                      zIndex:'2'
+                    }
+                },(el)=>{
+                    
                     el.appendChild(this.el.status);
                     el.appendChild(this.el.indicator);
-                  
+                
                     el.appendChild(svg);
                     el.appendChild(this.el.label);
 
                     el.appendChild(this.el.container);
+                
+
                 });
 
                 return v;
@@ -92,7 +205,116 @@
 
             controller(){
 
+                const t = new Template();
+
+                const highlight = t.div({
+                    class:'highlight-o',
+                    style:{
+                        position:'absolute',
+                        minHeight:'24px',
+                        backgroundColor:'rgba(81, 83, 100, 0.25)',
+                        width:'100%',
+                        left:'0px',
+                    }
+                },);
+
+                this.el.label.onclick = ()=>{
+                    
+                    let label_bound = this.el.label.getBoundingClientRect();
+
+
+                    let parent_bound = this._model.parentContainer.getBoundingClientRect();
+
+                    highlight.style.top     = (label_bound.y-2)+'px';
+                    highlight.style.left    = (parent_bound.x)+'px';
+                    highlight.style.width   = parent_bound.width+'px';
+
+                    $q('.highlight-o').items().map(item=>{
+                        item.style.display = 'none';
+                    });
+
+                    document.body.appendChild(highlight);
+
+                    highlight.style.display = 'block';
+                   
+                }
+
+                this.el.label.oncontextmenu = (e)=>{
+                    e.preventDefault();
+                    
+                    console.log('context menu',e.clientX,e.clientY);
+
+                    this.el.contextMenu.handler.show(e.clientX,e.clientY);
+                }
                 
+            }
+
+
+            createContextMenu(type){
+                
+                let cm = null;
+
+                switch(type){
+
+                    case 'project':
+
+                        cm = contextMenu({
+                            items:[
+                                {
+                                    name:'Add Section',
+                                    onclick:()=>{
+                                        console.log('yeah')
+                                    }
+                                }
+                            ]
+                        });
+                        break;
+                    
+                    case 'section':
+                        cm = contextMenu({
+                            items:[
+                                {
+                                    name:'Add Contract Item',
+                                    onclick:()=>{
+                                        console.log('yeah')
+                                    }
+                                }
+                            ]
+                        });
+                        break;
+
+                    case 'contract_item':
+                        cm = contextMenu({
+                            items:[
+                                {
+                                    name:'Add Component',
+                                    onclick:()=>{
+                                        console.log('yeah')
+                                    }
+                                }
+                            ]
+                        });
+                        break;
+
+                    case 'component':
+                        cm = contextMenu({
+                            items:[
+                                {
+                                    name:'Add Component Item',
+                                    onclick:()=>{
+                                        console.log('yeah')
+                                    }
+                                }
+                            ]
+                        });
+                        break;
+                    
+                    case 'component_item':
+
+                        break;
+                }
+
+
             }
 
             spinner(){
@@ -126,10 +348,25 @@
 
             toggleContainer(val){
                 
-                //Open
+                if(this.getState('loading',true)){
+                    console.log('Loading');
+                    return false;
+                }
+
+                val = !val;
+
+                this._model.onScreen();
+
+                
+                if(this.getState('skipClose')){
+                    this.setState('skipClose',false);
+                    return true;
+                }
+
                 if(val){
 
                     if(this.el.container.innerHTML == ''){
+                            
 
                         (async ()=>{
 
@@ -138,6 +375,12 @@
 
                             let content = await this._model.open();
 
+                            //Abort
+                            if(content === false){
+                                this.setState('loading',false);
+                                this.setState('open',false);
+                                return false;
+                            }
 
                             if(content instanceof HTMLElement){
                                 this.el.container.appendChild(content);
@@ -161,13 +404,20 @@
                         
                         this.el.container.style.display = 'block';
                         this.el.indicator.innerText = '⌄';
+                        
                     }
+
+                    this.setState('skipClose',true);
+                    
 
                 }else{ //Close
 
                     this.el.container.style.display = 'none';
-                    this.el.indicator.innerText = '>';
+                    this.el.indicator.innerText = '>';                    
+                 
                 }
+
+                return val;
             }
 
             icon(type = ''){
@@ -267,46 +517,12 @@
         }
 
 
-        function Directory(entry){
-            const t = new Template();
-            
-            const container =  t.div({
-                style:{
-                    paddingLeft:'24px',
-                    display:'hidden'
-                }
-            });
-
-            const view = t.div({},(el)=>{
-
-                el.appendChild(entry);
-
-                el.appendChild(container);
-            });
-
-
-            view.container = (el)=>{
-                container.innerHTML = '';
-                container.appendChild(el);
-            }
-
-            view.open = ()=>{
-                container.style.display = 'block';
-            }
-
-            view.close = ()=>{
-                container.style.display = 'hidden';
-            }
-
-            entry.directory = view;
-
-            return view;
-        }
 
         
         view.appendChild(item({
             name:'Test',
             type:'project',
+            parentContainer:view,
             open: () =>{
 
                 return new Promise((res,rej)=>{
@@ -317,12 +533,14 @@
                             item({
                                 type:'section',
                                 name:'kwak',
+                                parentContainer:view,
                                 open: () =>{
 
                                     return new Promise((res,rej)=>{
 
                                         setTimeout(()=>{
                                             res(item({
+                                                parentContainer:view,
                                                 name:'oh yeah',
                                                 type:'contract_item'
                                             }));
@@ -333,12 +551,14 @@
                             item({
                                 type:'component',
                                 name:'tae',
+                                parentContainer:view,
                                 open: () =>{
 
                                     return new Promise((res,rej)=>{
 
                                         setTimeout(()=>{
                                             res(item({
+                                                parentContainer:view,
                                                 name:'component_item',
                                                 type:'component_item'
                                             }));
