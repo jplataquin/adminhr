@@ -102,7 +102,7 @@ class LedgerEntryController extends Controller
         $ledger_entry->quantity       = $quantity;
         $ledger_entry->unit_amount    = $unit_amount;
         $ledger_entry->date           = $date;
-        $ledger_entry->status         = 'PEND';
+        $ledger_entry->status         = 'APRV';
         
         $ledger_entry->created_by     = $user_id;
 
