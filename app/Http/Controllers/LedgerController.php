@@ -407,7 +407,7 @@ class LedgerController extends Controller
 
         $account = $ledger->Account;
 
-        $entries = $ledger->Entries()->where('status','PEND')->get();
+        $entries = $ledger->Entries()->where('status','APRV')->get();
 
         return view('ledger/print',[
             'ledger'     => $ledger,
