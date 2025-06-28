@@ -18,7 +18,9 @@
                 </div>
 
                 <div class="col-span-12 mb-3">
-                    <x-record-meta :record="$ledger_account"></x-record-meta>
+                    <x-record-meta :record="$ledger_account">
+                        
+                    </x-record-meta>
                 </div>
 
             </form>
@@ -26,7 +28,13 @@
 
         <div class="p-6 border-t border-gray-200 rounded-b flow-root">
        
-            <x-display-controls status="{{$ledger_account->status}}"></x-display-controls>
+            <x-display-controls status="{{$ledger_account->status}}">
+                   @if($ledger->status == 'PEND')
+                        <x-slot:right>
+                            <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
+                        </x-slot>
+                    @endif
+            </x-display-controls>
             <script type="module">
                 import {$q} from '/adarna.js';
 
