@@ -29,7 +29,7 @@
         <div class="p-6 border-t border-gray-200 rounded-b flow-root">
        
             <x-display-controls status="{{$ledger_account->status}}">
-                   @if($ledger->status == 'PEND')
+                   @if($ledger_account->status == 'PEND')
                         <x-slot:right>
                             <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
                         </x-slot>
