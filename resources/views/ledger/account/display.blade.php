@@ -38,6 +38,18 @@
             <script type="module">
                 import {$q} from '/adarna.js';
 
+                if(typeof reviewLinkBtn != 'undefined'){
+
+                    reviewLinkBtn.onclick = async ()=>{
+                        let test = await $copyToClipboard('{{ url("/review/ledger/account/".$ledger_account->id); }}');
+                        if(test){
+                            alert('Review Link for "Ledger: {{$ledger_account->id}}" copied!');
+                        }else{
+                            alert('Failed to copy');
+                        }
+                    }
+                }
+
                 controls.onCancelClick = ()=>{
                     $url('/ledger/accounts');
                     return false;
