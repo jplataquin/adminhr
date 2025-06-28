@@ -233,8 +233,8 @@ class LedgerController extends Controller
         $user_id = Auth::user()->id;
 
 
-        $ledger_account->status          = 'PEND';
-        $ledger_account->save();
+        $ledger->status          = 'PEND';
+        $ledger->save();
 
         return response()->json([
             'status'    => 1,
