@@ -130,3 +130,72 @@ window.$_GET = (url,data) =>{
     
     });
 }
+
+window.$_FILE = (url,data) =>{
+
+    let formData = new FormData();
+    
+    for(let key in data){
+        
+        formData.append(key, data[key]);
+    }
+
+    return new Promise((resolve,reject)=>{
+        
+        axios.post(url, formData,{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            signal:abort_controller.signal
+        }).then(reply=>{
+
+            resolve(reply.data);
+
+        }).catch(err=>{
+
+            reject(err);
+
+            if(401 == err.status){
+
+                abort_controller.abort();
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Unauthenticated",
+                    text: "Please login, and try again.",
+                });
+                
+                return false;
+            }
+
+
+            if(404 == err.status){
+
+                abort_controller.abort();
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Resource Not Found",
+                    text: "Something went wrong",
+                });
+                
+                return false;
+            }
+
+
+            if(500 == err.status){
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "Something went wrong.",
+                });
+                
+                return false;
+            }
+
+
+        });
+    
+    });
+}

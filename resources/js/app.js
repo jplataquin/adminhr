@@ -144,6 +144,11 @@ window.$reload = (url)=>{
 }
 
 
+window.$back = (url)=>{
+
+    history.back();
+}
+
 //Math
 
 window.$roundUp = function(num,decimalPlaces = 0){
@@ -167,6 +172,7 @@ window.$id = function(id,def = {},dom = document){
 
     return target;
 }
+
 window.$numberFormat = function(val,fractionDigits){
 
     if(!fractionDigits){
@@ -523,4 +529,27 @@ window.$copyToClipboard = async function(textToCopy) {
         } 
 
     });
+}
+
+window.$attrChange = function(elem,attrName,callback){
+
+    let val = elem.getAttribute(attrName);
+
+    callback(val,null);
+
+    let observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === "attributes" && mutation.attributeName == attrName){
+                
+                let newVal = mutation.target.getAttribute(attrName);
+                callback(newVal,mutation.oldValue);
+            }
+        });
+    });
+    
+    observer.observe(elem, {
+        attributes: true
+    });
+
+    return observer;
 }

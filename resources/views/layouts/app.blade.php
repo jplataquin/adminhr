@@ -15,13 +15,19 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <script type="text/javascript">
+
+            @php
+                $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+            @endphp
+            <script type="module" src="/build/{{ $manifest['resources/js/app.js']['file'] }}"></script>
+            <link rel="stylesheet" href="/build/{{ $manifest['resources/css/app.css']['file'] }}">
+
+            <script type="text/javascript">
+                
+                
             
-            
-        
-        </script>
+            </script>
     </head>
     <body class="font-sans antialiased dark:bg-gray-900">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

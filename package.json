@@ -20,6 +20,13 @@
     },
     "dependencies": {
         "adarna": "^3.4.1",
-        "bootstrap": "^5.3.3"
+        "bootstrap": "^5.3.3",
+        "filepond": "^4.32.7",
+        "filepond-plugin-file-validate-type": "^1.2.9",
+        "filepond-plugin-image-crop": "^2.0.6",
+        "filepond-plugin-image-edit": "^1.6.3",
+        "filepond-plugin-image-preview": "^4.6.12",
+        "filepond-plugin-image-resize": "^2.0.10",
+        "filepond-plugin-image-transform": "^3.8.7"
     }
 }

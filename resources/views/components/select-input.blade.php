@@ -26,8 +26,10 @@
         let options = elem.querySelectorAll('option');
 
         options.forEach(opt=>{
-            opt.style.display   = 'none';
-            opt.selected        = false;
+
+            if(opt.selected == false){
+                opt.style.display   = 'none';
+            }
         });
 
         options.forEach(opt=>{

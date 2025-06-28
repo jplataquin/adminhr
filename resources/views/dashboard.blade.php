@@ -14,4 +14,39 @@
             </div>
         </div>
     </div>
+
+    <div data-controller="/test.js">
+        <button data-el="submit" data-val="a">a</button>
+    </div>
+    <div data-controller="/test.js">
+        <div>
+            <button data-el="submit" data-val="b">b</button>
+        </div>
+        
+        <br><br>
+        
+        <div data-controller="/test.js">
+            <div>
+                <button data-el="submit" data-val="c">c</button>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import Teknologia from '/technologia.js';
+
+        let d = {
+            test: (root,el)=>{
+
+                el.submit.onclick = ()=>{
+                    
+                    alert(el.submit.innerHTML);
+                }
+             
+            }
+        } 
+
+        Teknologia.init(document.body,d).observe();
+
+
+    </script>
 </x-app-layout>

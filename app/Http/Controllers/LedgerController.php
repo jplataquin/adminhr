@@ -245,7 +245,7 @@ class LedgerController extends Controller
 
     public function _request_delete(Request $request){
 
-        $id = (int) $request->input('id');
+        $id     = (int) $request->input('id');
 
         $ledger = Ledger::find($id);
 

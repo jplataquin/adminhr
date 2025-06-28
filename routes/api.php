@@ -11,8 +11,11 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/employee/create', [App\Http\Controllers\EmployeeController::class, '_create']);
+    Route::post('/upload',[App\Http\Controllers\FileUploadController::class, 'upload']);
 
+    Route::post('/employee/create', [App\Http\Controllers\EmployeeController::class, '_create']);
+    Route::post('/employee/update', [App\Http\Controllers\EmployeeController::class, '_update']);
+    
     //Ledger Account
     Route::post('/ledger/account/create', [App\Http\Controllers\LedgerAccountController::class, '_create']);
     Route::post('/ledger/account/update/{id}',[App\Http\Controllers\LedgerAccountController::class, '_update']);
@@ -25,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/ledger/{id}/create', [App\Http\Controllers\LedgerController::class, '_create']);
     Route::post('/ledger/update/{id}',[App\Http\Controllers\LedgerController::class, '_update']);
     Route::post('/ledger/delete',[App\Http\Controllers\LedgerController::class, '_delete']);
+    Route::post('/ledger/post',[App\Http\Controllers\LedgerController::class, '_revert']);
     Route::get('/ledgers',[App\Http\Controllers\LedgerController::class, '_list']);
     
     //Ledger Entry

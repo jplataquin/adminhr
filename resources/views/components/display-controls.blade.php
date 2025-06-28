@@ -35,11 +35,11 @@
 </div>
 <script type="module">
     
-    let editBtn           = $id('{{$namespace}}editBtn',document.createElement('button'));
-    let updateBtn         = $id('{{$namespace}}updateBtn',document.createElement('button'));
-    let deleteBtn         = $id('{{$namespace}}deleteBtn',document.createElement('button'));
-    let requestDeleteBtn  = $id('{{$namespace}}requestDeleteBtn',document.createElement('button'));
-    let revertBtn         = $id('{{$namespace}}revertBtn',document.createElement('button'));
+    const editBtn           = $id('{{$namespace}}editBtn',document.createElement('button'));
+    const updateBtn         = $id('{{$namespace}}updateBtn',document.createElement('button'));
+    const deleteBtn         = $id('{{$namespace}}deleteBtn',document.createElement('button'));
+    const requestDeleteBtn  = $id('{{$namespace}}requestDeleteBtn',document.createElement('button'));
+    const revertBtn         = $id('{{$namespace}}revertBtn',document.createElement('button'));
 
     let callback = [];
     let state = 'edit';

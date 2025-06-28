@@ -1,4 +1,7 @@
 @import 'bootstrap-icons/font/bootstrap-icons.min.css';
+@import 'filepond/dist/filepond.min.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+@import 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -60,3 +63,20 @@ select:disabled {
     background: none !important;
 }
     
+
+
+@keyframes shadow-loading {
+    from { 
+        box-shadow: rgba(195, 255, 0, 0.25) 0px 54px 55px, rgba(195, 255, 0, 0.25)  0px -12px 30px, rgba(195, 255, 0, 0.25) 0px 4px 6px, rgba(195, 255, 0, 0.25) 0px 12px 13px, rgba(195, 255, 0, 0.25) 0px -3px 5px;
+    }
+    to {
+        box-shadow: rgba(183, 255, 0, 0.484) 0px 54px 55px, rgba(183, 255, 0, 0.484) 0px -12px 30px, rgba(183, 255, 0, 0.484) 0px 4px 6px, rgba(183, 255, 0, 0.484) 0px 12px 13px, rgba(183, 255, 0, 0.484) 0px -3px 5px;
+    
+    }
+}
+  
+.shadow-loading {
+    animation-name: shadow-loading;
+    animation-iteration-count: infinite;
+    animation-duration: 4s;
+} 
