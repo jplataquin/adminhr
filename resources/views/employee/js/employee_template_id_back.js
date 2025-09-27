@@ -55,7 +55,7 @@ export default function(root,elem){
         ctx.fillText(expiry,expiry_x,380);
     };
 
-    backImg.src    = '/storage/employee/pbi_2025_id_template_back.png';
+    backImg.src    = '/employee/id_template/back';
     
   
     
