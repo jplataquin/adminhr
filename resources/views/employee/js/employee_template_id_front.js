@@ -78,7 +78,7 @@ export default function(root,elem){
 
 
     
-    frontImg.src    = '/storage/employee/pbi_2025_id_template_front.png';
+    frontImg.src    = '/employee/id_template/front';
     photoImg.src    = elem.photo.value;
     qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
     
