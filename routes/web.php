@@ -84,6 +84,14 @@ Route::middleware('auth')->group(function () {
    
 
 
+Route::get('/employee/photo/{$file}', function($photo){
+
+    $response = Response::make(File::get( storage_path('app/public/employee/photos/'.$photo) ), 200);
+    $response->header("Content-Type", 'image/jpeg');
+
+    return $response;
+});
+
 
 Route::get('technologia.js', function(){
 

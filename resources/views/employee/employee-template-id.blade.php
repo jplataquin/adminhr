@@ -73,7 +73,7 @@
             <input data-el="suffix" type="hidden" value="{{$employee->suffix}}"/>
             <input data-el="prefix" type="hidden" value="{{$employee->prefix}}"/>
             
-            <input data-el="photo" type="hidden" value="{{ asset('storage/employee/photos/'.$employee->photo) }}"/>
+            <input data-el="photo" type="hidden" value="/employee/photo/{{ $employee->photo }}"/>
             
 
             <input data-el="employee_id" type="hidden" value="{{$employee->id}}"/>
