@@ -262,7 +262,7 @@
                     return false;
                 }
 
-                window.$url('/employee/'+data.id);
+                window.$url('/employee/'+reply.data.id);
             });
         }
     </script>
