@@ -31,6 +31,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id'])->name('employees');
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list'])->name('employees');
     
+
+    Route::get('/employee/id_template/{type}', function($type){
+
+        $path = base_path('resources/img/pbi_2025_id_template_'.$type.'.png');
+
+        if(!file_exists($path)){
+            return 'Not Found';
+        }
+
+        $file = File::get( $path );
+
+    
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", 'image/png');
+
+        return $response;
+    });
+
     // Route::get('/employee/bulk/upload', function(){
     //     return view('employee/bulk/upload');
     // });
@@ -80,10 +99,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
- Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
+Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
    
 
-//employee/photo/1758955450_1.
 Route::get('/employee/photo/{photo}', function($photo){
 
     $path = storage_path('app/public/employee/photos/'.$photo);
@@ -91,7 +109,7 @@ Route::get('/employee/photo/{photo}', function($photo){
     if(!file_exists($path)){
         return 'asdasd';
     }
-    
+
     $file = File::get( $path );
 
  
