@@ -24,6 +24,10 @@
                         Ledger
                     </x-nav-link>
 
+                    <x-nav-link href="/employees" :active="request()->routeIs('employees')">
+                        Ledger
+                    </x-nav-link>
+
                 </div>
             </div>
 

@@ -26,10 +26,10 @@ Route::middleware('auth')->group(function () {
 
 
     //Employee
-    Route::get('/employee/create', [App\Http\Controllers\EmployeeController::class, 'create']);
-    Route::get('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'display']);
-    Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id']);
-    Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list']);
+    Route::get('/employee/create', [App\Http\Controllers\EmployeeController::class, 'create'])->name('employees');
+    Route::get('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'display'])->name('employees');
+    Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id'])->name('employees');
+    Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list'])->name('employees');
     
     // Route::get('/employee/bulk/upload', function(){
     //     return view('employee/bulk/upload');
