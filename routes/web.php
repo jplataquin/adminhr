@@ -86,13 +86,17 @@ Route::middleware('auth')->group(function () {
 //employee/photo/1758955450_1.
 Route::get('/employee/photo/{photo}', function($photo){
 
-    $photo = File::get( storage_path('app/public/employee/photos/'.$photo) );
+    $path = storage_path('app/public/employee/photos/'.$photo);
 
-    if(!$photo){
-        return 'ADAsd';
+    if(!file_exists($path)){
+        return 'asdasd';
     }
+    
+    $file = File::get( $path );
 
-    $response = Response::make($photo, 200);
+ 
+
+    $response = Response::make($file, 200);
     $response->header("Content-Type", 'image/jpeg');
 
     return $response;
