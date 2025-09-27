@@ -582,6 +582,18 @@ class EmployeeController extends Controller
             'employee' => $employee
         ]);
     }
+
+    public function public_display($id){
+        $employee = Employee::findOrFail($id);
+
+        return response()->json([
+            'employment_status'         => $employee->employment_status,
+            'firstname'                 => $employee->firstname,
+            'middlename'                => $employee->middlename,
+            'lastname'                  => $employee->lastname,
+            'suffix'                    => $employee->suffix
+        ]);
+    }
     /***
 
     public function _update(Request $request){

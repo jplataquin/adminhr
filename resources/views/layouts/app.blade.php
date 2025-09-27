@@ -25,6 +25,7 @@
 
             <script type="text/javascript">
                 
+                window.$base_url = '{{ url('') }}';
                 
             
             </script>

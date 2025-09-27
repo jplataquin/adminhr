@@ -16,6 +16,10 @@ Route::get('/test', function(){
 });
 
 Route::middleware('auth')->group(function () {
+
+
+    Route::get('/generate-qrcode', [App\Http\Controllers\QrCodeController::class, 'generate']);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -26,10 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'display']);
     Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id']);
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list']);
-    Route::get('/employee/bulk/upload', function(){
-        return view('employee/bulk/upload');
-    });
-    Route::post('/employee/bulk/review', [App\Http\Controllers\EmployeeController::class, 'bulk_review']);
+    
+    // Route::get('/employee/bulk/upload', function(){
+    //     return view('employee/bulk/upload');
+    // });
+    // Route::post('/employee/bulk/review', [App\Http\Controllers\EmployeeController::class, 'bulk_review']);
+
+    
 
     //Ledger Account
     Route::get('/ledger/accounts', [App\Http\Controllers\LedgerAccountController::class, 'list'])->name('ledger');
@@ -73,10 +80,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
+ Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
+   
+
+
 
 Route::get('technologia.js', function(){
 
     $response = Response::make(File::get(base_path('resources/js/technologia.js')), 200);
+    $response->header("Content-Type", 'text/javascript');
+
+    return $response;
+});
+
+Route::get('qrcode.min.js', function(){
+
+    $response = Response::make(File::get(base_path('resources/js/qrcode.min.js')), 200);
     $response->header("Content-Type", 'text/javascript');
 
     return $response;
@@ -92,6 +111,15 @@ Route::get('/js/controllers/{file}.js', function($file){
 });
 
 
+Route::get('/js/view/{name}/{path}', function($name,$path){
+
+    $response = Response::make(File::get(base_path('resources/views/'.$name.'/js/'.$path.'.js')), 200);
+    $response->header("Content-Type", 'text/javascript');
+
+    return $response;
+})->where('path', '.+');
+
+
 Route::get('test.js', function(){
 
     $response = Response::make(File::get(base_path('resources/js/test.js')), 200);
@@ -99,6 +127,16 @@ Route::get('test.js', function(){
 
     return $response;
 });
+
+
+Route::get('jszip.min.js', function(){
+
+    $response = Response::make(File::get(base_path('node_modules/jszip/dist/jszip.min.js')), 200);
+    $response->header("Content-Type", 'text/javascript');
+
+    return $response;
+});
+
 
 Route::get('adarna.js', function(){
 
