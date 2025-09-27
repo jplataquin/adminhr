@@ -26,14 +26,14 @@
 
         let page            = 1;
         let order           = 'ASC';
-        let orderBy         = 'name';
+        let orderBy         = 'firstname';
         
         search.value = '';
         
         pageDoc.reinitalize = ()=>{
             page       = 1;
             order      = 'ASC';
-            orderBy    = 'name';
+            orderBy    = 'firstname';
             $el.clear(list);
             showMoreBtn.classList.remove('hidden');
         }
