@@ -74,7 +74,7 @@
             
 
             <input data-el="employee_id" type="hidden" value="{{$employee->id}}"/>
-            <input data-el="position" type="hidden" value="Position"/>
+            <input data-el="position" type="hidden" value="{{$employee->position_options($employee->position) }}"/>
             
             <canvas id="front" data-el="canvas" width="638px" height="1016px"></canvas>
 
