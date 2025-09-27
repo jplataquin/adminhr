@@ -13,9 +13,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/upload',[App\Http\Controllers\FileUploadController::class, 'upload']);
 
+    //Employees
     Route::post('/employee/create', [App\Http\Controllers\EmployeeController::class, '_create']);
     Route::post('/employee/update', [App\Http\Controllers\EmployeeController::class, '_update']);
-    
+    Route::get('/employees',[App\Http\Controllers\EmployeeController::class, '_list']);
+ 
     //Ledger Account
     Route::post('/ledger/account/create', [App\Http\Controllers\LedgerAccountController::class, '_create']);
     Route::post('/ledger/account/update/{id}',[App\Http\Controllers\LedgerAccountController::class, '_update']);

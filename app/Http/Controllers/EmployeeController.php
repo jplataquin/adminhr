@@ -44,6 +44,48 @@ class EmployeeController extends Controller
         return view('employee/list');
     }
 
+    public function _list(Request $request){
+
+        //todo check role
+
+
+        $page       = (int) $request->input('page')     ?? 1;
+        $limit      = (int) $request->input('limit')    ?? 10;
+        $orderBy    = $request->input('order_by')       ?? 'id';
+        $order      = $request->input('order')          ?? 'DESC';
+        $query      = $request->input('query')          ?? '';
+        $status     = $request->input('status')         ?? '';
+        $result = [];
+
+        $employee = new Employee();
+
+        $employee = $employee->where('deleted_at',null);
+
+        if($query != ''){
+            $employee = $employee->where('name','LIKE','%'.$query.'%');
+        }
+
+        if($status != ''){
+            $employee = $employee->where('status','=',$status);
+        }
+
+        if($limit > 0){
+            $page   = ($page-1) * $limit;
+            
+            $result = $employee->orderBy($orderBy,$order)->skip($page)->take($limit)->get();
+            
+        }else{
+
+            $result = $employee->orderBy($orderBy,$order)->take($limit)->get();
+        }
+
+        return response()->json([
+            'status' => 1,
+            'message'=>'',
+            'data'=> $result
+        ]);
+    }
+
 
     private function validate_create($data){
         
@@ -665,47 +707,7 @@ class EmployeeController extends Controller
 
     }
 
-    public function _list(Request $request){
-
-        //todo check role
-
-
-        $page       = (int) $request->input('page')     ?? 1;
-        $limit      = (int) $request->input('limit')    ?? 10;
-        $orderBy    = $request->input('order_by')       ?? 'id';
-        $order      = $request->input('order')          ?? 'DESC';
-        $query      = $request->input('query')          ?? '';
-        $status     = $request->input('status')         ?? '';
-        $result = [];
-
-        $employee = new Employee();
-
-        $employee = $employee->where('deleted_at',null);
-
-        if($query != ''){
-            $employee = $employee->where('name','LIKE','%'.$query.'%');
-        }
-
-        if($status != ''){
-            $employee = $employee->where('status','=',$status);
-        }
-
-        if($limit > 0){
-            $page   = ($page-1) * $limit;
-            
-            $result = $employee->orderBy($orderBy,$order)->skip($page)->take($limit)->get();
-            
-        }else{
-
-            $result = $employee->orderBy($orderBy,$order)->take($limit)->get();
-        }
-
-        return response()->json([
-            'status' => 1,
-            'message'=>'',
-            'data'=> $result
-        ]);
-    }
+    
 
     public function _delete(Request $request){
 

@@ -43,8 +43,8 @@
             data.map(item=>{
 
                 let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
-                    t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
-                    t.span({class:'text-xs dark:text-white'},item.status);
+                    t.h3({class:"text-sm font-semibold dark:text-white"}, String(item.firstname+' '+item.middlename+' '+item.lastname+' '+item.suffix).trim() );
+                    t.span({class:'text-xs dark:text-white'},item.employment_status);
                 });
 
                 row.onclick = ()=>{
