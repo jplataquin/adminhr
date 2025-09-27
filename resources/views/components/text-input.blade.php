@@ -6,10 +6,10 @@
     'value'         => '',
     'name'          => '',
     'type'          => 'text',
-    'mode'          => 1
+    'mode'          => '1'
 ])
 
-@if($mode == 1)
+@if($mode == '1')
     @if($label != '')
     <label class="text-sm font-medium dark:text-white block mb-2">{{$label}}</label>
     @endif

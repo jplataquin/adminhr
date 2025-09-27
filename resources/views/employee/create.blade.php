@@ -41,10 +41,10 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                            <x-text-input label="Employment Start Date" id="employment_start_date"></x-text-input>
+                            <x-text-input label="Employment Start Date" type="date" id="employment_start_date"></x-text-input>
                         </div>
                         <div class="col-span-6 sm:col-span-3">
-                            <x-text-input label="Employment End Date" id="employment_end_date"></x-text-input>
+                            <x-text-input label="Employment End Date" type="date" id="employment_end_date"></x-text-input>
                         </div>
 
                         <div class="col-span-6 sm:col-span-3">
