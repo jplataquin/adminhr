@@ -83,8 +83,8 @@ Route::middleware('auth')->group(function () {
  Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
    
 
-
-Route::get('/employee/photo/{$file}', function($photo){
+//employee/photo/1758955450_1.
+Route::get('/employee/photo/{$photo}', function($photo){
 
     $response = Response::make(File::get( storage_path('app/public/employee/photos/'.$photo) ), 200);
     $response->header("Content-Type", 'image/jpeg');
