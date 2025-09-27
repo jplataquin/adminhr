@@ -22,7 +22,7 @@
                         <x-text-input label="Prefix" id="prefix"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Birth Date" id="birthdate"></x-text-input>
+                        <x-text-input label="Birth Date" type="date" id="birthdate"></x-text-input>
                     </div>
                    
 

@@ -382,20 +382,20 @@
     }
 
 
-    // $attrChange(container,'disabled',(val)=>{
+    $attrChange(container,'disabled',(val)=>{
 
    
 
-    //     if(val == 'true'){
+        if(val == 'true'){
             
-    //         Mode.default();
-    //         Mode.disabled();
+            Mode.default();
+            Mode.disabled();
 
-    //     }else{
+        }else{
 
-    //         Mode.default();
-    //         Mode.enabled();
-    //     }
-    // });
+            Mode.default();
+            Mode.enabled();
+        }
+    });
     
 </script>
