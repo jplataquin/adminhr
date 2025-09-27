@@ -185,7 +185,7 @@ class EmployeeController extends Controller
             'emergency_contact_no'      => ['max:255'],
         ];
 
-        if( ! in_arraay($data['employment_status'],['REGU','PROB']) ){
+        if( ! in_array($data['employment_status'],['REGU','PROB']) ){
 
             $rules['employment_end_date'][] = 'required';
 
