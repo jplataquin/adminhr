@@ -48,7 +48,7 @@
             
             data.map(item=>{
 
-                console.log(item);
+                item.suffx = item.suffx || '';
 
                 let name = item.firstname+' '+item.middlename+' '+item.lastname+' '+item.suffix;
 
