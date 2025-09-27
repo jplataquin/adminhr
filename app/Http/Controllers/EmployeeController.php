@@ -82,7 +82,9 @@ class EmployeeController extends Controller
         return response()->json([
             'status' => 1,
             'message'=>'',
-            'data'=> $result
+            'data'=> [
+                'rows'=>$result
+            ]
         ]);
     }
 
