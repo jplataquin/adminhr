@@ -151,9 +151,7 @@ class EmployeeController extends Controller
                 'required',
                 'date_format:Y-m-d'
             ],
-            'employment_end_date'         => [
-                'date_format:Y-m-d'
-            ],
+            
             'employment_status'         => [
                 'required',
                 'in:'.$this->format_in( $employee->employment_status_options() )
@@ -187,8 +185,10 @@ class EmployeeController extends Controller
 
         if( ! in_array($data['employment_status'],['REGU','PROB']) ){
 
-            $rules['employment_end_date'][] = 'required';
-
+            $rules['employment_end_date'] = [
+                'required',
+                'date_format:Y-m-d'    
+            ];
         }
 
         $validator = Validator::make($data,$rules);
