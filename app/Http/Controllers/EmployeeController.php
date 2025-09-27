@@ -354,11 +354,11 @@ class EmployeeController extends Controller
 
         try{
 
-            $path = public_path('employee/photos/');
+            $path = storage_path('app/public/employee/photos/');
 
             if(!File::isDirectory($path)){
     
-                File::makeDirectory($path, 0777, true, true);
+                File::makeDirectory($path, 0775, true, true);
             }
             
             rename(storage_path('app/private/temp_uploads/'.$photo), storage_path('app/public/employee/photos/'.$photo));
@@ -487,17 +487,9 @@ class EmployeeController extends Controller
 
             try{
 
-                $photo_storage_path = storage_path('app/public/employee/photos');
-
-                Storage::disk('public')->delete('employee/photos/'.$employee->photo);
-                
-                if( ! is_dir( $photo_storage_path ) ) {
-                    mkdir($photo_storage_path,'0755',true);
-                }
-
                 rename(
                     storage_path('app/private/temp_uploads/'.$photo), 
-                    $photo_storage_path.'/'.$photo
+                    storage_path('app/public/employee/photos/'.$photo)
                 );
             
             }catch(\Exception $e){
