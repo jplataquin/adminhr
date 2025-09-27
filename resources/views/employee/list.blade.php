@@ -49,9 +49,12 @@
             data.map(item=>{
 
                 console.log(item);
-                
+
+                let name = item.firstname+' '+item.middlename+' '+item.lastname+' '+item.suffix;
+
                 let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
-                    t.h3({class:"text-sm font-semibold dark:text-white"}, String(item.firstname+' '+item.middlename+' '+item.lastname+' '+item.suffix).trim() );
+                    t.h3({class:"text-sm font-semibold dark:text-white"}, name.trim() );
+                    t.span({class:'text-xs text-bold dark:text-white'}, String(item.id).padStart(6,'0') );
                     t.span({class:'text-xs dark:text-white'},item.employment_status);
                 });
 
