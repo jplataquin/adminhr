@@ -49,7 +49,7 @@
             data.map(item=>{
 
                 if(!item.suffix){
-                    item.suffx = '';
+                    item.suffix = '';
                 }
 
                 if(!item.middlename){
