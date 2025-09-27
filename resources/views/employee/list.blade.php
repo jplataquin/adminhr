@@ -5,7 +5,7 @@
             <h3 class="text-xl font-semibold dark:text-white">
                 Employees
             </h3>
-            <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createAccountBtn">Create Account</button>
+            <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createRecordBtn">Create Record</button>
         </div>
         <div class="ps-6 pe-6 pt-6 space-y-6">
             <x-text-input id="search" mode="2" label="Search"></x-text-input>
@@ -20,16 +20,22 @@
     </div>
 
     <script type="module">
-        import {$el, Template} from '/adarna.js';
+        import {$el, $q, Template} from '/adarna.js';
 
         const t             = new Template();
+
+        const createRecordBtn = $q('#createRecordBtn').first();
 
         let page            = 1;
         let order           = 'ASC';
         let orderBy         = 'firstname';
         
+        createRecordBtn.onclick = (e)=>{
+            document.location.href = '/employee/create';
+        }
+
         search.value = '';
-        
+
         pageDoc.reinitalize = ()=>{
             page       = 1;
             order      = 'ASC';
@@ -142,60 +148,5 @@
         pageDoc.showData();
     </script>
 
-    <script type="module">
-        import {Template} from '/adarna.js';
 
-        const t             = new Template();
-        const name          = $t.text_input();
-        const description   = $t.textarea();
-        const create_btn    = $t.button('Create');
-
-        create_btn.classList.add('float-right');
-
-        const create_ledger_account_form = t.div({class:'p-6 space-y-6 mb-10'},()=>{
-
-            t.div({class:'grid grid-cols-12 gap-6 mb-5'},()=>{
-
-                t.div({class:'col-span-12 sm:col-span-12'},(el)=>{
-                    el.append($t.label('Name'));
-                    el.append(name);
-                });             
-
-            });//div
-
-            t.div((el)=>{
-                el.append(create_btn);
-            });
-
-        });
-
-        createAccountBtn.onclick = ()=>{
-
-            $drawerModal.content('Create Ledger Account',create_ledger_account_form);
-            $drawerModal.open();
-        }
-
-
-        create_btn.onclick = ()=>{
-
-            
-            $ui.blockUI();
-
-            $_POST('/api/ledger/account/create',{
-                name: name.value
-            }).then(reply=>{
-
-                $ui.unblockUI();
-
-                if(reply.status <= 0){
-                    return $ui.showError(reply);
-                }
-
-                pageDoc.reinitalize();
-                pageDoc.showData();
-                $drawerModal.close();
-            });
-            
-        }
-    </script>
 </x-app-layout>
