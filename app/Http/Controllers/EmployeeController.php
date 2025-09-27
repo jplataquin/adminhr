@@ -96,7 +96,7 @@ class EmployeeController extends Controller
 
         //TODO validate department conditional
 
-        $validator = Validator::make($data,[
+        $rules = [
             'photo'                     => [
                 'max:255',
                 'required',
@@ -152,7 +152,6 @@ class EmployeeController extends Controller
                 'date_format:Y-m-d'
             ],
             'employment_end_date'         => [
-                'required',
                 'date_format:Y-m-d'
             ],
             'employment_status'         => [
@@ -184,7 +183,15 @@ class EmployeeController extends Controller
             'bank_account_no'           => ['max:255'],
             'emergency_contact_person'  => ['max:255'],
             'emergency_contact_no'      => ['max:255'],
-        ]);
+        ];
+
+        if( ! in_arraay($data['employment_status'],['REGU','PROB']) ){
+
+            $rules['employment_end_date'][] = 'required';
+
+        }
+
+        $validator = Validator::make($data,$rules);
 
         return $validator;
     }
