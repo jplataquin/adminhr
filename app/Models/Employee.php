@@ -13,7 +13,7 @@ class Employee extends Model
     protected $table = 'employees';
 
     public function employment_status_options($key = null){
-
+        //RSGN AWOL LAOF TRMN RETR DECE
         //PROB, REGU, RSGN, AWOL, TRMN, RETR
         $opt = [
             'PROB' => 'Probation',
@@ -342,6 +342,7 @@ class Employee extends Model
                     'DTDRIV3' => 'Dumptruck Driver 3',
 
             'CORAST'    => 'Corporate Assitant',
+            'CORSEC'    => 'Corporate Secretary',
             'VPOPER'    => 'VP Operations',
             'CEOPRE'    => 'CEO / President'            
         ];
