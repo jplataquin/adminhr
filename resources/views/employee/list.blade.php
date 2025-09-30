@@ -28,7 +28,8 @@
 
         const t             = new Template();
 
-        const createRecordBtn = $q('#createRecordBtn').first();
+        const createRecordBtn   = $q('#createRecordBtn').first();
+        const printBtn          = $q('#printBtn').first();
 
         let page            = 1;
         let order           = 'ASC';
@@ -36,6 +37,10 @@
         
         createRecordBtn.onclick = (e)=>{
             document.location.href = '/employee/create';
+        }
+
+        printBtn.onclick = (e)=>{
+            window.$tab('/employees/print','Employee Master List');
         }
 
         search.value = '';
