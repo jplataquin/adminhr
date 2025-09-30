@@ -639,7 +639,7 @@ class EmployeeController extends Controller
 
         $employees = $employees->orderBy('id','ASC');
 
-        $employees = $employees->all();
+        $employees = $employees->get();
 
         $divisions = [];
 
