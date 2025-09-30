@@ -241,6 +241,11 @@
                         
                     });
 
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+
                     cancelBtn.onclick = ()=>{
                         window.$back();
                     }
