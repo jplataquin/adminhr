@@ -86,7 +86,7 @@
             <canvas id="back" data-el="canvas" width="638px" height="1016px"></canvas>
             <input data-el="tin" type="hidden" value="{{$employee->tin}}"/>
             <input data-el="sss" type="hidden" value="{{$employee->sss}}"/>
-            <input data-el="pag_ibig" type="hidden" value="{{$employee->pag_ibig}}"/>
+            <input data-el="pag_ibig" type="hidden" value="{{$employee->pagibig}}"/>
         </div>
 
         <button style="width:638px; margin-top:20px; height:40px;cursor:pointer" onclick="window.download()">Download</button>

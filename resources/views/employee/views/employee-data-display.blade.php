@@ -155,7 +155,7 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Pag Ibig" id="pagibig" value="{{$employee->pagibig}}" data-value="{{$employee->pagibig}}" disabled="true" class="editable"></x-text-input>
+                        <x-text-input label="Pag IBIG" id="pagibig" value="{{$employee->pagibig}}" data-value="{{$employee->pagibig}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="TIN" id="tin" value="{{$employee->tin}}" data-value="{{$employee->tin}}" disabled="true" class="editable"></x-text-input>
