@@ -54,6 +54,9 @@ export default function(root,elem){
 
         ctx.fillText(position,position_x,225);
 
+        photoImg.src    = elem.photo.value;
+        qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
+
     }
 
     photoImg.onload = ()=>{
@@ -79,8 +82,7 @@ export default function(root,elem){
 
     
     frontImg.src    = '/employee/id_template/front';
-    photoImg.src    = elem.photo.value;
-    qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
+  
     
 
 }
