@@ -33,7 +33,7 @@
         Technologia.init(employee_record_display);
 
         generate_id_btn.onclick = (e)=>{
-            window.$url('/employee/template_id/{{$employee->id}}');
+            window.$tab('/employee/template_id/{{$employee->id}}','Company ID');
         }
 
     </script>

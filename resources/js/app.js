@@ -139,6 +139,18 @@ window.$url = (url)=>{
     window.location.href = url;
 }
 
+window.$tab = (url,title = '')=>{
+
+    const tab = window.open(url, '_blank').focus();
+
+    if (tab && title) {
+        // Add an event listener to ensure the title is set after the page loads
+        tab.addEventListener('load', function() {
+            tab.document.title = title;
+        });
+    } 
+}
+
 window.$reload = (url)=>{
 
     window.location.reload();
