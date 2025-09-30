@@ -60,7 +60,7 @@ export default function(root,elem){
     }
 
     photoImg.onload = ()=>{
-        ctx.drawImage(photoImg, 18, 44,132, 132);
+        ctx.drawImage(photoImg, 18, 45,132, 132);
     }
 
 
