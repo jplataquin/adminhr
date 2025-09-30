@@ -633,6 +633,30 @@ class EmployeeController extends Controller
         print_r($formated_data);
     }
 
+    public function print(Request $request){
+
+        $employees = new Employee();
+
+        $employees = $employees->orderBy('id','ASC');
+
+        $employees = $employees->all();
+
+        $divisions = [];
+
+        foreach($employees as $employee){
+
+            if(!isset($divisions[$employee->division])){
+                $divisions[$employee->division] = [];
+            }
+
+            $divisions[$employee->division] = $employee;
+        }
+
+        return view('employee/print',[
+            'divisions' => $divisions
+        ]);
+    }
+
     public function employee_template_id($id,Request $request){
 
         $employee = Employee::findOrFail($id);

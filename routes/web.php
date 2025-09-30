@@ -30,7 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'display'])->name('employees');
     Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id'])->name('employees');
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list'])->name('employees');
-    
+    Route::get('/employees/print', [App\Http\Controllers\EmployeeController::class, 'print'])->name('employees');
+        
 
     Route::get('/employee/id_template/{type}', function($type){
 
@@ -101,6 +102,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
    
+
 
 Route::get('/employee/photo/{photo}', function($photo){
 

@@ -5,6 +5,7 @@
             <h3 class="text-xl font-semibold dark:text-white">
                 Employees
             </h3>
+             <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="printBtn">Print</button>
             <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createRecordBtn">Create Record</button>
         </div>
         <div class="ps-6 pe-6 pt-6 space-y-6">
