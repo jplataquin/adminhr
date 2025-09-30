@@ -219,6 +219,12 @@
                         item.disabled = false;
                     }
                 });
+                
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+
 
                 editBtn.classList.add('hidden');
                 updateBtn.classList.remove('hidden');
@@ -241,10 +247,6 @@
                         
                     });
 
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
 
                     cancelBtn.onclick = ()=>{
                         window.$back();
