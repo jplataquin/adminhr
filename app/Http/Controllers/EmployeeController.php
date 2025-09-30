@@ -204,7 +204,7 @@ class EmployeeController extends Controller
 
         //TODO validate department conditional
 
-        $validator = Validator::make($data,[
+        $rules = [
             'id' =>[
                 'required',
                 'integer',
@@ -264,10 +264,6 @@ class EmployeeController extends Controller
                 'required',
                 'date_format:Y-m-d'
             ],
-            'employment_end_date'         => [
-                'required',
-                'date_format:Y-m-d'
-            ],
             'employment_status'         => [
                 'required',
                 'in:'.$this->format_in( $employee->employment_status_options() )
@@ -297,7 +293,18 @@ class EmployeeController extends Controller
             'bank_account_no'           => ['max:255'],
             'emergency_contact_person'  => ['max:255'],
             'emergency_contact_no'      => ['max:255'],
-        ]);
+        ];
+
+        if( ! in_array($data['employment_status'],['REGU','PROB']) ){
+
+            $rules['employment_end_date'] = [
+                'required',
+                'date_format:Y-m-d'    
+            ];
+        }
+
+        $validator = Validator::make($data,$rules);
+
 
         return $validator;
     }
