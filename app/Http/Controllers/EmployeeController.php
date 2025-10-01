@@ -667,14 +667,14 @@ class EmployeeController extends Controller
             'Firstname'             => ['key'=>'firstname','style'=>'min-width:200px'],
             'Middlename'            => ['key'=>'middlename','style'=>'min-width:200px'],
             'Lastname'              => ['key'=>'lastname','style'=>'min-width:200px'],
-            'Suffix'                => 'suffix',
-            'Birth Date'            => ['key'=>'birthdate','style'=>'min-width:100px'],
-            'Gender'                => 'gender',
-            'Marital Status'        => function($data) use ($marital_status_options){
+            'Suffix'                => ['key'=>'suffix','style'=>'text-align:center'],
+            'Birth Date'            => ['key'=>'birthdate','style'=>'min-width:100px;text-align:center'],
+            'Gender'                => ['key'=>'gender','style'=>'text-align:center'],
+            'Marital Status'        => ['key'=>function($data) use ($marital_status_options){
                 $key = $data->marital_status;
 
                 return $marital_status_options->$key; 
-            },
+            },'style'=>'text-align:center'],
             'Department'            => function($data) use ($department_options){
                 $div = $data->divsion;
                 $key = $data->department;
@@ -707,8 +707,6 @@ class EmployeeController extends Controller
             },
             'School / University'       => 'school_univeristy',
             'Degree'                    => 'degree',
-            'current_address'           => 'current_address',
-            'permanent_address'         => 'permanent_address',
             'Religon'                   => 'religion',
             'Emergency Contact Person'  => 'emergency_contact_person',
             'Emergency Contact Person No.' => 'emergency_contact_person_no',
