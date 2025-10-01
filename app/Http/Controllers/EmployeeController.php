@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Models\Employee;
 use App\Rules\UploadExists;
+use Carbon\Carbon;
 
 class EmployeeController extends Controller
 {
@@ -754,8 +755,8 @@ class EmployeeController extends Controller
         ksort($divisions);
        
         
-        $division_options               = Employee::division_options();
-        
+        $division_options = Employee::division_options();
+
         return view('employee/print',[
             'divisions'             => $divisions,
             'headers'               => $headers,
