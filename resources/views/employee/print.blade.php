@@ -77,7 +77,7 @@
             <tr>
                 @foreach($headers as $title=>$key)
                     <td>
-                        {{$employee}}
+                        {{$employee->$key}}
                     </td>
                 @endforeach
             </tr>
