@@ -103,7 +103,7 @@ class Employee extends Model
     }
 
 
-    public function division_options($key = null){
+    public static function division_options($key = null){
 
         $opt = [
             'ADMNHR'    => 'Administrative & Human Resource',
