@@ -170,7 +170,7 @@
                             
                             @else
                             
-                                {{$key['key']}}
+                                {{$employee->$$key['key']}}
 
                             @endif
                         </td>
