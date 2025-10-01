@@ -688,13 +688,15 @@ class EmployeeController extends Controller
             'pag-IBIG'      => 'pagibig',
             "Driver's License No." => 'drivers_license_no',
             'Passport No.' => 'passport_no',
-            
-
+        
         ];
+
+        $division_options = $employees->division_option();
 
         return view('employee/print',[
             'divisions' => $divisions,
-            'headers' => $headers
+            'headers' => $headers,
+            'division_options' => $division_options
         ]);
     }
 

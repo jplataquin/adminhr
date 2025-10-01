@@ -69,7 +69,7 @@
             <tr>
                 @foreach($headers as $title=>$key)
                     <th>
-                        {{$title}}
+                        {{ $division_options[$title] }}
                     </th>
                 @endforeach
             </tr>
