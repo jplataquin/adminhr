@@ -664,7 +664,7 @@ class EmployeeController extends Controller
         $headers = [
             'ID'                    => 'id',
             'Prefix'                => 'prefix',
-            'Firstname'             => 'firstname',
+            'Firstname'             => ['key'=>'firstname','width'=>'200px'],
             'Middlename'            => 'middlename',
             'Lastname'              => 'lastname',
             'Suffix'                => 'suffix',

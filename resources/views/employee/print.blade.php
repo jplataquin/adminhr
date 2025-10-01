@@ -161,17 +161,34 @@
             @foreach($employees as $employee)
             <tr>
                 @foreach($headers as $title=>$key)
-                    <td>
-                        @if( is_callable($key) )
+                    
+                    @if(is_array($key))
+                        <td style="width:{{ $key['width'] }}">
+                            @if( is_callable($key['key']) )
 
-                            {{$key($employee)}}
-                        
-                        @else
-                        
-                             {{$employee->$key}}
+                                {{$key['key']($employee)}}
+                            
+                            @else
+                            
+                                {{$employee->$key['key']}}
 
-                        @endif
-                    </td>
+                            @endif
+                        </td>
+
+                    @else
+                        <td>
+                            @if( is_callable($key) )
+
+                                {{$key($employee)}}
+                            
+                            @else
+                            
+                                {{$employee->$key}}
+
+                            @endif
+                        </td>
+                    @endif
+                    
                 @endforeach
             </tr>
             @endforeach
