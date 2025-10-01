@@ -653,9 +653,9 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
-        $division_options = Employee::division_options();
-        $position_options = Employee::position_options();
-        $department_options = Employee::department_options();
+        $division_options   = Employee::division_options();
+        $position_options   = Employee::position_options();
+        $department_options = Employee::department_options_grouped();
 
         $headers = [
             'ID'                    => 'id',
@@ -668,8 +668,9 @@ class EmployeeController extends Controller
             'Gender'                => 'gender',
             'Marital Status'        => 'marital_status',
             'Department'            => function($data) use ($department_options){
+                $div = $data->divsion;
                 $key = $data->department;
-                return $department_options->$key;
+                return $department_options->$div->$key;
             },
             'Position'              => function($data) use ($position_options){
                 $key = $data->position;

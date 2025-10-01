@@ -125,7 +125,7 @@ class Employee extends Model
         return (object) $opt;
     }
 
-    public function department_options_grouped($group_key = null,$key = null){
+    public static function department_options_grouped($group_key = null,$key = null){
 
         $opt = [
             'ADMNHR'    => [
