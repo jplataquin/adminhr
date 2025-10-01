@@ -653,12 +653,13 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
-        $division_options           = Employee::division_options();
-        $position_options           = Employee::position_options();
-        $department_options         = Employee::department_options_grouped();
-        $employment_status_options  = Employee::employment_status_options();
-        $duty_status_options        = Employee::duty_status_options();
-        $marital_status_options     = Employee::marital_status_options();
+        $division_options               = Employee::division_options();
+        $position_options               = Employee::position_options();
+        $department_options             = Employee::department_options_grouped();
+        $employment_status_options      = Employee::employment_status_options();
+        $duty_status_options            = Employee::duty_status_options();
+        $marital_status_options         = Employee::marital_status_options();
+        $educational_attainment_options = Employee::educational_attainment_options();
 
         $headers = [
             'ID'                    => 'id',
