@@ -749,12 +749,12 @@ class EmployeeController extends Controller
 
         foreach($headers as $title => $row){
 
-            $header_row[] = $division_options->$title;
+            $header_row[] = $title;
         }
 
         foreach($divisions as $division_title => $employees){
 
-            fputcsv($csvFile,[$division_title]);
+            fputcsv($csvFile,[$division_options->$division_title]);
 
             fputcsv($csvFile,$header_row);
 
