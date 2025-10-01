@@ -704,7 +704,7 @@ class EmployeeController extends Controller
             'Employment Start Date' => ['key'=>'employment_start_date','style'=>'min-width:200px;text-align:center'],
             'Employment End Date'   => ['key'=>'employment_end_data','style'=>'min-width:200px;text-align:center'],
             
-            'Email'                     => ['key'=>'email','style'=>'min-width:200px'],
+            'Email'                     => ['key'=>'email','style'=>'min-width:250px'],
             'Mobile No.'                => ['key'=>'mobile_no','style'=>'min-width:100px'],
             
             'Educational Attainment'   => ['key'=>function($data) use ($educational_attainment_options){
