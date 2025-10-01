@@ -722,6 +722,7 @@ class EmployeeController extends Controller
         
         ];
 
+        ksort($divisions);
 
         return view('employee/print',[
             'divisions'             => $divisions,

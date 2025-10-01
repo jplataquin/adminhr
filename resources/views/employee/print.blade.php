@@ -54,7 +54,92 @@
         <!-- Site fevicon icons -->
         <meta name="msapplication-TileImage" content="images/icon/cropped-cropped-favicon-1-1-270x270.png" />
 
+        <style>
+                        table{
+                width: 100%;
+            }
 
+            table, figure {
+                page-break-inside: avoid; /* Prevent the table from breaking across pages */
+            }
+
+            table, tr, td, th {
+                border: solid 1px #000000;
+                border-collapse: collapse;
+            }
+
+            
+            th, td {
+                vertical-align: text-top;
+                padding: 3px;
+            }
+
+            .text-center{
+                text-align:center;
+            }
+
+            .text-right{
+                text-align:right;
+            }
+
+            .text-left{
+                text-align:left;
+            }
+            
+            .mt-10px{
+                margin-top:10px !important;
+            }
+            
+            @media print {
+                @page {
+                    size: A4 portrait;
+                    margin: 0.5in;
+                }
+
+                body{
+                    font-size: 10px;
+                }
+
+                section {
+                    page-break-after: always; /* Start a new page after <section> elements */
+                }
+
+                table{
+                    width: 100%;
+                }
+
+                table, figure {
+                    page-break-inside: avoid; /* Prevent the table from breaking across pages */
+                }
+
+                table, tr, td, th {
+                    border: solid 1px #000000;
+                    border-collapse: collapse;
+                }
+
+                th, td {
+                    vertical-align: text-top;
+                    padding: 3px;
+                }
+
+                .text-center{
+                    text-align:center;
+                }
+
+                .text-right{
+                    text-align:right;
+                }
+
+                .mt-10px{
+                    margin-top:10px !important;
+                }
+
+                .no-print {
+                    display: none;
+                }
+            }
+
+        </style>
         <!--complete list of meta tags at - https://gist.github.com/lancejpollard/1978404 -->
     </head>
     <body>
