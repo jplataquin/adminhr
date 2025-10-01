@@ -649,9 +649,8 @@ class EmployeeController extends Controller
                 $divisions[$employee->division] = [];
             }
 
-            print_r($employee);
 
-            $divisions[$employee->division] = $employee;
+            $divisions[$employee->division] = $employee->id;
         }
 
        // print_r($divisions);
