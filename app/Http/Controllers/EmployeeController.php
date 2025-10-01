@@ -737,13 +737,19 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
+        ksort($divisions);
+       
+        
+        $division_options = Employee::division_options();
+
+
         $headers = $this->table_headers();
 
         $header_row = [];
 
         foreach($headers as $title => $row){
 
-            $header_row[] = $title;
+            $header_row[] = $division_options->$title;
         }
 
         foreach($divisions as $division_title => $employees){
@@ -762,15 +768,15 @@ class EmployeeController extends Controller
 
                         if(is_callable($row['key'])){
 
-                            $key = $row['key']($employee);
+                            $val = $row['key']($employee);
 
-                            $entry_rows[] = $employee->$key;
+                            $entry_rows[] = $val;
 
                         }else{
 
                             $key = $row['key'];
 
-                            $entry_rows[] = $employee->$key;
+                            $entry_rows[] =  mb_convert_encoding($employee->$key,'UTF-8', 'ISO-8859-1');
                         }
 
                     }else{
@@ -779,7 +785,7 @@ class EmployeeController extends Controller
 
                             $key = $row($employee);
 
-                            $entry_rows[] = $employee->$key;
+                            $entry_rows[] = $key;
 
                         }else{
 
