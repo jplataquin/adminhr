@@ -665,10 +665,10 @@ class EmployeeController extends Controller
             'ID'                    => 'id',
             'Prefix'                => 'prefix',
             'Firstname'             => ['key'=>'firstname','style'=>'min-width:200px'],
-            'Middlename'            => 'middlename',
-            'Lastname'              => 'lastname',
+            'Middlename'            => ['key'=>'middlename','style'=>'min-width:200px'],
+            'Lastname'              => ['key'=>'lastname','style'=>'min-width:200px'],
             'Suffix'                => 'suffix',
-            'Birth Date'            => 'birthdate',
+            'Birth Date'            => ['key'=>'birthdate','style'=>'min-width:100px'],
             'Gender'                => 'gender',
             'Marital Status'        => function($data) use ($marital_status_options){
                 $key = $data->marital_status;
