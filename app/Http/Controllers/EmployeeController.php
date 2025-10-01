@@ -675,6 +675,7 @@ class EmployeeController extends Controller
 
                 return $marital_status_options->$key; 
             },'style'=>'text-align:center'],
+
             'Department'            => function($data) use ($department_options){
                 $div = $data->divsion;
                 $key = $data->department;
@@ -711,12 +712,12 @@ class EmployeeController extends Controller
             'Emergency Contact Person'  => 'emergency_contact_person',
             'Emergency Contact Person No.' => 'emergency_contact_person_no',
 
-            'TIN'           => 'tin',
-            'SSS'           => 'sss',
-            'Philhealth'    => 'philhealth',
-            'pag-IBIG'      => 'pagibig',
-            "Driver's License No." => 'drivers_license_no',
-            'Passport No.' => 'passport_no',
+            'TIN'           => ['key'=>'lastname','style'=>'min-width:100px;text-align:center'],
+            'SSS'           => ['key'=>'sss','style'=>'min-width:100px;text-align:center'],
+            'Philhealth'    => ['key'=>'philhealth','style'=>'min-width:100px;text-align:center'],
+            'pag-IBIG'      => ['key'=>'pagibig','style'=>'min-width:100px;text-align:center'],
+            "Driver's License No." => ['key'=>'drivers_license_no','style'=>'min-width:100px;text-align:center'],
+            'Passport No.' => ['key'=>'passport_no','style'=>'min-width:100px;text-align:center'],
         
         ];
 
