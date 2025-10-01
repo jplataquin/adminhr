@@ -789,7 +789,7 @@ class EmployeeController extends Controller
 
                         }else{
 
-                            $entry_rows[] = $employee->$row;
+                            $entry_rows[] = mb_convert_encoding($employee->$row,'UTF-8', 'ISO-8859-1');
                         }
                     }
                 }
