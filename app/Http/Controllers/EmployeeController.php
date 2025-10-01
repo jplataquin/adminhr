@@ -712,6 +712,23 @@ class EmployeeController extends Controller
         return $headers;
     }
 
+    public function export_csv(Request $request){
+
+        $csvFileName = 'user.csv';
+        $csvFile = fopen($csvFileName, 'w');
+        $headers = array_keys((array) $data[0]); // Get the column headers from the first row
+        fputcsv($csvFile, $headers);
+
+        foreach ($data as $row) {
+            fputcsv($csvFile, (array) $row);
+        }
+
+        fclose($csvFile);
+
+        // Download the CSV file
+        return Response::download(public_path($csvFileName))->deleteFileAfterSend(true);
+    }
+
     public function print(Request $request){
 
         $employees = new Employee();
@@ -739,7 +756,8 @@ class EmployeeController extends Controller
         return view('employee/print',[
             'divisions'             => $divisions,
             'headers'               => $headers,
-            'division_options'      => $division_options
+            'division_options'      => $division_options,
+            'now'                   => Carbon::now()
         ]);
     }
 

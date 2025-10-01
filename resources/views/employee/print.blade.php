@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="pingback" href="https: //domainname.com/xmlrpc.php" />
-        <title>Employee Masterlist</title>
+        <title>Employee Masterlist - {{$now}}</title>
         <!-- style and script resources -->
         <link rel="stylesheet" href="" media="all">
         <script type="text/javascript">
@@ -145,8 +145,9 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
         
+        <h3>As of {{$now}}</h3>
+        <br><br>
         @foreach($divisions as $division => $employees)
         <h1>{{ $division_options->$division }}</h1>
         <table border="1">
