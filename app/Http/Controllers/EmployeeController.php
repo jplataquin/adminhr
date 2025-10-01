@@ -688,7 +688,7 @@ class EmployeeController extends Controller
             },
             'Employment Status'     => function($data) use ($employment_status_options){
                 $key = $data->employment_status;
-                return $employmnt_status_options->$key;
+                return $employment_status_options->$key;
             },
             'Duty Status'           => function($data) use ($duty_status_options){
                 $key = $data->duty_status;
