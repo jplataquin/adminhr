@@ -676,18 +676,20 @@ class EmployeeController extends Controller
                 return $marital_status_options->$key; 
             },'style'=>'text-align:center;min-width:100px'],
 
-            'Department'            => function($data) use ($department_options){
+            'Department'            => ['key'=>function($data) use ($department_options){
                 $div = $data->divsion;
                 $key = $data->department;
 
                 if(!$div) return '';
 
                 return $department->$div->$key;
-            },
-            'Position'              => function($data) use ($position_options){
+            },'style'=>'text-align:center,min-width:100px'],
+
+            'Position'              => ['key'=>function($data) use ($position_options){
                 $key = $data->position;
                 return $position_options->$key;
-            },
+            },'style'=>'text-align:center;min-width:100px'],
+            
             'Employment Status'     => function($data) use ($employment_status_options){
                 $key = $data->employment_status;
                 return $employment_status_options->$key;
