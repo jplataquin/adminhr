@@ -674,7 +674,7 @@ class EmployeeController extends Controller
                 $key = $data->marital_status;
 
                 return $marital_status_options->$key; 
-            },'style'=>'text-align:center'],
+            },'style'=>'text-align:center;min-width:100px'],
 
             'Department'            => function($data) use ($department_options){
                 $div = $data->divsion;
@@ -697,7 +697,7 @@ class EmployeeController extends Controller
 
                 return $duty_status_options->$key;
             },'style'=>'min-width:100px;text-align:center'],
-            
+
             'Employment Start Date' => 'employment_start_date',
             'Employment End Date'   => 'employment_end_data',
             
