@@ -655,7 +655,7 @@ class EmployeeController extends Controller
 
         $division_options = Employee::division_options();
         $position_options = Employee::position_options();
-
+        $department_options = Employee::department_options();
 
         $headers = [
             'ID'                    => 'id',
@@ -667,7 +667,10 @@ class EmployeeController extends Controller
             'Birth Date'            => 'birthdate',
             'Gender'                => 'gender',
             'Marital Status'        => 'marital_status',
-            'Department'            => 'department',
+            'Department'            => function($data) use ($department_options){
+                $key = $data->department;
+                return $department_options->$key;
+            },
             'Position'              => function($data) use ($position_options){
                 $key = $data->position;
                 return $position_options->$key;
