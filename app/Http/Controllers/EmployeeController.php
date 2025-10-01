@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -733,7 +732,7 @@ class EmployeeController extends Controller
         fclose($csvFile);
 
         // Download the CSV file
-        return Response::download(public_path($csvFileName))->deleteFileAfterSend(true);
+        return response()->download(public_path($csvFileName))->deleteFileAfterSend(true);
     }
 
     public function print(Request $request){
