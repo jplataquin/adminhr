@@ -692,11 +692,12 @@ class EmployeeController extends Controller
                 $key = $data->employment_status;
                 return $employment_status_options->$key;
             },
-            'Duty Status'           => function($data) use ($duty_status_options){
+            'Duty Status'           => ['key'=>function($data) use ($duty_status_options){
                 $key = $data->duty_status;
 
                 return $duty_status_options->$key;
-            },
+            },'style'=>'min-width:100px;text-align:center'],
+            
             'Employment Start Date' => 'employment_start_date',
             'Employment End Date'   => 'employment_end_data',
             
