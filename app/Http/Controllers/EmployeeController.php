@@ -691,7 +691,9 @@ class EmployeeController extends Controller
         
         ];
 
-        $division_options = Employee::division_options();
+        $employee_object = new Employee();
+
+        $division_options = $employee_object->division_options();
 
         return view('employee/print',[
             'divisions' => $divisions,
