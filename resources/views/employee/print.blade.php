@@ -92,8 +92,8 @@
             
             @media print {
                 @page {
-                    size: A4 portrait;
-                    margin: 0.5in;
+                    size: A4 landscape;
+                    margin: 0.25in;
                 }
 
                 body{
