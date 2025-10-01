@@ -693,7 +693,7 @@ class EmployeeController extends Controller
             'Employment Status'     => ['key'=>function($data) use ($employment_status_options){
                 $key = $data->employment_status;
                 return $employment_status_options->$key;
-            },'style'=>'text-align:center;min-width:210px'],
+            },'style'=>'text-align:center;min-width:200px'],
 
             'Duty Status'           => ['key'=>function($data) use ($duty_status_options){
                 $key = $data->duty_status;
@@ -701,8 +701,8 @@ class EmployeeController extends Controller
                 return $duty_status_options->$key;
             },'style'=>'min-width:100px;text-align:center'],
 
-            'Employment Start Date' => 'employment_start_date',
-            'Employment End Date'   => 'employment_end_data',
+            'Employment Start Date' => ['key'=>'employment_start_date','style'=>'min-width:200px;text-align:center'],
+            'Employment End Date'   => ['key'=>'employment_end_data','style'=>'min-width:200px;text-align:center'],
             
             'Email'                     => 'email',
             'Mobile No.'                => 'mobile_no',
