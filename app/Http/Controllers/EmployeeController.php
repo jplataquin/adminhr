@@ -653,30 +653,42 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
-       // print_r($divisions);
 
         $headers = [
-            'ID' => 'id',
-            'Prefix' => 'prefix',
-            'Firstname' => 'firstname',
-            'Middlename' => 'middlename',
-            'Lastname' => 'lastname',
-            'Suffix' => 'suffix',
-            'Birth Date' => 'birthdate',
-            'Gender' => 'gender',
-            'Marital Status' => 'marital_status',
-
-            'Employment Status' => 'employment_status',
-            'Duty Status' => 'duty_status',
+            'ID'                    => 'id',
+            'Prefix'                => 'prefix',
+            'Firstname'             => 'firstname',
+            'Middlename'            => 'middlename',
+            'Lastname'              => 'lastname',
+            'Suffix'                => 'suffix',
+            'Birth Date'            => 'birthdate',
+            'Gender'                => 'gender',
+            'Marital Status'        => 'marital_status',
+            'Department'            => 'department',
+            'Position'              => 'position',
+            'Employment Status'     => 'employment_status',
+            'Duty Status'           => 'duty_status',
             'Employment Start Date' => 'employment_start_date',
-            'Employment End Date' => 'employment_end_data',
-            'Department' => 'department',
-            'Position' => 'position',
-            'Email' => 'email',
-            'Mobile No.' => 'mobile_no',
-            'Edducational Attainment' => 'educational_attainment',
-            'School / University' => 'school_univeristy',
-            'Degree' => 'degree'
+            'Employment End Date'   => 'employment_end_data',
+            
+            'Email'                     => 'email',
+            'Mobile No.'                => 'mobile_no',
+            'Edducational Attainment'   => 'educational_attainment',
+            'School / University'       => 'school_univeristy',
+            'Degree'                    => 'degree',
+            'current_address'           => 'current_address',
+            'permanent_address'         => 'permanent_address',
+            'Religon'                   => 'religion',
+            'Emergency Contact Person'  => 'emergency_contact_person',
+            'Emergency Contact Person No.' => 'emergency_contact_person_no',
+
+            'TIN'           => 'tin',
+            'SSS'           => 'sss',
+            'Philhealth'    => 'philhealth',
+            'pag-IBIG'      => 'pagibig',
+            "Driver's License No." => 'drivers_license_no',
+            'Passport No.' => 'passport_no',
+            
 
         ];
 
