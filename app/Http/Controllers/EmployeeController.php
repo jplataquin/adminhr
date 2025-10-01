@@ -691,7 +691,7 @@ class EmployeeController extends Controller
         
         ];
 
-        $division_options = $employees->division_option();
+        $division_options = $employees->division_options();
 
         return view('employee/print',[
             'divisions' => $divisions,
