@@ -633,26 +633,7 @@ class EmployeeController extends Controller
         print_r($formated_data);
     }
 
-    public function print(Request $request){
-
-        $employees = new Employee();
-
-        $employees = $employees->orderBy('id','ASC');
-
-        $employees = $employees->get();
-
-        $divisions = [];
-
-        foreach($employees as $employee){
-
-            if(!isset($divisions[$employee->division])){
-                $divisions[$employee->division] = [];
-            }
-
-
-            $divisions[$employee->division][] = $employee;
-        }
-
+    private function table_header(){
         $division_options               = Employee::division_options();
         $position_options               = Employee::position_options();
         $department_options             = Employee::department_options_grouped();
@@ -727,8 +708,34 @@ class EmployeeController extends Controller
         
         ];
 
-        ksort($divisions);
 
+        return $headers;
+    }
+
+    public function print(Request $request){
+
+        $employees = new Employee();
+
+        $employees = $employees->orderBy('id','ASC');
+
+        $employees = $employees->get();
+
+        $divisions = [];
+
+        foreach($employees as $employee){
+
+            if(!isset($divisions[$employee->division])){
+                $divisions[$employee->division] = [];
+            }
+
+
+            $divisions[$employee->division][] = $employee;
+        }
+
+        $headers = $this->table_headers();
+        
+        ksort($divisions);
+       
         return view('employee/print',[
             'divisions'             => $divisions,
             'headers'               => $headers,
