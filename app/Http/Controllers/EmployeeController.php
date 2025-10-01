@@ -663,11 +663,11 @@ class EmployeeController extends Controller
 
         $headers = [
             'ID'                    => 'id',
-            'Prefix'                => 'prefix',
+            'Prefix'                => ['key'=>'prefix','style'=>'min-width:100px'],
             'Firstname'             => ['key'=>'firstname','style'=>'min-width:200px'],
             'Middlename'            => ['key'=>'middlename','style'=>'min-width:200px'],
             'Lastname'              => ['key'=>'lastname','style'=>'min-width:200px'],
-            'Suffix'                => ['key'=>'suffix','style'=>'text-align:center'],
+            'Suffix'                => ['key'=>'suffix','style'=>'text-align:center;min-width:100px'],
             'Birth Date'            => ['key'=>'birthdate','style'=>'min-width:100px;text-align:center'],
             'Gender'                => ['key'=>'gender','style'=>'text-align:center'],
             'Marital Status'        => ['key'=>function($data) use ($marital_status_options){
