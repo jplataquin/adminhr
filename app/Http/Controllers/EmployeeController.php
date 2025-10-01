@@ -653,6 +653,9 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
+        $division_options = Employee::division_options();
+        $position_options = Employee::position_options();
+
 
         $headers = [
             'ID'                    => 'id',
@@ -665,7 +668,10 @@ class EmployeeController extends Controller
             'Gender'                => 'gender',
             'Marital Status'        => 'marital_status',
             'Department'            => 'department',
-            'Position'              => 'position',
+            'Position'              => function($data) use ($position_options){
+                $key = $data->position;
+                return $position_options->$key;
+            },
             'Employment Status'     => 'employment_status',
             'Duty Status'           => 'duty_status',
             'Employment Start Date' => 'employment_start_date',
@@ -691,15 +697,11 @@ class EmployeeController extends Controller
         
         ];
 
-        $employee_object = new Employee();
-
-        $division_options = Employee::division_options();
-        $position_options = $employee_object->position_options();
 
         return view('employee/print',[
-            'divisions' => $divisions,
-            'headers' => $headers,
-            'division_options' => $division_options
+            'divisions'             => $divisions,
+            'headers'               => $headers,
+            'division_options'      => $division_options
         ]);
     }
 

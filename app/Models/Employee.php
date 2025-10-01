@@ -12,7 +12,7 @@ class Employee extends Model
 
     protected $table = 'employees';
 
-    public function employment_status_options($key = null){
+    public static function employment_status_options($key = null){
         //RSGN AWOL LAOF TRMN RETR DECE
         //PROB, REGU, RSGN, AWOL, TRMN, RETR
         $opt = [
@@ -33,7 +33,7 @@ class Employee extends Model
         return (object) $opt;
     } 
 
-    public function duty_status_options($key = null){
+    public static function duty_status_options($key = null){
        
         $opt = [
             'ONDU' => 'On Duty',
@@ -51,7 +51,7 @@ class Employee extends Model
         return (object) $opt;
     }
 
-    public function marital_status_options($key = null){
+    public static function marital_status_options($key = null){
         
         //SING, MARD, DIVO, WIDO, SEPE
         $opt = [
@@ -69,7 +69,7 @@ class Employee extends Model
         return (object) $opt;
     }
 
-    public function gender_options($key = null){
+    public static function gender_options($key = null){
 
         //M, F
         $opt = [
@@ -84,7 +84,7 @@ class Employee extends Model
         return (object) $opt;
     }
 
-    public function educational_attainment_options($key = null){
+    public static function educational_attainment_options($key = null){
 
         //GR, HS, BD, VE, PG
         $opt = [
@@ -186,7 +186,7 @@ class Employee extends Model
     }
 
 
-    public function position_options($key = null){
+    public static function position_options($key = null){
 
         $opt = [
             'ADHRDM' => 'Admin/HR Division Manager',

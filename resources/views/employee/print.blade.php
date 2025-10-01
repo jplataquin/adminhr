@@ -77,7 +77,13 @@
             <tr>
                 @foreach($headers as $title=>$key)
                     <td>
-                        {{$employee->$key}}
+                        @if( is_callable($key) )
+
+                        @elseif
+                        
+                             {{$employee->$key}}
+
+                        @endif
                     </td>
                 @endforeach
             </tr>
