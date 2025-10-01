@@ -653,9 +653,12 @@ class EmployeeController extends Controller
             $divisions[$employee->division][] = $employee;
         }
 
-        $division_options   = Employee::division_options();
-        $position_options   = Employee::position_options();
-        $department_options = Employee::department_options_grouped();
+        $division_options           = Employee::division_options();
+        $position_options           = Employee::position_options();
+        $department_options         = Employee::department_options_grouped();
+        $employment_status_options  = Employee::employment_status_options();
+        $duty_status_options        = Employee::duty_status_options();
+        $marital_status_options     = Employee::marital_status_options();
 
         $headers = [
             'ID'                    => 'id',
@@ -666,7 +669,11 @@ class EmployeeController extends Controller
             'Suffix'                => 'suffix',
             'Birth Date'            => 'birthdate',
             'Gender'                => 'gender',
-            'Marital Status'        => 'marital_status',
+            'Marital Status'        => function($data) use ($marital_status_options){
+                $key = $data->marital_status;
+
+                return $marital_status_options->$key; 
+            },
             'Department'            => function($data) use ($department_options){
                 $div = $data->divsion;
                 $key = $data->department;
@@ -679,8 +686,15 @@ class EmployeeController extends Controller
                 $key = $data->position;
                 return $position_options->$key;
             },
-            'Employment Status'     => 'employment_status',
-            'Duty Status'           => 'duty_status',
+            'Employment Status'     => function($data) use ($employment_status_options){
+                $key = $data->employent_status;
+                return $employmnt_status_options->$key;
+            },
+            'Duty Status'           => function($data) use ($duty_status_options){
+                $key = $data->duty_status;
+
+                return $duty_status_options->$key;
+            },
             'Employment Start Date' => 'employment_start_date',
             'Employment End Date'   => 'employment_end_data',
             
