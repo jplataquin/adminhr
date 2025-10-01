@@ -79,6 +79,7 @@
                     <td>
                         @if( is_callable($key) )
 
+                            {{$key($employee)}}
                         @elseif
                         
                              {{$employee->$key}}
