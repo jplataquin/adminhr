@@ -706,18 +706,18 @@ class EmployeeController extends Controller
                 $key = $data->educational_attainment;
                 return $educational_attainment_options->$key;
             },
-            'School / University'       => 'school_univeristy',
-            'Degree'                    => 'degree',
-            'Religon'                   => 'religion',
-            'Emergency Contact Person'  => 'emergency_contact_person',
-            'Emergency Contact Person No.' => 'emergency_contact_person_no',
+            'School / University'       => ['key'=>'school_university','style'=>'min-width:150px;text-align:center'],
+            'Degree'                    => ['key'=>'degree','style'=>'min-width:150px;text-align:center'],
+            'Religon'                   => ['key'=>'religion','style'=>'min-width:150px;text-align:center'],
+            // 'Emergency Contact Person'      => 'emergency_contact_person',
+            // 'Emergency Contact Person No.'  => 'emergency_contact_person_no',
 
-            'TIN'           => ['key'=>'lastname','style'=>'min-width:100px;text-align:center'],
-            'SSS'           => ['key'=>'sss','style'=>'min-width:100px;text-align:center'],
-            'Philhealth'    => ['key'=>'philhealth','style'=>'min-width:100px;text-align:center'],
-            'pag-IBIG'      => ['key'=>'pagibig','style'=>'min-width:100px;text-align:center'],
-            "Driver's License No." => ['key'=>'drivers_license_no','style'=>'min-width:100px;text-align:center'],
-            'Passport No.' => ['key'=>'passport_no','style'=>'min-width:100px;text-align:center'],
+            'TIN'           => ['key'=>'lastname','style'=>'min-width:150px;text-align:center'],
+            'SSS'           => ['key'=>'sss','style'=>'min-width:150px;text-align:center'],
+            'Philhealth'    => ['key'=>'philhealth','style'=>'min-width:150px;text-align:center'],
+            'pag-IBIG'      => ['key'=>'pagibig','style'=>'min-width:150px;text-align:center'],
+            "Driver's License No." => ['key'=>'drivers_license_no','style'=>'min-width:150px;text-align:center'],
+            'Passport No.' => ['key'=>'passport_no','style'=>'min-width:150px;text-align:center'],
         
         ];
 
