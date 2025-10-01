@@ -169,8 +169,14 @@
                                 {{$key['key']($employee)}}
                             
                             @else
-                            
-                                {{$employee->$$key['key']}}
+
+                                @php 
+                                
+                                    $row_key = $key['key'] 
+                                
+                                @endphp
+                                
+                                {{$employee->$row_key}}
 
                             @endif
                         </td>
