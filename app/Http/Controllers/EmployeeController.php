@@ -719,15 +719,91 @@ class EmployeeController extends Controller
 
         $csvFileName    = 'employee_masterlist_'.$now.'.csv';
         $csvFile        = fopen($csvFileName, 'w');
-       
+        
+        $employees = new Employee();
+
+        $employees = $employees->orderBy('id','ASC');
+
+        $employees = $employees->get();
+
+        $divisions = [];
+
+        foreach($employees as $employee){
+
+            if(!isset($divisions[$employee->division])){
+                $divisions[$employee->division] = [];
+            }
+
+            $divisions[$employee->division][] = $employee;
+        }
+
+        $headers = $this->table_headers();
+
+        $header_row = [];
+
+        foreach($headers as $title => $row){
+
+            $header_row[] = $title;
+        }
+
+        foreach($divisions as $division_title => $employees){
+
+            fputcsv($csvFile,[$division_title]);
+
+            fputcsv($csvFile,$header_row);
+
+            foreach($employees as $employee){
+
+                $entry_rows = [];
+
+                foreach($headers as $title => $row){
+                    
+                    if(is_array($row)){
+
+                        if(is_callable($row['key'])){
+
+                            $key = $row['key']($employee);
+
+                            $entry_rows[] = $employee->$key;
+
+                        }else{
+
+                            $key = $row['key'];
+
+                            $entry_rows[] = $employee->$key;
+                        }
+
+                    }else{
+
+                        if(is_callable($row)){
+
+                            $key = $row($employee);
+
+                            $entry_rows[] = $employee->$key;
+
+                        }else{
+
+                            $entry_rows[] = $employee->$row;
+                        }
+                    }
+                }
+
+                fputcsv($csvFile,$entry_rows);
+                
+            }
+            
+            fputcsv($csvFile,['']);
+            fputcsv($csvFile,['']);
+        }
+        
+        
+
        // $headers = array_keys((array) $data[0]); // Get the column headers from the first row
         //fputcsv($csvFile, $headers);
 
         // foreach ($data as $row) {
         //     fputcsv($csvFile, (array) $row);
         // }
-
-        fputcsv($csvFile,['1','2','a']);
 
         fclose($csvFile);
 
