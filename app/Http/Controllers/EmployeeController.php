@@ -670,7 +670,7 @@ class EmployeeController extends Controller
             'Department'            => function($data) use ($department_options){
                 $div = $data->divsion;
                 $key = $data->department;
-                return $department_options->$div->$key;
+                return $department_options->$div;
             },
             'Position'              => function($data) use ($position_options){
                 $key = $data->position;
