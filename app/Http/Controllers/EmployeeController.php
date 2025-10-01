@@ -700,7 +700,10 @@ class EmployeeController extends Controller
             
             'Email'                     => 'email',
             'Mobile No.'                => 'mobile_no',
-            'Edducational Attainment'   => 'educational_attainment',
+            'Edducational Attainment'   => function($data) use ($educational_attainment_options){
+                $key = $data->educational_attainment;
+                return $educational_attainment_options->$key;
+            },
             'School / University'       => 'school_univeristy',
             'Degree'                    => 'degree',
             'current_address'           => 'current_address',
