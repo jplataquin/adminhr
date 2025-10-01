@@ -633,7 +633,7 @@ class EmployeeController extends Controller
         print_r($formated_data);
     }
 
-    private function table_header(){
+    private function table_headers(){
         $division_options               = Employee::division_options();
         $position_options               = Employee::position_options();
         $department_options             = Employee::department_options_grouped();
