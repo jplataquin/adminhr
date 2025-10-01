@@ -163,7 +163,7 @@
                 @foreach($headers as $title=>$key)
                     
                     @if(is_array($key))
-                        <td style="width:{{ $key['width'] }}">
+                        <td style="{{ $key['style'] }}">
                             @if( is_callable($key['key']) )
 
                                 {{$key['key']($employee)}}
@@ -175,7 +175,7 @@
                                     $row_key = $key['key'] 
                                 
                                 @endphp
-                                
+
                                 {{$employee->$row_key}}
 
                             @endif
