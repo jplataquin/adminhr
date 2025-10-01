@@ -712,7 +712,7 @@ class EmployeeController extends Controller
                 return $educational_attainment_options->$key;
             },'style'=>'min-width:200px;text-align:center'],
 
-            'School / University'       => ['key'=>'school_university','style'=>'min-width:200px;text-align:center'],
+            'School / University'       => ['key'=>'school_university','style'=>'min-width:300px;text-align:center'],
             'Degree'                    => ['key'=>'degree','style'=>'min-width:150px;text-align:center'],
             'Religon'                   => ['key'=>'religion','style'=>'min-width:150px;text-align:center'],
             // 'Emergency Contact Person'      => 'emergency_contact_person',
