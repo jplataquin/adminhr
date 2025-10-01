@@ -80,7 +80,8 @@
                         @if( is_callable($key) )
 
                             {{$key($employee)}}
-                        @elseif
+                        
+                        @else
                         
                              {{$employee->$key}}
 
