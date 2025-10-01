@@ -634,7 +634,7 @@ class EmployeeController extends Controller
     }
 
     private function table_headers(){
-        $division_options               = Employee::division_options();
+
         $position_options               = Employee::position_options();
         $department_options             = Employee::department_options_grouped();
         $employment_status_options      = Employee::employment_status_options();
@@ -753,6 +753,9 @@ class EmployeeController extends Controller
         
         ksort($divisions);
        
+        
+        $division_options               = Employee::division_options();
+        
         return view('employee/print',[
             'divisions'             => $divisions,
             'headers'               => $headers,
