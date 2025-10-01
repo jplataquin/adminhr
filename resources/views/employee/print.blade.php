@@ -64,12 +64,12 @@
 
         
         @foreach($divisions as $division => $employees)
-        <h1>{{$division}}</h1>
+        <h1>{{ $division_options->$division }}</h1>
         <table border="1">
             <tr>
                 @foreach($headers as $title=>$key)
                     <th>
-                        {{ $division_options->$title }}
+                        {{$title}}
                     </th>
                 @endforeach
             </tr>
