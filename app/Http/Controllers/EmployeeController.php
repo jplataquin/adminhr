@@ -652,8 +652,34 @@ class EmployeeController extends Controller
             $divisions[$employee->division] = $employee;
         }
 
+        $headers = [
+            'ID' => 'id',
+            'Prefix' => 'prefix',
+            'Firstname' => 'firstname',
+            'Middlename' => 'middlename',
+            'Lastname' => 'lastname',
+            'Suffix' => 'suffix',
+            'Birth Date' => 'birthdate',
+            'Gender' => 'gender',
+            'Marital Status' => 'marital_status',
+
+            'Employment Status' => 'employment_status',
+            'Duty Status' => 'duty_status',
+            'Employment Start Date' => 'employment_start_date',
+            'Employment End Date' => 'employment_end_data',
+            'Department' => 'department',
+            'Position' => 'position',
+            'Email' => 'email',
+            'Mobile No.' => 'mobile_no',
+            'Edducational Attainment' => 'educational_attainment',
+            'School / University' => 'school_univeristy',
+            'Degree' => 'degree'
+
+        ];
+
         return view('employee/print',[
-            'divisions' => $divisions
+            'divisions' => $divisions,
+            'headers' => $headers
         ]);
     }
 
