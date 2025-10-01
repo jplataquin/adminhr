@@ -715,15 +715,20 @@ class EmployeeController extends Controller
 
     public function export_csv(Request $request){
 
-        $csvFileName = 'user.csv';
-        $csvFile = fopen($csvFileName, 'w');
-        $headers = array_keys((array) $data[0]); // Get the column headers from the first row
-        fputcsv($csvFile, $headers);
+        $now = Carbon::now();
 
-        foreach ($data as $row) {
-            fputcsv($csvFile, (array) $row);
-        }
+        $csvFileName    = 'employee_masterlist_'.$now.'.csv';
+        $csvFile        = fopen($csvFileName, 'w');
+       
+       // $headers = array_keys((array) $data[0]); // Get the column headers from the first row
+        //fputcsv($csvFile, $headers);
 
+        // foreach ($data as $row) {
+        //     fputcsv($csvFile, (array) $row);
+        // }
+
+        fputcsv($csvFile,['1','2','a']);
+        
         fclose($csvFile);
 
         // Download the CSV file

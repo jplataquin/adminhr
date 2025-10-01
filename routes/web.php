@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/employee/template_id/{id}', [App\Http\Controllers\EmployeeController::class, 'employee_template_id'])->name('employees');
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list'])->name('employees');
     Route::get('/employees/print', [App\Http\Controllers\EmployeeController::class, 'print'])->name('employees');
+    Route::get('/employees/export/csv', [App\Http\Controllers\EmployeeController::class, 'export_csv'])->name('employees');
         
 
     Route::get('/employee/id_template/{type}', function($type){
