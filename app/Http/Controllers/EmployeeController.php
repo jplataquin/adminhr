@@ -113,7 +113,6 @@ class EmployeeController extends Controller
                 'max:255'
             ],
             'middlename'                => [
-                'required',
                 'max:255'
             ],
             'lastname'                  => [
@@ -226,7 +225,6 @@ class EmployeeController extends Controller
                 'max:255'
             ],
             'middlename'                => [
-                'required',
                 'max:255'
             ],
             'lastname'                  => [
