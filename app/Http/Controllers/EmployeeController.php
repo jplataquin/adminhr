@@ -123,6 +123,7 @@ class EmployeeController extends Controller
             'email'                     => [
                 'max:255',
                 'email',
+                'nullable'
             ],
             'mobile_no'                 => ['max:255'],
             'educational_attainment'    => [
@@ -235,6 +236,7 @@ class EmployeeController extends Controller
             'email'                     => [
                 'max:255',
                 'email',
+                'nullable'
             ],
             'mobile_no'                 => ['max:255'],
             'educational_attainment'    => [
