@@ -6,7 +6,7 @@
                 Employees
             </h3>
             <div>
-                <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="printBtn">Print</button>
+                <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="exportCSVBtn">Export CSV</button>
                 
                 <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createRecordBtn">Create Record</button>
             </div>
@@ -29,7 +29,7 @@
         const t             = new Template();
 
         const createRecordBtn   = $q('#createRecordBtn').first();
-        const printBtn          = $q('#printBtn').first();
+        const exportCSVBtn      = $q('#exportCSVBtn').first();
 
         let page            = 1;
         let order           = 'ASC';
@@ -39,8 +39,8 @@
             document.location.href = '/employee/create';
         }
 
-        printBtn.onclick = (e)=>{
-            window.$tab('/employees/print','Employee Master List');
+        exportCSVBtn.onclick = (e)=>{
+            window.$tab('/employees/export/csv');
         }
 
         search.value = '';

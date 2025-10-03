@@ -770,7 +770,7 @@ class EmployeeController extends Controller
 
                             $val = $row['key']($employee);
 
-                            $entry_rows[] = $val;
+                            $entry_rows[] = mb_convert_encoding($val,'UTF-8', 'ISO-8859-1');
 
                         }else{
 
@@ -785,7 +785,7 @@ class EmployeeController extends Controller
 
                             $key = $row($employee);
 
-                            $entry_rows[] = $key;
+                            $entry_rows[] = mb_convert_encoding($key,'UTF-8', 'ISO-8859-1');
 
                         }else{
 
