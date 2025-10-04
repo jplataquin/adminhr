@@ -23,7 +23,7 @@
     <div id="image_upload_controls_{{$name}}">
         <div>
             <input type="hidden" name="{{$name}}" value="{{$value}}" id="data_{{$name}}"/>
-            <input type="file" id="input_{{$name}}" capture="environment" accept="image/jpeg" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"/>
+            <input type="file" id="input_{{$name}}" capture accept="image/jpeg" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"/>
         </div>
         <div class="text-center mt-6">
             <button id="clear_data_{{$name}}" class="w-[30%] text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm py-2.5 text-center">Clear</button>
