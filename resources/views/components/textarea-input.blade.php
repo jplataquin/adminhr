@@ -13,7 +13,7 @@
     {{$label}}
 
     @if($required)
-        <span class="text-red-500 text-sm">*</span>
+        <span class="text-red-500 text-sm required_indicator">*</span>
     @endif
 
 </label>
