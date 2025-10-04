@@ -16,7 +16,7 @@
         {{$label}}
 
         @if($required)
-            <span class="text-red-50 text-sm">*</span>
+            <span class="text-red-500 text-sm">*</span>
         @endif
 
     </label>
@@ -33,7 +33,7 @@
             {{$label}}
 
             @if($required)
-                <span class="text-red-50 text-sm">*</span>
+                <span class="text-red-500 text-sm">*</span>
             @endif
         </label>
     </div>
