@@ -289,8 +289,8 @@
         if(disabled) return false;
 
         dragFlag    = true;
-        curXpos     = e.pageX;
-        curYpos     = e.pageY;
+        curXpos     = e.touches[0].clientX;
+        curYpos     = e.touches[0].clientY;
     
     };
 
@@ -300,11 +300,9 @@
         
         if (dragFlag) {
         
-            let x = e.pageX;
-            let y = e.pageY;
+            let x = e.touches[0].clientX;
+            let y = e.touches[0].clientY;
             
-
-            console.log(curXpos,x);
 
             if(curXpos > x){
                 //increase
