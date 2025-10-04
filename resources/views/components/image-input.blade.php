@@ -286,6 +286,9 @@
 
     canvas.ontouchstart = function(e) {
 
+        e.preventDefault();
+        
+
         if(disabled) return false;
 
         dragFlag    = true;
@@ -296,6 +299,8 @@
 
     canvas.ontouchmove = function(e) {
         
+        e.preventDefault();
+
         if(disabled) return  false;
         
         if (dragFlag) {
@@ -333,6 +338,9 @@
 
     canvas.ontouchend = function(e) {
 
+        e.preventDefault();
+        
+        
         if(disabled) return false;
         
         dragFlag = false;
