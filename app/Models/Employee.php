@@ -108,7 +108,7 @@ class Employee extends Model
         $opt = [
             'ADMNHR'    => 'Administrative & Human Resource',
             'ACCFIN'    => 'Accounting & Finance',
-            'CONOPS'    => 'Construction & Operations',
+            'CONOPS'    => 'Construction',
             'WARLOG'    => 'Warehousing & Logistics',
             'EQUMAI'    => 'Equipment & Maintenance',
             'SAPRDE'    => 'Sales & Project Development',
@@ -195,7 +195,7 @@ class Employee extends Model
                     'OSHO__' => 'Occupational Safety & Health Officer',
                 'FACINC' => 'Facilities In-Charge',
             
-            'CONSDM' => 'Construction & Operations Division Manager',
+            'CONSDM' => 'Construction Division Manager',
                 'CONSDH' => 'Construction Department Head',
                     
                     'CONSTF1' => 'Construction Staff 1',

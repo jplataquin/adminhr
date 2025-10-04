@@ -12,7 +12,7 @@
                         <x-text-input label="Prefix" id="prefix" value="{{$employee->prefix}}" data-value="{{$employee->prefix}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Birth Date" id="birthdate" value="{{$employee->birthdate}}" data-value="{{$employee->birthdate}}" disabled="true" class="editable"></x-text-input>
+                        <x-text-input label="Birth Date" id="birthdate" required="true" value="{{$employee->birthdate}}" data-value="{{$employee->birthdate}}" disabled="true" class="editable"></x-text-input>
                     </div>
                 
 
