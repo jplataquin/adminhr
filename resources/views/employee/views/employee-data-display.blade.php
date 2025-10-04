@@ -17,21 +17,21 @@
                 
 
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Firstname" id="firstname" value="{{$employee->firstname}}" data-value="{{$employee->firstname}}" disabled="true" class="editable"></x-text-input>
+                        <x-text-input label="Firstname" id="firstname" required="true" value="{{$employee->firstname}}" data-value="{{$employee->firstname}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="Middlename" id="middlename" value="{{$employee->middlename}}" data-value="{{$employee->middlename}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Lastname" id="lastname" value="{{$employee->lastname}}" data-value="{{$employee->lastname}}" disabled="true" class="editable"></x-text-input>
+                        <x-text-input label="Lastname" id="lastname" required="true" value="{{$employee->lastname}}" data-value="{{$employee->lastname}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="Suffix" id="suffix" value="{{$employee->suffix}}" data-value="{{$employee->suffix}}" disabled="true" class="editable"></x-text-input>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Employment Start Date" id="employment_start_date"  value="{{$employee->employment_start_date}}" data-value="{{$employee->employment_start_date}}" disabled="true" class="editable"></x-text-input>
+                        <x-text-input label="Employment Start Date" required="true" id="employment_start_date"  value="{{$employee->employment_start_date}}" data-value="{{$employee->employment_start_date}}" disabled="true" class="editable"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="Employment End Date" id="employment_end_date"  value="{{$employee->employment_end_date}}" data-value="{{$employee->employment_end_date}}" disabled="true" class="editable"></x-text-input>
@@ -131,12 +131,12 @@
                     </div>
                     
                     <div class="col-span-full">
-                        <x-textarea-input label="Current Address" id="current_address" data-value="{{$employee->current_address}}" disabled="true" class="editable">
+                        <x-textarea-input label="Current Address" required="true" id="current_address" data-value="{{$employee->current_address}}" disabled="true" class="editable">
                             {{$employee->current_address}}
                         </x-textarea-input>
                     </div>                    
                     <div class="col-span-full">
-                        <x-textarea-input label="Permanent Address" id="permanent_address" data-value="{{$employee->permanent_address}}" disabled="true" class="editable">
+                        <x-textarea-input label="Permanent Address" required="true" id="permanent_address" data-value="{{$employee->permanent_address}}" disabled="true" class="editable">
                             {{$employee->permanent_address}}
                         </x-textarea-input>
                     </div>
