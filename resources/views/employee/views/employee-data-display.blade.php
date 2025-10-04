@@ -198,6 +198,12 @@
             const updateBtn = $id('updateBtn');
             const cancelBtn = $id('cancelBtn');
 
+            const required_indicator = $q('.required_indicator').all();
+
+            required_indicator.map(item=>{
+                item.style.display = 'none';
+            });
+
             $dateOnlyInput([
                 birthdate,
                 employment_start_date,
@@ -215,6 +221,9 @@
                     //for div
                     if(typeof item.disabled == 'undefined'){
                         item.setAttribute('disabled',false);
+                        required_indicator.map(item=>{
+                            item.style.display = 'inline';
+                        });
                     }else{
                         item.disabled = false;
                     }
