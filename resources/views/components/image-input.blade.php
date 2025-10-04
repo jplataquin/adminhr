@@ -284,6 +284,62 @@
 	    }
     }
 
+    canvas.ontouchstart = function(e) {
+
+        if(disabled) return false;
+
+        dragFlag    = true;
+        curXpos     = e.pageX;
+        curYpos     = e.pageY;
+    
+    };
+
+    canvas.ontouchmove = function(e) {
+        
+        if(disabled) return  false;
+        
+        if (dragFlag) {
+        
+            let x = e.pageX;
+            let y = e.pageY;
+            
+
+            console.log(curXpos,x);
+
+            if(curXpos > x){
+                //increase
+                currentX = currentX + (curXpos - x);
+                
+            }else{
+                //decrease
+                currentX = currentX - (x - curXpos);
+            }
+
+            if(curYpos > y){
+                //increase
+                currentY = currentY + (curYpos - y);
+                
+            }else if(curYpos < y){
+                //decrease
+                currentY = currentY - (y - curYpos);
+            }
+
+            curXpos = x;
+            curYpos = y;
+
+            clearCanvas()
+            drawImg();
+        }
+
+    };
+
+    canvas.ontouchend = function(e) {
+
+        if(disabled) return false;
+        
+        dragFlag = false;
+    };
+
     canvas.onmousedown = function(e) {
 
         if(disabled) return false;
