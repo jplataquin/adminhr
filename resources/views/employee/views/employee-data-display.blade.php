@@ -198,7 +198,7 @@
             const updateBtn = $id('updateBtn');
             const cancelBtn = $id('cancelBtn');
 
-            const required_indicator = $q('.required_indicator').all();
+            const required_indicator = $q('.required_indicator').get();
 
             required_indicator.map(item=>{
                 item.style.display = 'none';
