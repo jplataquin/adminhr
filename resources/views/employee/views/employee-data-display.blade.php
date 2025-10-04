@@ -222,12 +222,15 @@
                     //for div
                     if(typeof item.disabled == 'undefined'){
                         item.setAttribute('disabled',false);
-                        required_indicator.map(item=>{
-                            item.style.display = 'inline';
-                        });
+                        
                     }else{
                         item.disabled = false;
                     }
+                });
+
+
+                required_indicator.map(item=>{
+                    item.style.display = 'inline';
                 });
                 
                 window.scrollTo({
