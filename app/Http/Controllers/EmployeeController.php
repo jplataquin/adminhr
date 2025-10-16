@@ -63,7 +63,7 @@ class EmployeeController extends Controller
         $employee = $employee->where('deleted_at',null);
 
         if($query != ''){
-            $employee = $employee->where('name','LIKE','%'.$query.'%');
+            $employee = $employee->where('firstname','LIKE','%'.$query.'%')->orWhere('middlename','LIKE','%'.$query.'%')->orWhere('lastname','LIKE','%'.$query.'%');
         }
 
         if($status != ''){
