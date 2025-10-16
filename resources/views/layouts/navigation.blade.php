@@ -57,7 +57,7 @@
                             Ledger
                         </x-dropdown-link>
                         <x-dropdown-link :href="employees">
-                            Ledger
+                            Employees
                         </x-dropdown-link>
 
                         <!-- Authentication -->
