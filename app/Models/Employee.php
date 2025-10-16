@@ -272,6 +272,10 @@ class Employee extends Model
                 'ACFIST2'    => 'Accounting & Finance Staff 2',
                 'ACFIST3'    => 'Accounting & Finance Staff 3',
                 
+                'DOCCTR1'    => 'Document Controller 1',
+                'DOCCTR2'    => 'Document Controller 2',
+                'DOCCTR3'    => 'Document Controller 3',
+
                 'PAYMST1'    => 'Payroll Master 1',
                 'PAYMST2'    => 'Payroll Master 2',
                 'PAYMST3'    => 'Payroll Master 3',
