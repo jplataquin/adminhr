@@ -22,26 +22,26 @@
                         <x-text-input label="Prefix" id="prefix"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Birth Date" type="date" id="birthdate"></x-text-input>
+                        <x-text-input required="true" label="Birth Date" type="date" id="birthdate"></x-text-input>
                     </div>
                    
 
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Firstname" id="firstname"></x-text-input>
+                        <x-text-input required="true" label="Firstname" id="firstname"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="Middlename" id="middlename"></x-text-input>
                     </div>
                     
                     <div class="col-span-6 sm:col-span-3">
-                        <x-text-input label="Lastname" id="lastname"></x-text-input>
+                        <x-text-input required="true" label="Lastname" id="lastname"></x-text-input>
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <x-text-input label="Suffix" id="suffix"></x-text-input>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                            <x-text-input label="Employment Start Date" type="date" id="employment_start_date"></x-text-input>
+                            <x-text-input required="true" label="Employment Start Date" type="date" id="employment_start_date"></x-text-input>
                         </div>
                         <div class="col-span-6 sm:col-span-3">
                             <x-text-input label="Employment End Date" type="date" id="employment_end_date"></x-text-input>
@@ -141,10 +141,10 @@
                     </div>
                     
                     <div class="col-span-full">
-                        <x-textarea-input label="Current Address" id="current_address"></x-textarea-input>
+                        <x-textarea-input label="Current Address" id="current_address" required="true"></x-textarea-input>
                     </div>                    
                     <div class="col-span-full">
-                        <x-textarea-input label="Permanent Address" id="permanent_address"></x-textarea-input>
+                        <x-textarea-input label="Permanent Address" id="permanent_address" required="true"></x-textarea-input>
                     </div>
                     
 
