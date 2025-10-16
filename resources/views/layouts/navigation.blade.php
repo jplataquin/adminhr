@@ -50,13 +50,13 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-                        <x-dropdown-link :href="\/review">
+                        <x-dropdown-link :href="review">
                             Review
                         </x-dropdown-link>
-                        <x-dropdown-link :href="\/ledger\/accounts">
+                        <x-dropdown-link :href="ledger/accounts">
                             Ledger
                         </x-dropdown-link>
-                        <x-dropdown-link :href="\/employees">
+                        <x-dropdown-link :href="employees">
                             Ledger
                         </x-dropdown-link>
 
