@@ -50,16 +50,7 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-                        <x-dropdown-link href="/review">
-                            Review
-                        </x-dropdown-link>
-                        <x-dropdown-link href="/ledger/accounts">
-                            Ledger
-                        </x-dropdown-link>
-                        <x-dropdown-link href="/employees">
-                            Employees
-                        </x-dropdown-link>
-
+                       
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -105,7 +96,16 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
-
+                <x-responsive-nav-link href="/review">
+                    Review
+                </x-responsive-nav-link>    
+                <x-responsive-nav-link href="/ledger/accounts">
+                    Ledger
+                </x-responsive-nav-link> 
+                <x-responsive-nav-link href="/employees">
+                    Employees
+                </x-responsive-nav-link> 
+                
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
