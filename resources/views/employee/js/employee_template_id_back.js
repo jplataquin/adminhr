@@ -8,20 +8,22 @@ export default function(root,elem){
     let pag_ibig    = elem.pag_ibig.value.trim() || 'n/a';
     
 
+    
     const canvas = elem.canvas;
 
-    canvas.width    = (300*2);
-    canvas.height   = (477*2);
+    canvas.width    = 300;
+    canvas.height   = 477;
 
     canvas.style.width  = '300px';
     canvas.style.height = '477px';
     
     const dpi = window.devicePixelRatio;
-  
+    
+    canvas.setAttribute('width', style.width() * dpi);
+    canvas.setAttribute('height', style.height() * dpi);
+
     const ctx    = canvas.getContext('2d');
-    
-    ctx.scale(dpi, dpi);
-    
+
     ctx.imageSmoothingEnabled = true;
 
     const backImg = new Image();
