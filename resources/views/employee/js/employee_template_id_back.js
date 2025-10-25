@@ -17,10 +17,10 @@ export default function(root,elem){
     canvas.style.width  = '300px';
     canvas.style.height = '477px';
     
-    const dpi = window.devicePixelRatio;
+    // const dpi = window.devicePixelRatio;
     
-    canvas.setAttribute('width', 300 * dpi);
-    canvas.setAttribute('height', 477 * dpi);
+    // canvas.setAttribute('width', 300 * dpi);
+    // canvas.setAttribute('height', 477 * dpi);
 
     const ctx    = canvas.getContext('2d');
 
