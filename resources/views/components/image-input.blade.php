@@ -46,9 +46,9 @@
     const img           = document.createElement('img');
     const ctx           = canvas.getContext('2d');
     
-    // ctx.imageSmoothingEnabled       = false; // Standard property
-    // ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
-    // ctx.mozImageSmoothingEnabled    = false; // For older Firefox browsers
+    ctx.imageSmoothingEnabled       = false; // Standard property
+    ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
+    ctx.mozImageSmoothingEnabled    = false; // For older Firefox browsers
     
     const dpr = window.devicePixelRatio || 1;
 
@@ -60,10 +60,10 @@
     canvas.style.height = '{{$displayHeight}}px';
 
     //Set resolition width/height
-    canvas.width        = {{$displayWidth}} * dpr;
-    canvas.height       = {{$displayHeight}} * dpr;
+    canvas.width        = {{$displayWidth}};
+    canvas.height       = {{$displayHeight}};
     
-    ctx.scale(dpr, dpr);
+    //ctx.scale(dpr, dpr);
 
     let currentX    = 0;
     let currentY    = 0;
