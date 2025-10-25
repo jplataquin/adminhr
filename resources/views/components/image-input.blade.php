@@ -263,6 +263,8 @@
                     img.onload = ()=>{
                         
                         
+                        alert(img.width);
+
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
