@@ -285,7 +285,7 @@
                         Mode.imageChange();
                     }
                     
-
+                    img.width = 300;
                     img.src = evt.target.result;
 
                 }
