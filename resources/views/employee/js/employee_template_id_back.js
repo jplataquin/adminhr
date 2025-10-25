@@ -18,8 +18,10 @@ export default function(root,elem){
     
     const dpi = window.devicePixelRatio;
   
-    const ctx    = canvas.getContext('2d').scale(dpi, dpi);
-
+    const ctx    = canvas.getContext('2d');
+    
+    let a = ctx.scale(dpi, dpi);
+    console.log(a);
     ctx.imageSmoothingEnabled = true;
 
     const backImg = new Image();
