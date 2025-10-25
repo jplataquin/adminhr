@@ -209,10 +209,10 @@
             bitmap, 
             0,
             0, 
-            img.width, 
-            img.height, 
-            (currentX * -1), 
-            (currentY * -1),
+            // img.width, 
+            // img.height, 
+            // (currentX * -1), 
+            // (currentY * -1),
             // img.width * ratio, 
             // img.height * ratio
         );
