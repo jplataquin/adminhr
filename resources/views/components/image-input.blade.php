@@ -46,9 +46,9 @@
     const img           = document.createElement('img');
     const ctx           = canvas.getContext('2d');
     
-    ctx.imageSmoothingEnabled       = false; // Standard property
-    ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
-    ctx.mozImageSmoothingEnabled    = false; // For older Firefox browsers
+    // ctx.imageSmoothingEnabled       = false; // Standard property
+    // ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
+    // ctx.mozImageSmoothingEnabled    = false; // For older Firefox browsers
     
     const dpr = window.devicePixelRatio || 1;
 
@@ -445,6 +445,7 @@
         if(original_file != ''){
             clearCanvas();
             Mode.clearedImage();
+            
         }
     }
 
