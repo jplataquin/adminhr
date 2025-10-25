@@ -337,6 +337,7 @@
 
             clearCanvas()
             drawImg();
+            Mode.imageChange();
         }
 
     };
@@ -371,8 +372,6 @@
             let y = e.pageY;
             
 
-            console.log(curXpos,x);
-
             if(curXpos > x){
                 //increase
                 currentX = currentX + (curXpos - x);
@@ -396,6 +395,7 @@
 
             clearCanvas()
             drawImg();
+            Mode.imageChange();
         }
 
     };
@@ -450,8 +450,6 @@
 
 
     $attrChange(container,'disabled',(val)=>{
-
-   
 
         if(val == 'true'){
             
