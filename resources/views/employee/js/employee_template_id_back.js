@@ -9,7 +9,11 @@ export default function(root,elem){
     
 
     const canvas = elem.canvas;
-    canvas.width = 300;
+    canvas.style.width  = '300px';
+    canvas.style.height = '477px';
+    
+    canvas.width    = 300;
+    canvas.height   = 477;
 
     const ctx    = canvas.getContext('2d');
 
@@ -19,8 +23,8 @@ export default function(root,elem){
 
     backImg.onload = ()=>{
         // set size proportional to image
-        canvas.height = canvas.width * (backImg.height / backImg.width);
-        ctx.drawImage(backImg, 0, 0,canvas.width,canvas.height); 
+        let pheight = canvas.width * (backImg.height / backImg.width);
+        ctx.drawImage(backImg, 0, 0,canvas.width,pheight); 
 
 
         ctx.fillStyle           = 'grey'; // Set fill color for the text

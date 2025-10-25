@@ -83,7 +83,7 @@
         
 
         <div data-controller="/js/view/employee/employee_template_id_back">
-            <canvas id="back" data-el="canvas" width="638px" height="1016px"></canvas>
+            <canvas id="back" data-el="canvas" width="300px" height="477px"></canvas>
             <input data-el="tin" type="hidden" value="{{$employee->tin}}"/>
             <input data-el="sss" type="hidden" value="{{$employee->sss}}"/>
             <input data-el="pag_ibig" type="hidden" value="{{$employee->pagibig}}"/>
