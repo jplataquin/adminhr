@@ -21,7 +21,12 @@ export default function(root,elem){
     name        = name.trim();
 
     const canvas = elem.canvas;
-    canvas.width = 300;
+
+    canvas.style.width  = '638px';
+    canvas.style.height = '1016px';
+    
+    canvas.width    = 638;
+    canvas.height   = 1016;
 
     const ctx    = canvas.getContext('2d');
 
@@ -33,8 +38,9 @@ export default function(root,elem){
     
     frontImg.onload = ()=>{
         // set size proportional to image
-        canvas.height = canvas.width * (frontImg.height / frontImg.width);
-        ctx.drawImage(frontImg, 0, 0,canvas.width,canvas.height); 
+        //canvas.height 
+        let pheight = canvas.width * (frontImg.height / frontImg.width);
+        ctx.drawImage(frontImg, 0, 0,canvas.width,pheight); 
 
         ctx.fillStyle       = 'blue'; // Set fill color for the text
         ctx.font            = "16px Arial";
