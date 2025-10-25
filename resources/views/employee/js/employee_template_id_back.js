@@ -9,13 +9,16 @@ export default function(root,elem){
     
 
     const canvas = elem.canvas;
+
+    canvas.width    = (300*2);
+    canvas.height   = (477*2);
+
     canvas.style.width  = '300px';
     canvas.style.height = '477px';
     
-    canvas.width    = 300;
-    canvas.height   = 477;
-
-    const ctx    = canvas.getContext('2d');
+    const dpi = window.devicePixelRatio;
+  
+    const ctx    = canvas.getContext('2d').scale(dpi, dpi);
 
     ctx.imageSmoothingEnabled = true;
 
