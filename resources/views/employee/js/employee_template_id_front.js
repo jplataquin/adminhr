@@ -22,18 +22,19 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
 
-    canvas.width    = (300*2);
-    canvas.height   = (477*2);
-
     canvas.style.width  = '300px';
     canvas.style.height = '477px';
     
+    canvas.width    = 300;
+    canvas.height   = 477;
+
     const dpi = window.devicePixelRatio;
-  
+    
+    canvas.setAttribute('width', 300 * dpi);
+    canvas.setAttribute('height', 477 * dpi);
+
     const ctx    = canvas.getContext('2d');
-    
-    ctx.scale(dpi, dpi);
-    
+
     ctx.imageSmoothingEnabled = true;
 
     const frontImg = new Image();
