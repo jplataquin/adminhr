@@ -13,7 +13,7 @@
 <div id="image_upload_card_{{$name}}" disabled="{{$disabled}}"  {{ $attributes->merge(['class' => 'grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-4']) }}>
     <div id="canvas_container_{{$name}}" class="grid grid-cols-1">
         <div class="flex justify-center">
-            <canvas class="" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$hdisplayHeighteight}}px"></canvas>
+            <canvas class="" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$displayHeighteight}}px"></canvas>
         </div>
         <div class="flex justify-center mt-3">
             <input class="" type="range" min="1" max="200" value="1" id="zoom_{{$name}}">
