@@ -1,12 +1,9 @@
 @props([
     'name'          => '',
     'value'         => '',
-    'width'         => '200',
-    'height'        => '200',
-    'displayWidth'  => '200',
-    'displayHeight' => '200',
-    'targetWidth'   => '300',
-    'targetHeight'  => '300',
+   
+    'displayWidth'  => '300',
+    'displayHeight' => '300',
     'disabled'      => 'false'
 ])
 
@@ -143,8 +140,8 @@
             canvas.style.height = '{{$displayHeight}}px';
 
             //Set resolition width/height
-            canvas.width        = {{$targetWidth}};
-            canvas.height       = {{$targetHeight}};
+            canvas.width        = {{$displayWidth}};
+            canvas.height       = {{$displayHeight}};
             
             
             currentX    = 0;
