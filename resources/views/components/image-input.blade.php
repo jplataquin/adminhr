@@ -199,8 +199,12 @@
         let resizeWidth = img.width * ratio;
         let resizeHeight = img.height * ratio;
 
-        let bitmap = await createImageBitmap(img, {resizeWidth, resizeHeight});
-        
+        let bitmap = await createImageBitmap(img, {
+            reseizeWidth: resizeWidth, 
+            resizeHeight: resizeHeight,
+            resizeQuality: 'pixelated'
+        });
+
         ctx.drawImage(
             bitmap, 
             0,
