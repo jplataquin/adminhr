@@ -22,11 +22,11 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
 
-    canvas.style.width  = '638px';
-    canvas.style.height = '1016px';
+    canvas.style.width  = '300px';
+    canvas.style.height = '477px';
     
-    canvas.width    = 638;
-    canvas.height   = 1016;
+    canvas.width    = 300;
+    canvas.height   = 477;
 
     const ctx    = canvas.getContext('2d');
 

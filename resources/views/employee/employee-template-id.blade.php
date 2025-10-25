@@ -76,7 +76,7 @@
             <input data-el="employee_id" type="hidden" value="{{$employee->id}}"/>
             <input data-el="position" type="hidden" value="{{$employee->position_options($employee->position) }}"/>
             
-            <canvas id="front" data-el="canvas" width="638px" height="1016px"></canvas>
+            <canvas id="front" data-el="canvas" width="300px" height="477px"></canvas>
 
             <div style="display:none" id="qr_code"></div>
         </div>
