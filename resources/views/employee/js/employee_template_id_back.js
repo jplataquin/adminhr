@@ -19,8 +19,8 @@ export default function(root,elem){
     
     const dpi = window.devicePixelRatio;
     
-    canvas.setAttribute('width', style.width() * dpi);
-    canvas.setAttribute('height', style.height() * dpi);
+    canvas.setAttribute('width', 300 * dpi);
+    canvas.setAttribute('height', 477 * dpi);
 
     const ctx    = canvas.getContext('2d');
 
