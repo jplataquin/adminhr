@@ -200,7 +200,7 @@
         let resizeHeight = img.height * ratio;
 
         let bitmap = await createImageBitmap(img, {
-            reseizeWidth: resizeWidth, 
+            resizeWidth: resizeWidth, 
             resizeHeight: resizeHeight,
             resizeQuality: 'pixelated'
         });
