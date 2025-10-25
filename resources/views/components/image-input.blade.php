@@ -194,17 +194,23 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    function drawImg(){
+    async function drawImg(){
+
+        let resizeWidth = img.width * ratio;
+        let resizeHeight = img.height * ratio;
+
+        let bitmap = await createImageBitmap(img, {resizeWidth, resizeHeight});
+        
         ctx.drawImage(
-            img, 
+            bitmap, 
             0,
             0, 
             img.width, 
             img.height, 
             (currentX * -1), 
             (currentY * -1),
-            img.width * ratio, 
-            img.height * ratio
+            // img.width * ratio, 
+            // img.height * ratio
         );
     }
 
