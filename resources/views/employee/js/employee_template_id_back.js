@@ -20,8 +20,8 @@ export default function(root,elem){
   
     const ctx    = canvas.getContext('2d');
     
-    let a = ctx.scale(dpi, dpi);
-    console.log(a);
+    ctx.scale(dpi, dpi);
+    
     ctx.imageSmoothingEnabled = true;
 
     const backImg = new Image();
