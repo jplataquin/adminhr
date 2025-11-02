@@ -85,7 +85,7 @@ export default function(root,elem){
         load_count++;
 
 
-        ctx.drawImage(photoImg, 18, 44);
+        ctx.drawImage(photoImg, 18, 44,photoImg.width,photoImg.height);
     }
 
 
