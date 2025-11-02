@@ -203,7 +203,7 @@
         let resizeWidth     = og_width * ratio;
         let resizeHeight    = img.height * ratio;
 
-        console.log(og_width,img.width);
+        console.log('B');
 
         img.width  = resizeWidth;
         img.height = resizeHeight;
@@ -273,12 +273,12 @@
                         
                         
                         
-                        console.log(og_width,img.width,'here');
+                        console.log('A');
 
                         og_width  = img.width;
                         og_height = img.height;
 
-                        
+
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
