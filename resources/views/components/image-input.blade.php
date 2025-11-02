@@ -264,11 +264,13 @@
                         
                         
 
-                        let hRatio = (canvas.width/2) / img.width;
-                        let vRatio = (canvas.height/2) / img.height;
+                        let hRatio = canvas.width / img.width;
+                        let vRatio = canvas.height / img.height;
                         
                         ratio = Math.min(hRatio, vRatio);
 
+                        ratio = 0.5;
+                        
                         let min = ratio * 100;
 
                         range.setAttribute('min', min);
