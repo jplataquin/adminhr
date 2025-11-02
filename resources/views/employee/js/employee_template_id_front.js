@@ -38,7 +38,7 @@ export default function(root,elem){
     ctx.imageSmoothingEnabled = true;
 
     const frontImg = new Image();
-    const photoImg = new Image();
+    const photoImg = document.createElement('img');
     const qrCodeImg = new Image();
     
     let load_count = 0;
