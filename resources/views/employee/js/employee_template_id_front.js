@@ -76,7 +76,7 @@ export default function(root,elem){
         ctx.drawImage(frontImg, 0, 0,canvas.width,pheight); 
 
         ctx.fillStyle       = 'blue'; // Set fill color for the text
-        ctx.font            = "60px Arial";
+        ctx.font            = "55px Arial";
         let name_metrics    = ctx.measureText(name);
         
         
