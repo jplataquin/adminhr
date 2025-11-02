@@ -103,7 +103,7 @@ export default function(root,elem){
         load_count++;
 
 
-        ctx.drawImage(photoImg, 43, 44,photoImg.width,photoImg.height);
+        ctx.drawImage(photoImg, 43, 60,photoImg.width,photoImg.height);
     }
 
 
