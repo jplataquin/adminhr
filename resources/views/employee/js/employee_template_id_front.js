@@ -68,19 +68,21 @@ export default function(root,elem){
 
     frontImg.onload = ()=>{
         load_count++;
+
         // set size proportional to image
         //canvas.height 
         let pheight = canvas.width * (frontImg.height / frontImg.width);
+        
         ctx.drawImage(frontImg, 0, 0,canvas.width,pheight); 
 
         ctx.fillStyle       = 'blue'; // Set fill color for the text
-        ctx.font            = "16px Arial";
+        ctx.font            = "72px Arial";
         let name_metrics    = ctx.measureText(name);
         
         
         let name_x = (canvas.width / 2) - (name_metrics.width / 2);
 
-        ctx.fillText(name,name_x,210);
+        ctx.fillText(name,name_x,600);
 
 
         ctx.fillStyle           = 'grey'; // Set fill color for the text
