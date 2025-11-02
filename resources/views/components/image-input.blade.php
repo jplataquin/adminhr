@@ -200,8 +200,9 @@
         let resizeWidth = img.width * ratio;
         //let resizeHeight = img.height * ratio;
 
-        img.width = resizeWidth;
-         console.log(ratio);
+        //img.width = resizeWidth;
+        img.style.width = resizeWidth+'px';
+        console.log(img.style.width);
         // let bitmap = await createImageBitmap(img, {
         //     resizeWidth: resizeWidth, 
         //     resizeHeight: resizeHeight,
