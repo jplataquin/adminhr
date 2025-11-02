@@ -249,6 +249,7 @@
 
         ratio = range.value * 0.01;
         
+        console.log(ratio);
         clearCanvas();
 
         drawImg();
@@ -280,8 +281,8 @@
                         let hRatio = canvas.width / n_img.width;
                         let vRatio = canvas.height / n_img.height;
                         
-                        og_width = 0;
-                        og_height = 0;
+                        og_width   = 0;
+                        og_height  = 0;
                         
 
                         ratio = Math.min(hRatio, vRatio);
