@@ -16,17 +16,18 @@ export default function(root,elem){
     let suffix      = elem.suffix.value;
     let employee_id = elem.employee_id.value;
     let position    = elem.position.value;
+    let test = elem.test;
     
     let name    = uppercaseFirstLetter(firstname)+' '+middlenameToInitial(middlename)+' '+uppercaseFirstLetter(lastname)+' '+uppercaseFirstLetter(suffix);
     name        = name.trim();
 
     const canvas = elem.canvas;
 
-    canvas.style.width  = '600px';
-    canvas.style.height = '687px';
+    canvas.style.width  = '300px';
+    canvas.style.height = '477px';
     
-    canvas.width    = 600;
-    canvas.height   = 687;
+    canvas.width    = 300;
+    canvas.height   = 477;
 
     // const dpi = window.devicePixelRatio;
     
@@ -71,7 +72,7 @@ export default function(root,elem){
         
         console.log('a',photoImg.width);
         photoImg.width  = 300;
-        photoImg.height = 300;
+        photoImg.height = 133;
 
         
         console.log('n',photoImg.width);
@@ -85,7 +86,7 @@ export default function(root,elem){
         load_count++;
 
 
-        ctx.drawImage(photoImg, 18, 44,photoImg.width,photoImg.height);
+        ctx.drawImage(test, 18, 44);
     }
 
 

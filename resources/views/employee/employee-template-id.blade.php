@@ -61,7 +61,7 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <img width="133px" height="133px" src="/employee/photo/{{ $employee->photo }}"/>
+     
         <div data-controller="/js/view/employee/employee_template_id_front">
             
             <input data-el="firstname" type="hidden" value="{{$employee->firstname}}"/>
@@ -72,7 +72,7 @@
             
             <input data-el="photo" type="hidden" value="/employee/photo/{{ $employee->photo }}"/>
             
-
+            <img data-el="test" width="133px" height="133px" src="/employee/photo/{{ $employee->photo }}"/>
             <input data-el="employee_id" type="hidden" value="{{$employee->id}}"/>
             <input data-el="position" type="hidden" value="{{$employee->position_options($employee->position) }}"/>
             
