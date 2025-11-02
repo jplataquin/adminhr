@@ -45,6 +45,9 @@
 
     const img           = document.createElement('img');
     const ctx           = canvas.getContext('2d');
+
+    let og_width = 0;
+    let og_height = 0;
     
     ctx.imageSmoothingEnabled       = true; // Standard property
  
@@ -197,9 +200,10 @@
     async function drawImg(){
 
        
-        let resizeWidth = img.orig.width * ratio;
-        let resizeHeight = img.orig.height * ratio;
+        let resizeWidth = og_width * ratio;
+        let resizeHeight = og_height * ratio;
 
+        console.log(og_width,og_height);
         img.width  = resizeWidth;
         img.height = resizeHeight;
 
@@ -291,9 +295,8 @@
                     
 
                     
-                    img.orig        = {};
-                    img.orig.width  = img.width;
-                    img.orig.height = img.height;
+                    og_width  = img.width;
+                    og_height = img.height;
                     img.src = evt.target.result;
 
                 }
