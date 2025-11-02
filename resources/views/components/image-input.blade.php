@@ -210,11 +210,12 @@
         }else{
             resizeWidth     = og_width * ratio;
             resizeHeight    = og_height * ratio;
+            
+            img.width  = resizeWidth;
+            img.height = resizeHeight;
         }
         
         
-        img.width  = resizeWidth;
-        img.height = resizeHeight;
 
 
         ctx.drawImage(
@@ -275,6 +276,7 @@
                     img.onload = ()=>{
                         
                         
+                        console.log(img.width,img.height);
 
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
