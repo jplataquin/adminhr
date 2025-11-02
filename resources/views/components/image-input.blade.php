@@ -198,10 +198,11 @@
 
        
         let resizeWidth = img.width * ratio;
-        //let resizeHeight = img.height * ratio;
+        let resizeHeight = img.height * ratio;
 
         img.width = resizeWidth;
-      
+        img.height = resizeHeight;
+        
         // let bitmap = await createImageBitmap(img, {
         //     resizeWidth: resizeWidth, 
         //     resizeHeight: resizeHeight,
