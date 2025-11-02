@@ -270,9 +270,6 @@
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
-                        img.orig        = {};
-                        img.orig.width  = img.width;
-                        img.orig.height = img.height;
 
                         ratio = Math.min(hRatio, vRatio);
 
@@ -292,6 +289,11 @@
                         Mode.imageChange();
                     }
                     
+
+                    
+                    img.orig        = {};
+                    img.orig.width  = img.width;
+                    img.orig.height = img.height;
                     img.src = evt.target.result;
 
                 }
