@@ -91,7 +91,7 @@ export default function(root,elem){
 
         let position_x = (canvas.width / 2) - (position_metrics.width / 2);
 
-        ctx.fillText(position,position_x,525);
+        ctx.fillText(position,position_x,528);
 
 
         
@@ -112,16 +112,16 @@ export default function(root,elem){
     qrCodeImg.onload = ()=>{
        
         let qr_x = (canvas.width / 2) - (120 / 2);
-        ctx.drawImage(qrCodeImg,qr_x,253,120,120);
+        ctx.drawImage(qrCodeImg,qr_x,653,350,350);
 
         ctx.fillStyle           = 'black'; // Set fill color for the text
-        ctx.font                = "14px Arial";
+        ctx.font                = "30px Arial";
 
         let id_text                 = String(employee_id).padStart(4, '0');
         let employee_id_metrics     = ctx.measureText(id_text);
 
         let employee_id_x = (canvas.width / 2) - (employee_id_metrics.width / 2);
-        ctx.fillText(id_text,employee_id_x,242);
+        ctx.fillText(id_text,employee_id_x,642);
     }
 
 
