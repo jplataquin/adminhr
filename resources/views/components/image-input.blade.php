@@ -196,6 +196,8 @@
 
     async function drawImg(){
 
+        ration = .10;
+        
         let resizeWidth = img.width * ratio;
         let resizeHeight = img.height * ratio;
 
@@ -269,8 +271,7 @@
                         
                         ratio = Math.min(hRatio, vRatio);
 
-                        ratio = 0.5;
-                        
+
                         let min = ratio * 100;
 
                         range.setAttribute('min', min);
