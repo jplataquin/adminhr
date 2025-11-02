@@ -40,17 +40,17 @@ export default function(root,elem){
         tin = 'TIN: '+tin;
         let tin_metrics    = ctx.measureText(tin);
         let tin_x = (canvas.width / 2) - (tin_metrics.width / 2);
-        ctx.fillText(tin,tin_x,300)
+        ctx.fillText(tin,tin_x,350)
 
         sss = 'SSS: '+sss;
         let sss_metrics    = ctx.measureText(sss);
         let sss_x = (canvas.width / 2) - (sss_metrics.width / 2);
-        ctx.fillText(sss,sss_x,320);
+        ctx.fillText(sss,sss_x,370);
 
         pag_ibig = 'Pag-IBIG: '+pag_ibig;
         let pag_ibig_metrics    = ctx.measureText(pag_ibig);
         let pag_ibig_x = (canvas.width / 2) - (pag_ibig_metrics.width / 2);
-        ctx.fillText(pag_ibig,pag_ibig_x,340);
+        ctx.fillText(pag_ibig,pag_ibig_x,390);
 
 
         ctx.fillStyle           = 'Black'; // Set fill color for the text
@@ -63,7 +63,7 @@ export default function(root,elem){
         let expiry              = 'EXP: '+yearTwoYearsFromNow
         let expiry_metrics      = ctx.measureText(expiry);
         let expiry_x            = (canvas.width / 2) - (expiry_metrics.width / 2);
-        ctx.fillText(expiry,expiry_x,380);
+        ctx.fillText(expiry,expiry_x,413);
     };
 
     backImg.src    = '/employee/id_template/back';
