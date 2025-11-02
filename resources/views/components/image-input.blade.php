@@ -211,7 +211,7 @@
         ctx.drawImage(
             img, 
             (currentX * -1), 
-            (currentY * -1) 
+            (currentY * -1), 
              img.width, 
              img.height, 
             // (currentX * -1), 
