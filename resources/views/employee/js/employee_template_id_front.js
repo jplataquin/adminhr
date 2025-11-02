@@ -22,10 +22,10 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
 
-    canvas.style.width  = '432px';
+    canvas.style.width  = '600px';
     canvas.style.height = '687px';
     
-    canvas.width    = 432;
+    canvas.width    = 600;
     canvas.height   = 687;
 
     // const dpi = window.devicePixelRatio;
