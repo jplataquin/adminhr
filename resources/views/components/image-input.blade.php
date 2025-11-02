@@ -196,19 +196,21 @@
 
     async function drawImg(){
 
-        ratio = .10;
+        ratio = .50;
 
         let resizeWidth = img.width * ratio;
-        let resizeHeight = img.height * ratio;
+        //let resizeHeight = img.height * ratio;
 
-        let bitmap = await createImageBitmap(img, {
-            resizeWidth: resizeWidth, 
-            resizeHeight: resizeHeight,
-            resizeQuality: 'pixelated'
-        });
+        img.width = resizeWidth;
+
+        // let bitmap = await createImageBitmap(img, {
+        //     resizeWidth: resizeWidth, 
+        //     resizeHeight: resizeHeight,
+        //     resizeQuality: 'pixelated'
+        // });
 
         ctx.drawImage(
-            bitmap, 
+            img, 
             (currentX * -1), 
             (currentY * -1) 
             // img.width, 
