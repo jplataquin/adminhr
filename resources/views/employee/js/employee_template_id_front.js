@@ -80,7 +80,9 @@ export default function(root,elem){
         photoImg.width  = 113;
         photoImg.height = 113;
 
-        ctx.drawImage(photoImg, 18, 44,133, 133);
+        
+        console.log(photoImg.width);
+        ctx.drawImage(photoImg, 18, 44);
     }
 
 
