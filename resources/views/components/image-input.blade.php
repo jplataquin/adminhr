@@ -196,12 +196,12 @@
 
     async function drawImg(){
 
-        console.log(img.width,img.height);
+       
         let resizeWidth = img.width * ratio;
         //let resizeHeight = img.height * ratio;
 
         img.width = resizeWidth;
-
+         console.log(img.width,img.height,ratio);
         // let bitmap = await createImageBitmap(img, {
         //     resizeWidth: resizeWidth, 
         //     resizeHeight: resizeHeight,
