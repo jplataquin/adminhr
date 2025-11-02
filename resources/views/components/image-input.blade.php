@@ -196,8 +196,8 @@
 
     async function drawImg(){
 
-        ration = .10;
-        
+        ratio = .10;
+
         let resizeWidth = img.width * ratio;
         let resizeHeight = img.height * ratio;
 
