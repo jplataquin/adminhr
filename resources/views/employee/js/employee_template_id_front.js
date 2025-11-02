@@ -23,11 +23,11 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
 
-    canvas.style.width  = '300px';
-    canvas.style.height = '477px';
+    canvas.style.width  = '1276px';
+    canvas.style.height = '2032px';
     
-    canvas.width    = 300;
-    canvas.height   = 477;
+    canvas.width    = 1276;
+    canvas.height   = 2032;
 
     // const dpi = window.devicePixelRatio;
     
@@ -36,6 +36,7 @@ export default function(root,elem){
 
     const ctx    = canvas.getContext('2d');
 
+    /***
     
     // Get the DPR and size of the canvas
         const dpr = window.devicePixelRatio;
@@ -51,7 +52,7 @@ export default function(root,elem){
         // Set the "drawn" size of the canvas
         canvas.style.width = `${rect.width}px`;
         canvas.style.height = `${rect.height}px`;
-
+**/
 //    ctx.imageSmoothingEnabled = true;
 
     const frontImg = new Image();
