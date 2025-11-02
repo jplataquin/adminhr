@@ -205,18 +205,17 @@
 
         
         if(og_width == 0 || og_height == 0){
-            console.log('a');
+          
             og_width        = img.width;
             og_height       = img.height;
             resizeWidth     = img.width * ratio;
             resizeHeight    = img.height * ratio;
         }else{
-              console.log('b');
+          
             resizeWidth     = og_width * ratio;
             resizeHeight    = og_height * ratio;
         }
         
-        console.log(og_width,og_height,resizeWidth,resizeHeight);
         img.width  = resizeWidth;
         img.height = resizeHeight;
 
@@ -253,7 +252,6 @@
 
         ratio = range.value * 0.01;
         
-        console.log('ratio',ratio);
         clearCanvas();
 
         drawImg();
