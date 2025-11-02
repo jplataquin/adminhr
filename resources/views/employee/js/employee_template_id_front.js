@@ -76,7 +76,7 @@ export default function(root,elem){
     photoImg.onload = ()=>{
         load_count++;
 
-        console.log(photoImt.width);
+        console.log(photoImg.width);
         photoImg.width  = 113;
         photoImg.height = 113;
 
