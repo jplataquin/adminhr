@@ -264,8 +264,8 @@
                         
                         
 
-                        let hRatio = canvas.width / (img.width/2);
-                        let vRatio = canvas.height / (img.height/2);
+                        let hRatio = (canvas.width/2) / img.width;
+                        let vRatio = (canvas.height/2) / img.height;
                         
                         ratio = Math.min(hRatio, vRatio);
 
