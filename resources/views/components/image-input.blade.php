@@ -271,6 +271,10 @@
                     img.onload = ()=>{
                         
                         
+                        
+                        og_width  = img.width;
+                        og_height = img.height;
+
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
@@ -295,8 +299,6 @@
                     
 
                     
-                    og_width  = img.width;
-                    og_height = img.height;
                     img.src = evt.target.result;
 
                 }
