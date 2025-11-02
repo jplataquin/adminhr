@@ -35,7 +35,7 @@ export default function(root,elem){
 
 
         ctx.fillStyle           = 'grey'; // Set fill color for the text
-        ctx.font                = "14px Arial";
+        ctx.font                = "30px Arial";
 
         tin = 'TIN: '+tin;
         let tin_metrics    = ctx.measureText(tin);
@@ -54,7 +54,7 @@ export default function(root,elem){
 
 
         ctx.fillStyle           = 'Black'; // Set fill color for the text
-        ctx.font                = "14px Arial";
+        ctx.font                = "30px Arial";
 
         const today                 = new Date(); // Get the current date and time
         const currentYear           = today.getFullYear(); // Get the current year (e.g., 2025)
