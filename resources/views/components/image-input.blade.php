@@ -273,10 +273,10 @@
                         
                         
                         
+                        console.log(og_width,img.width,'here');
+
                         og_width  = img.width;
                         og_height = img.height;
-
-                        console.log(og_width,img.width,'here');
 
                         
                         let hRatio = canvas.width / img.width;
