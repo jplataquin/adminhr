@@ -41,7 +41,10 @@ export default function(root,elem){
     const photoImg = new Image();
     const qrCodeImg = new Image();
     
+    let load_count = 0;
+
     frontImg.onload = ()=>{
+        load_count++;
         // set size proportional to image
         //canvas.height 
         let pheight = canvas.width * (frontImg.height / frontImg.width);
@@ -65,13 +68,19 @@ export default function(root,elem){
 
         ctx.fillText(position,position_x,225);
 
+        photoImg.width  = 133;
+        photoImg.height = 133;
+
         photoImg.src    = elem.photo.value;
         qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
 
     }
 
     photoImg.onload = ()=>{
-        ctx.drawImage(photoImg, 18, 44,133, 133);
+        load_count++;
+        
+        ctx.drawImage(photoImg, 18, 44);
+
     }
 
 
