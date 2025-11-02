@@ -275,11 +275,6 @@
                     img.onload = ()=>{
                         
                         
-                        
-                        if(og_width == 0 || og_height == 0){
-                            og_width  = img.width;
-                            og_height = img.height;
-                        }
 
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
