@@ -43,7 +43,7 @@
     const original_file = '{{$value}}';    
     const name          = '{{$name}}';
 
-    const img           = document.createElement('img');
+    let img           = document.createElement('img');
     const ctx           = canvas.getContext('2d');
 
     let og_width = 0;
@@ -272,12 +272,13 @@
 	    	reader.onload = function(evt){
 	    		if( evt.target.readyState == FileReader.DONE) {
 	    			
-                    img.onload = ()=>{
+                    let n_img = document.createElement('img');
+                    n_img.onload = ()=>{
                         
                         
 
-                        let hRatio = canvas.width / img.width;
-                        let vRatio = canvas.height / img.height;
+                        let hRatio = canvas.width / n_img.width;
+                        let vRatio = canvas.height / n_img.height;
                         
                         og_width = 0;
                         og_height = 0;
@@ -293,7 +294,7 @@
 
                         currentX = 0;
                         currentY = 0;
-
+                        img = n_img;
                         clearCanvas()
 
                         drawImg();
@@ -303,7 +304,7 @@
                     
 
                     
-                    img.src = evt.target.result;
+                    n_img.src = evt.target.result;
 
                 }
 	    	}    
