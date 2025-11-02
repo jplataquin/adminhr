@@ -22,12 +22,13 @@ export default function(root,elem){
     name        = name.trim();
 
     const canvas = elem.canvas;
-
-    canvas.style.width  = '1276px';
-    canvas.style.height = '2032px';
     
-    canvas.width    = 1276;
-    canvas.height   = 2032;
+    canvas.width    = 1276 * 0.5;
+    canvas.height   = 2032 * 0.5;
+
+    canvas.style.width  = `${canvas.width}px`;
+    canvas.style.height = `${canvas.height}px`;
+    
 
     // const dpi = window.devicePixelRatio;
     
@@ -102,7 +103,7 @@ export default function(root,elem){
         load_count++;
 
 
-        ctx.drawImage(test, 18, 44,test.width,test.height);
+        ctx.drawImage(photoImg, 18, 44,photoImg.width,photoImg.height);
     }
 
 
