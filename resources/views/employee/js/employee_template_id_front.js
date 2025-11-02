@@ -70,8 +70,8 @@ export default function(root,elem){
 
         
         console.log('a',photoImg.width);
-        photoImg.width  = 113;
-        photoImg.height = 113;
+        photoImg.width  = 133;
+        photoImg.height = 133;
 
         
         console.log('n',photoImg.width);
