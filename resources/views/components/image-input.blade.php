@@ -212,7 +212,7 @@
             resizeHeight    = og_height * ratio;
         }
         
-        
+        console.log(og_width,og_height,resizeWidth,resizeHeight);
         img.width  = resizeWidth;
         img.height = resizeHeight;
 
@@ -249,7 +249,7 @@
 
         ratio = range.value * 0.01;
         
-        console.log(ratio);
+        console.log('ratio',ratio);
         clearCanvas();
 
         drawImg();
