@@ -11,11 +11,11 @@ export default function(root,elem){
     
     const canvas = elem.canvas;
 
-    canvas.width    = 300;
-    canvas.height   = 477;
+    canvas.width    = 1276 * 0.55;
+    canvas.height   = 2032 * 0.55;
 
-    canvas.style.width  = '300px';
-    canvas.style.height = '477px';
+    canvas.style.width  = `${canvas.width}px`;
+    canvas.style.height = `${canvas.height}px`;
     
     // const dpi = window.devicePixelRatio;
     

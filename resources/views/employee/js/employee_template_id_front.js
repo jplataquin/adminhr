@@ -60,14 +60,9 @@ export default function(root,elem){
     const photoImg  = new Image();
     const qrCodeImg = new Image();
     
-    let load_count = 0;
-
-    // frontImg.width = rect.width;
-    
-    // frontImg.width = rect.height;
 
     frontImg.onload = ()=>{
-        load_count++;
+
 
         // set size proportional to image
         //canvas.height 
@@ -102,9 +97,7 @@ export default function(root,elem){
     }
 
     photoImg.onload = ()=>{
-        load_count++;
-
-
+      
         ctx.drawImage(photoImg, 43, 100,photoImg.width,photoImg.height);
     }
 
