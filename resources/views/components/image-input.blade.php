@@ -206,6 +206,8 @@
         
         if(og_width == 0 || og_height == 0){
             console.log('a');
+            og_width        = img.width;
+            og_height       = img.height;
             resizeWidth     = img.width * ratio;
             resizeHeight    = img.height * ratio;
         }else{
