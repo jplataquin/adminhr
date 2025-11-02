@@ -34,7 +34,12 @@ export default function(root,elem){
     // canvas.setAttribute('width', 300 * dpi);
     // canvas.setAttribute('height', 477 * dpi);
 
+    ctx.imageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
+ctx.mozImageSmoothingEnabled = false;   // For older Mozilla browsers
+
     const ctx    = canvas.getContext('2d');
+
 
     ctx.imageSmoothingEnabled = true;
 
