@@ -23,8 +23,8 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
     
-    canvas.width    = 1276 * 0.55;
-    canvas.height   = 2032 * 0.55;
+    canvas.width    = 1276 * 0.53;
+    canvas.height   = 2032 * 0.53;
 
     canvas.style.width  = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
@@ -56,8 +56,8 @@ export default function(root,elem){
 **/
 //    ctx.imageSmoothingEnabled = true;
 
-    const frontImg = new Image();
-    const photoImg = document.createElement('img');
+    const frontImg  = new Image();
+    const photoImg  = new Image();
     const qrCodeImg = new Image();
     
     let load_count = 0;
