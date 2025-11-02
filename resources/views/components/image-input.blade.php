@@ -200,8 +200,8 @@
     async function drawImg(){
 
        
-        let resizeWidth = img.width * ratio;
-        let resizeHeight = img.height * ratio;
+        let resizeWidth     = og_width * ratio;
+        let resizeHeight    = img.height * ratio;
 
         console.log(og_width,img.width);
 
@@ -278,6 +278,7 @@
 
                         console.log(og_width,img.width,'here');
 
+                        
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
