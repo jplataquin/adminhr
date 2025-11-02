@@ -23,8 +23,8 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
     
-    canvas.width    = 1276 * 0.53;
-    canvas.height   = 2032 * 0.53;
+    canvas.width    = 1276 * 0.54;
+    canvas.height   = 2032 * 0.54;
 
     canvas.style.width  = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
