@@ -69,12 +69,12 @@ export default function(root,elem){
         ctx.fillText(position,position_x,225);
 
         
-        console.log(photoImg.width);
+        console.log('a',photoImg.width);
         photoImg.width  = 113;
         photoImg.height = 113;
 
         
-        console.log(photoImg.width);
+        console.log('n',photoImg.width);
         photoImg.src    = elem.photo.value;
 
         qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
@@ -84,7 +84,7 @@ export default function(root,elem){
     photoImg.onload = ()=>{
         load_count++;
 
-        
+
         ctx.drawImage(photoImg, 18, 44);
     }
 
