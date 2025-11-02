@@ -91,7 +91,7 @@ export default function(root,elem){
 
         let position_x = (canvas.width / 2) - (position_metrics.width / 2);
 
-        ctx.fillText(position,position_x,225);
+        ctx.fillText(position,position_x,525);
 
 
         
