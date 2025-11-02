@@ -34,14 +34,15 @@ export default function(root,elem){
     // canvas.setAttribute('width', 300 * dpi);
     // canvas.setAttribute('height', 477 * dpi);
 
+    const ctx    = canvas.getContext('2d');
+
+    
     ctx.imageSmoothingEnabled = false;
 ctx.webkitImageSmoothingEnabled = false; // For older WebKit browsers
 ctx.mozImageSmoothingEnabled = false;   // For older Mozilla browsers
 
-    const ctx    = canvas.getContext('2d');
 
-
-    ctx.imageSmoothingEnabled = true;
+//    ctx.imageSmoothingEnabled = true;
 
     const frontImg = new Image();
     const photoImg = document.createElement('img');
