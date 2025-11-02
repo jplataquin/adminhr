@@ -72,7 +72,6 @@
             
             <input data-el="photo" type="hidden" value="/employee/photo/{{ $employee->photo }}"/>
             
-            <img data-el="test" width="133px" height="133px" src="/employee/photo/{{ $employee->photo }}"/>
             <input data-el="employee_id" type="hidden" value="{{$employee->id}}"/>
             <input data-el="position" type="hidden" value="{{$employee->position_options($employee->position) }}"/>
             

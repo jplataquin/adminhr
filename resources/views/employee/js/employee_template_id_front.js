@@ -16,7 +16,7 @@ export default function(root,elem){
     let suffix      = elem.suffix.value;
     let employee_id = elem.employee_id.value;
     let position    = elem.position.value;
-    let test = elem.test;
+    
     
     let name    = uppercaseFirstLetter(firstname)+' '+middlenameToInitial(middlename)+' '+uppercaseFirstLetter(lastname)+' '+uppercaseFirstLetter(suffix);
     name        = name.trim();
@@ -76,7 +76,7 @@ export default function(root,elem){
         ctx.drawImage(frontImg, 0, 0,canvas.width,pheight); 
 
         ctx.fillStyle       = 'blue'; // Set fill color for the text
-        ctx.font            = "55px Arial";
+        ctx.font            = "50px Arial";
         let name_metrics    = ctx.measureText(name);
         
         
@@ -111,8 +111,8 @@ export default function(root,elem){
 
     qrCodeImg.onload = ()=>{
        
-        let qr_x = (canvas.width / 2) - (300 / 2);
-        ctx.drawImage(qrCodeImg,qr_x,583,300,300);
+        let qr_x = (canvas.width / 2) - (290 / 2);
+        ctx.drawImage(qrCodeImg,qr_x,583,290,290);
 
         ctx.fillStyle           = 'black'; // Set fill color for the text
         ctx.font                = "30px Arial";
