@@ -76,7 +76,7 @@ export default function(root,elem){
         
         console.log(photoImg.width);
         photoImg.src    = elem.photo.value;
-        
+
         qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
 
     }
@@ -84,6 +84,7 @@ export default function(root,elem){
     photoImg.onload = ()=>{
         load_count++;
 
+        
         ctx.drawImage(photoImg, 18, 44);
     }
 
