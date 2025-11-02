@@ -60,6 +60,10 @@ export default function(root,elem){
     
     let load_count = 0;
 
+    frontImg.width = rect.width;
+    
+    frontImg.width = rect.height;
+
     frontImg.onload = ()=>{
         load_count++;
         // set size proportional to image
@@ -85,13 +89,8 @@ export default function(root,elem){
 
         ctx.fillText(position,position_x,225);
 
-        
-        console.log('a',photoImg.width);
-        photoImg.width  = 300;
-        photoImg.height = 133;
 
         
-        console.log('n',photoImg.width);
         photoImg.src    = elem.photo.value;
 
         qrCodeImg.src   = encodeURI('/generate-qrcode?d='+$base_url+'/public/employee/'+employee_id);
