@@ -345,6 +345,10 @@ class Employee extends Model
                     'DTDRIV2' => 'Dumptruck Driver 2',
                     'DTDRIV3' => 'Dumptruck Driver 3',
 
+            'TOPSTF1'   => 'Top Managment Staff 1',
+            'TOPSTF2'   => 'Top Managment Staff 2', 
+            'TOPSTF3'   => 'Top Managment Staff 3',
+
             'CORAST'    => 'Corporate Assitant',
             'CORSEC'    => 'Corporate Secretary',
             'VPOPER'    => 'VP Operations',

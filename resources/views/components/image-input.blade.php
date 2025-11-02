@@ -263,12 +263,11 @@
                     img.onload = ()=>{
                         
                         
-                        alert(img.width);
 
-                        let hRatio = canvas.width / img.width;
-                        let vRatio = canvas.height / img.height;
+                        let hRatio = canvas.width / (img.width/2);
+                        let vRatio = canvas.height / (img.height/2);
                         
-                        ratio = 1;//Math.min(hRatio, vRatio);
+                        ratio = Math.min(hRatio, vRatio);
 
                         let min = ratio * 100;
 
@@ -285,7 +284,6 @@
                         Mode.imageChange();
                     }
                     
-                    img.style.width = '300px';
                     img.src = evt.target.result;
 
                 }
