@@ -201,7 +201,7 @@
         //let resizeHeight = img.height * ratio;
 
         img.width = resizeWidth;
-         console.log(img.width,img.height,ratio);
+         console.log(ratio);
         // let bitmap = await createImageBitmap(img, {
         //     resizeWidth: resizeWidth, 
         //     resizeHeight: resizeHeight,
@@ -266,7 +266,6 @@
                     img.onload = ()=>{
                         
                         
-
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
