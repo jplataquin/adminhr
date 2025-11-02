@@ -22,11 +22,11 @@ export default function(root,elem){
 
     const canvas = elem.canvas;
 
-    canvas.style.width  = '300px';
-    canvas.style.height = '477px';
+    canvas.style.width  = '432px';
+    canvas.style.height = '687px';
     
-    canvas.width    = 300;
-    canvas.height   = 477;
+    canvas.width    = 432;
+    canvas.height   = 687;
 
     // const dpi = window.devicePixelRatio;
     
@@ -70,8 +70,8 @@ export default function(root,elem){
 
         
         console.log('a',photoImg.width);
-        photoImg.width  = 133;
-        photoImg.height = 133;
+        photoImg.width  = 300;
+        photoImg.height = 300;
 
         
         console.log('n',photoImg.width);
