@@ -213,16 +213,9 @@
         }
         
         
-        console.log('B');
-
         img.width  = resizeWidth;
         img.height = resizeHeight;
 
-        // let bitmap = await createImageBitmap(img, {
-        //     resizeWidth: resizeWidth, 
-        //     resizeHeight: resizeHeight,
-        //     resizeQuality: 'pixelated'
-        // });
 
         ctx.drawImage(
             img, 
@@ -283,11 +276,10 @@
                         
                         
                         
-                        console.log('A');
-
-                        og_width  = img.width;
-                        og_height = img.height;
-
+                        if(og_width == 0 || og_height == 0){
+                            og_width  = img.width;
+                            og_height = img.height;
+                        }
 
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
