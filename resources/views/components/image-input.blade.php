@@ -275,6 +275,8 @@
                         og_width  = img.width;
                         og_height = img.height;
 
+                        console.log(og_width,'here');
+                        
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
