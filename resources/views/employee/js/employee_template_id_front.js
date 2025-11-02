@@ -61,9 +61,9 @@ export default function(root,elem){
     
     let load_count = 0;
 
-    frontImg.width = rect.width;
+    // frontImg.width = rect.width;
     
-    frontImg.width = rect.height;
+    // frontImg.width = rect.height;
 
     frontImg.onload = ()=>{
         load_count++;
