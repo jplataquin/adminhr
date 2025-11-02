@@ -199,10 +199,20 @@
 
     async function drawImg(){
 
-       
-        let resizeWidth     = og_width * ratio;
-        let resizeHeight    = img.height * ratio;
+        
+        let resizeWidth;
+        let resizeHeight;
 
+        
+        if(og_width == 0 || og_height == 0){
+            resizeWidth     = img.width * ratio;
+            resizeHeight    = img.height * ratio;
+        }else{
+            resizeWidth     = og_width * ratio;
+            resizeHeight    = og_height * ratio;
+        }
+        
+        
         console.log('B');
 
         img.width  = resizeWidth;
