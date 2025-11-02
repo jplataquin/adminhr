@@ -86,7 +86,7 @@ export default function(root,elem){
 
 
         ctx.fillStyle           = 'grey'; // Set fill color for the text
-        ctx.font                = "14px Arial";
+        ctx.font                = "30px Arial";
         let position_metrics    = ctx.measureText(position);
 
         let position_x = (canvas.width / 2) - (position_metrics.width / 2);
