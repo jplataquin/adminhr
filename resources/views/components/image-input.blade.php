@@ -197,13 +197,12 @@
     async function drawImg(){
 
        
-        let resizeWidth = img.width * ratio;
-        let resizeHeight = img.height * ratio;
+        let resizeWidth = img.orig.width * ratio;
+        let resizeHeight = img.orig.height * ratio;
 
         img.width  = resizeWidth;
         img.height = resizeHeight;
 
-        console.log(ratio);
         // let bitmap = await createImageBitmap(img, {
         //     resizeWidth: resizeWidth, 
         //     resizeHeight: resizeHeight,
@@ -271,6 +270,9 @@
                         let hRatio = canvas.width / img.width;
                         let vRatio = canvas.height / img.height;
                         
+                        img.orig.width  = img.width;
+                        img.orig.height = img.height;
+
                         ratio = Math.min(hRatio, vRatio);
 
 
