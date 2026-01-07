@@ -700,7 +700,7 @@ class EmployeeController extends Controller
             // 'Emergency Contact Person'      => 'emergency_contact_person',
             // 'Emergency Contact Person No.'  => 'emergency_contact_person_no',
 
-            'TIN'           => ['key'=>'lastname','style'=>'min-width:150px;text-align:center'],
+            'TIN'           => ['key'=>'tin','style'=>'min-width:150px;text-align:center'],
             'SSS'           => ['key'=>'sss','style'=>'min-width:150px;text-align:center'],
             'Philhealth'    => ['key'=>'philhealth','style'=>'min-width:150px;text-align:center'],
             'pag-IBIG'      => ['key'=>'pagibig','style'=>'min-width:150px;text-align:center'],
