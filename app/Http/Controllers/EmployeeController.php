@@ -60,6 +60,9 @@ class EmployeeController extends Controller
         $order      = $request->input('order')          ?? 'DESC';
         $query      = $request->input('query')          ?? '';
         $status     = $request->input('status')         ?? '';
+        $division   = $request->input('division')       ?? '';
+        $department = $request->input('department')     ?? '';
+
         $result = [];
 
         $employee = new Employee();
@@ -73,6 +76,14 @@ class EmployeeController extends Controller
         if($status != ''){
             $employee = $employee->where('status','=',$status);
         }
+
+        if($division != ''){
+            $employee = $employee->where('division','=',$division);
+        } 
+
+        if($department != ''){
+            $department = $employee->where('division','=',$department);
+        } 
 
         if($limit > 0){
             $page   = ($page-1) * $limit;
