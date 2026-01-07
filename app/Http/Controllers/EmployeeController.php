@@ -82,7 +82,7 @@ class EmployeeController extends Controller
         } 
 
         if($department != ''){
-            $department = $employee->where('division','=',$department);
+            $department = $employee->where('department','=',$department);
         } 
 
         if($limit > 0){
