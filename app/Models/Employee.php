@@ -245,7 +245,7 @@ class Employee extends Model
                     'LABTEC1' => 'Lab Technician 1',
                     'LABTEC2' => 'Lab Technician 2',
                     'LABTEC3' => 'Lab Technician 3',
-                        'LABAID' => 'Lab Aid 1',
+                        'LABAID' => 'Lab Aid',
                     
                     
                 
