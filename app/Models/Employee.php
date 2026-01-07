@@ -191,10 +191,21 @@ class Employee extends Model
 
         $opt = [
             'ADHRDM' => 'Admin/HR Division Manager',
-                'ADHRST' => 'Admin/HR Staff',
+                'ADHRST' => 'Admin/HR Staff 1',
+                'AHRST2' => 'Admin/HR Staff 2',
+                'AHRST3' => 'Admin/HR Staff 3',
+                
                 'OSHODH' => 'OSHO Department Head',
-                    'OSHO__' => 'Occupational Safety & Health Officer',
+                    'OSHO__' => 'Occupational Safety & Health Officer 1',
+                    'OSHO_2' => 'Occupational Safety & Health Officer 2',
+                    'OSHO_3' => 'Occupational Safety & Health Officer 3',
+                
                 'FACINC' => 'Facilities In-Charge',
+
+                    'SVDRI1' => 'Service Vehicle Driver 1',
+                    'SVDRI2' => 'Service Vehicle Driver 2',
+                    'SVDRI3' => 'Service Vehicle Driver 3',
+                
             
             'CONSDM' => 'Construction Division Manager',
                 'CONSDH' => 'Construction Department Head',
