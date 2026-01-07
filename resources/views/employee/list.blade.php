@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div id="pageDoc" class="border border-1 rounded-lg shadow relative m-10">
+    <div id="pageDoc" class="border border-1 rounded-lg shadow relative m-5">
 
         <div class="flex items-start justify-between p-5 border-b rounded-t">
             <h3 class="text-xl font-semibold dark:text-white">
