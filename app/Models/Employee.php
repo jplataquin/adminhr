@@ -194,6 +194,11 @@ class Employee extends Model
                 'ADHRST' => 'Admin/HR Staff 1',
                 'AHRST2' => 'Admin/HR Staff 2',
                 'AHRST3' => 'Admin/HR Staff 3',
+
+                'OFUTI1' => 'Office Utility 1',
+                'OFUTI2' => 'Office Utility 2',
+                'OFUTI3' => 'Office Utility 3',
+                
                 
                 'OSHODH' => 'OSHO Department Head',
                     'OSHO__' => 'Occupational Safety & Health Officer 1',
