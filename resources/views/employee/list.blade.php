@@ -14,6 +14,28 @@
         <div class="ps-6 pe-6 pt-6 space-y-6">
             <x-text-input id="search" mode="2" label="Search"></x-text-input>
         </div>
+
+        <div class="ps-6 pe-6 pt-6 space-y-6">
+            <div class="grid grid-cols-6 gap-6">
+                 <div class="col-span-6 sm:col-span-3">
+                    <x-select-input label="Division" id="division">
+                        @foreach($employee->division_options() as $val=>$text)
+                            <option value="{{$val}}">{{$text}}</option>
+                        @endforeach
+                    </x-select-input>
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <x-select-input label="Department" id="department" dependon="#division">
+                        @foreach($employee->department_options_grouped() as $group=>$options)
+                            @foreach($options as $val=>$text)
+                                <option group="{{$group}}" value="{{$val}}">{{$text}}</option>
+                            @endforeach
+                        @endforeach
+                    </x-select-input>
+                </div>
+            </div>
+        </div>
+        
         <div class="p-6 space-y-6">
             <div id="list"></div>
         </div>

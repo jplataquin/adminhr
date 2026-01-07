@@ -42,7 +42,11 @@ class EmployeeController extends Controller
 
     public function list(){
 
-        return view('employee/list');
+        $employee = new Employee();
+        
+        return view('employee/list',[
+            'employee' => $employee
+        ]);
     }
 
     public function _list(Request $request){
