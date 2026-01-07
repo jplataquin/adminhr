@@ -53,6 +53,9 @@
 
         const createRecordBtn   = $q('#createRecordBtn').first();
         const exportCSVBtn      = $q('#exportCSVBtn').first();
+        const division          = $q('#division').first();
+        const department        = $q('#department').first();
+
 
         let page            = 1;
         let order           = 'ASC';
@@ -110,11 +113,13 @@
 
 
             $_GET('/api/employees',{
-                query: search.value,
-                page: page,
-                order: order,
-                order_by: orderBy,
-                limit: 10
+                query           : search.value,
+                page            : page,
+                order           : order,
+                order_by        : orderBy,
+                limit           : 10,
+                division        : division.value,
+                department      : department.value
             }).then(reply=>{
 
                 
@@ -159,6 +164,16 @@
             },1000);
         }
 
+        division.onchange = () => {
+            
+            pageDoc.reinitalize();
+            pageDoc.showData();
+        }
+
+        department.onchange = () => {
+            pageDoc.reinitalize();
+            pageDoc.showData();
+        }
 
         // sortSelect.onchange = ()=>{
         //     reinitalize();
