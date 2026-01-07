@@ -19,6 +19,7 @@
             <div class="grid grid-cols-6 gap-6">
                  <div class="col-span-6 sm:col-span-3">
                     <x-select-input label="Division" id="division">
+                        <option value=""> - </option>
                         @foreach($employee->division_options() as $val=>$text)
                             <option value="{{$val}}">{{$text}}</option>
                         @endforeach
