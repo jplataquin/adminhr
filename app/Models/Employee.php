@@ -130,7 +130,8 @@ class Employee extends Model
         $opt = [
             'ADMNHR'    => [
                 'ADMNHR'    => ' - ',
-                'OCUSAF'    => 'Occupational Safety And Health'
+                'OCUSAF'    => 'Occupational Safety And Health',
+                'PURCHA'    => 'Purchasing'
             ],
             'ACCFIN'    => [
                 'ACCFIN' => ' - '

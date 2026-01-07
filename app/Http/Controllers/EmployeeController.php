@@ -697,15 +697,17 @@ class EmployeeController extends Controller
             'School / University'       => ['key'=>'school_university','style'=>'min-width:300px;text-align:center'],
             'Degree'                    => ['key'=>'degree','style'=>'min-width:150px;text-align:center'],
             'Religon'                   => ['key'=>'religion','style'=>'min-width:150px;text-align:center'],
-            // 'Emergency Contact Person'      => 'emergency_contact_person',
-            // 'Emergency Contact Person No.'  => 'emergency_contact_person_no',
+            'Emergency Contact Person'      => 'emergency_contact_person',
+            'Emergency Contact Person No.'  => 'emergency_contact_person_no',
 
-            'TIN'           => ['key'=>'tin','style'=>'min-width:150px;text-align:center'],
-            'SSS'           => ['key'=>'sss','style'=>'min-width:150px;text-align:center'],
-            'Philhealth'    => ['key'=>'philhealth','style'=>'min-width:150px;text-align:center'],
-            'pag-IBIG'      => ['key'=>'pagibig','style'=>'min-width:150px;text-align:center'],
-            "Driver's License No." => ['key'=>'drivers_license_no','style'=>'min-width:150px;text-align:center'],
-            'Passport No.' => ['key'=>'passport_no','style'=>'min-width:150px;text-align:center'],
+            'TIN'                   => ['key'=>'tin','style'=>'min-width:150px;text-align:center'],
+            'SSS'                   => ['key'=>'sss','style'=>'min-width:150px;text-align:center'],
+            'Philhealth'            => ['key'=>'philhealth','style'=>'min-width:150px;text-align:center'],
+            'pag-IBIG'              => ['key'=>'pagibig','style'=>'min-width:150px;text-align:center'],
+            "Driver's License No."  => ['key'=>'drivers_license_no','style'=>'min-width:150px;text-align:center'],
+            'Passport No.'          => ['key'=>'passport_no','style'=>'min-width:150px;text-align:center'],
+            'Bank'                  => 'bank_name',
+            'Bank Account No.'      => 'bank_account_no'
         
         ];
 
