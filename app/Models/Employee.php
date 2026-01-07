@@ -250,9 +250,9 @@ class Employee extends Model
                     
                 
                 'PURCDH' => 'Purchasing Department Head',
-                    'PURSTF1' => 'Purchasing Staff 1',
-                    'PURSTF2' => 'Purchasing Staff 2',
-                    'PURSTF3' => 'Purchasing Staff 3',
+                    'PUROF1' => 'Purchasing Officer 1',
+                    'PUROF2' => 'Purchasing Officer 2',
+                    'PUROF3' => 'Purchasing Officer 3',
             
             'WARHDM' => 'Warehouse & Logistics Division Manager',
                 'WARHDH' => 'Warehouse Department Head',
