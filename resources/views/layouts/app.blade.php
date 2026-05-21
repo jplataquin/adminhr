@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,31 +13,21 @@
 
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+        
+        @vite(['resources/css/app.scss', 'resources/js/app.js'])
 
-
-
-            @php
-                $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
-            @endphp
-            <script type="module" src="/build/{{ $manifest['resources/js/app.js']['file'] }}"></script>
-            <link rel="stylesheet" href="/build/{{ $manifest['resources/css/app.css']['file'] }}">
-
-            <script type="text/javascript">
-                
-                window.$base_url = '{{ url('') }}';
-                
-            
-            </script>
+        <script type="text/javascript">
+            window.$base_url = '{{ url('') }}';
+        </script>
     </head>
-    <body class="font-sans antialiased dark:bg-gray-900">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <body class="font-sans antialiased">
+        <div class="min-vh-100 bg-body-tertiary">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-body shadow-sm mb-4">
+                    <div class="container py-3">
                         {{ $header }}
                     </div>
                 </header>
@@ -45,19 +35,21 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                <div class="container">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
 
         <div class="drawer_modal_background"></div>
-        <div class="drawer_modal bg-gray-100 dark:bg-gray-900">
-            <div class="drawer_modal_header bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-                <div class="p-2 float-left">
-                    <h5 class="drawer_modal_title text-xl font-semibold dark:text-white"></h5>
+        <div class="drawer_modal bg-body-tertiary">
+            <div class="drawer_modal_header bg-body border-bottom">
+                <div class="p-2 d-inline-block">
+                    <h5 class="drawer_modal_title h5 mb-0"></h5>
                 </div>
-                <div class="p-2 float-right">
-                    <button class="text-xl font-semibold dark:text-white" onclick="$drawerModal.close()" class="">
-                        <i class="bi bi-x-lg"></i>
+                <div class="p-2 float-end">
+                    <button class="btn btn-link text-decoration-none p-0" onclick="$drawerModal.close()">
+                        <i class="bi bi-x-lg h4"></i>
                     </button>
                 </div>
             </div>

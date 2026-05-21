@@ -1,33 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="h4 mb-0">
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
+    <div class="py-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                {{ __("You're logged in!") }}
             </div>
         </div>
     </div>
 
-    <div data-controller="/test.js">
-        <button data-el="submit" data-val="a">a</button>
+    <div class="mt-4" data-controller="/test.js">
+        <button class="btn btn-primary" data-el="submit" data-val="a">a</button>
     </div>
-    <div data-controller="/test.js">
-        <div>
-            <button data-el="submit" data-val="b">b</button>
+    <div class="mt-2" data-controller="/test.js">
+        <div class="mb-3">
+            <button class="btn btn-secondary" data-el="submit" data-val="b">b</button>
         </div>
-        
-        <br><br>
         
         <div data-controller="/test.js">
             <div>
-                <button data-el="submit" data-val="c">c</button>
+                <button class="btn btn-info" data-el="submit" data-val="c">c</button>
             </div>
         </div>
     </div>

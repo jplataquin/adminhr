@@ -2,8 +2,8 @@
     'namespace'      => ''
 ])
 
-<div class="float-root" id="{{$namespace}}controls">
-    <div class="float-left">
+<div class="clearfix" id="{{$namespace}}controls">
+    <div class="float-start">
         
         @if($record->status == 'PEND')
             <x-primary-button class="me-2" id="{{$namespace}}rejectBtn">Reject</x-primary-button>
@@ -22,7 +22,7 @@
             {{$right}}
         @endif
     </div>
-    <div class="float-right">
+    <div class="float-end">
         @if(isset($left))
             {{$left}}
         @endif

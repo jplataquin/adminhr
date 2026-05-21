@@ -2,10 +2,9 @@
 @import 'filepond/dist/filepond.min.css';
 @import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 @import 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap";
 
 .drawer_modal_background{
     opacity: 30%;

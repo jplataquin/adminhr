@@ -3,10 +3,10 @@
     'status'         => 'PEND'
 ])
 
-<div class="float-root" id="{{$namespace}}controls">
-    <div class="float-left">
+<div class="clearfix" id="{{$namespace}}controls">
+    <div class="float-start">
         @if($status == 'PEND')
-            <x-primary-button class="me-2 hidden" id="{{$namespace}}deleteBtn">Delete</x-primary-button>
+            <x-primary-button class="me-2 d-none" id="{{$namespace}}deleteBtn">Delete</x-primary-button>
         @endif
         
         @if($status == 'APRV')
@@ -21,14 +21,14 @@
             {{$left}}
         @endif
     </div>
-    <div class="float-right">
+    <div class="float-end">
         @if(isset($right))
             {{$right}}
         @endif
 
         @if($status == 'PEND')
             <x-primary-button class="me-2" id="{{$namespace}}editBtn">Edit</x-primary-button>
-            <x-primary-button class="hidden me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
+            <x-primary-button class="d-none me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
         @endif
         <x-secondary-button class="" id="{{$namespace}}cancelBtn">Cancel</x-secondary-button>
     </div>
@@ -68,9 +68,9 @@
 
     editBtn.addEventListener('click',()=>{
         
-        {{$namespace}}editBtn.classList.add('hidden');
-        {{$namespace}}updateBtn.classList.remove('hidden');
-        {{$namespace}}deleteBtn.classList.remove('hidden');
+        {{$namespace}}editBtn.classList.add('d-none');
+        {{$namespace}}updateBtn.classList.remove('d-none');
+        {{$namespace}}deleteBtn.classList.remove('d-none');
         
         changeState('update','update:start');
 
@@ -95,9 +95,9 @@
     cancelBtn.addEventListener('click',()=>{
 
         if(state == 'update'){
-            {{$namespace}}editBtn.classList.remove('hidden');
-            {{$namespace}}updateBtn.classList.add('hidden');
-            {{$namespace}}deleteBtn.classList.add('hidden');
+            {{$namespace}}editBtn.classList.remove('d-none');
+            {{$namespace}}updateBtn.classList.add('d-none');
+            {{$namespace}}deleteBtn.classList.add('d-none');
             
             changeState('edit','cancel:update');
 

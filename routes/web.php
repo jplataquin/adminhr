@@ -197,4 +197,11 @@ Route::get('adarna.js.map', function(){
 
 
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+    Route::post('/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
+});
+
 require __DIR__.'/auth.php';

@@ -1,34 +1,31 @@
 <x-app-layout>
 
-    <div class="border border-1 rounded-lg shadow relative m-10">
-
-        <div class="flex items-start justify-between p-5 border-b rounded-t">
-            <h3 class="text-xl font-semibold dark:text-white">
+    <div class="card shadow-sm border-0 m-4">
+        <div class="card-header bg-body py-3">
+            <h3 class="h5 mb-0">
                 Ledger Entry
             </h3>
         </div>
 
-        <div class="p-6 space-y-6">
+        <div class="card-body p-4">
             <form id="form" autocomplete="off">
-                <div class="grid grid-cols-12 gap-6">
-                    <div class="col-span-12 mb-3">
+                <div class="row g-3">
+                    <div class="col-12">
                         <x-text-input label="Account" name="account" id="account" disabled="true" value="{{$ledger_account->name}}"></x-text-input>
                     </div>
-                    <div class="col-span-12 mb-3">
+                    <div class="col-12">
                         <x-text-input label="Ledger" name="ledger" id="ledger" disabled="true" value="{{$ledger->name}}"></x-text-input>
                     </div>
                     
-
-                    
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-text-input label="Status" name="status" id="status" disabled="true" value="{{$ledger_entry->status}}"></x-text-input>
                     </div>
 
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-text-input label="Date" class="editable" name="date" id="date" disabled="true" value="{{$ledger_entry->date}}"></x-text-input>
                     </div>
 
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-select-input label="Type" class="editable" name="type" id="type" disabled="true">
                             @foreach($ledger_entry->type_options() as $value=>$text)
                                 <option value="{{$value}}" @if($ledger_entry->type == $value) selected @endif>{{$text}}</option>
@@ -36,9 +33,7 @@
                         </x-select-input>
                     </div>
 
-                    
-
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-select-input label="Tag" class="editable" name="tag" id="tag" disabled="true">
                             @foreach($ledger_entry->tag_options() as $value=>$text)
                                 <option value="{{$value}}" @if($ledger_entry->tag == $value) selected @endif>{{$text}}</option>
@@ -47,31 +42,30 @@
                     </div>
 
 
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-text-input label="Quantity ({{$ledger->unit}})" class="editable" name="quantity" id="quantity" disabled="true" value="{{$ledger_entry->quantity}}"></x-text-input>
                     </div>
 
-                    <div class="lg:col-span-6 md:col-span-6 col-span-12 mb-3">
+                    <div class="col-md-6">
                         <x-text-input label="Unit Amount" class="editable" name="unit_amount" id="unit_amount" disabled="true" value="{{$ledger_entry->unit_amount}}"></x-text-input>
                     </div>
 
-                    <div class="col-span-12 mb-3">
+                    <div class="col-12">
                         <x-text-input label="Amount" name="amount" id="amount" disabled="true" value="{{$ledger_entry->amount()}}"></x-text-input>
                     </div>
 
-                    <div class="col-span-12 mb-3">
+                    <div class="col-12">
                         <x-textarea-input label="Particular" class="editable" name="particular" id="particular" disabled="true">{{$ledger_entry->particular}}</x-textarea-input>
                     </div>
 
-                    <div class="col-span-12 mb-3">
+                    <div class="col-12 mt-4">
                         <x-record-meta :record="$ledger_entry"></x-record-meta>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div class="p-6 border-t border-gray-200 rounded-b flow-root">
-             
+        <div class="card-footer bg-body py-3 border-top">
             <x-display-controls status="{{$ledger_entry->status}}">
                 @if($ledger_entry->status == 'PEND')
                     <x-slot:right>
@@ -79,7 +73,6 @@
                     </x-slot>
                 @endif
             </x-display-controls>
-            
         </div>
 
     </div>

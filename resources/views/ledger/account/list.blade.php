@@ -1,21 +1,23 @@
 <x-app-layout>
-    <div id="pageDoc" class="border border-1 rounded-lg shadow relative m-10">
+    <div id="pageDoc" class="card shadow-sm border-0 m-4">
 
-        <div class="flex items-start justify-between p-5 border-b rounded-t">
-            <h3 class="text-xl font-semibold dark:text-white">
+        <div class="card-header bg-body py-3 d-flex align-items-center justify-content-between">
+            <h3 class="h5 mb-0">
                 Ledger Accounts
             </h3>
-            <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="createAccountBtn">Create Account</button>
-        </div>
-        <div class="ps-6 pe-6 pt-6 space-y-6">
-            <x-text-input id="search" mode="2" label="Search"></x-text-input>
-        </div>
-        <div class="p-6 space-y-6">
-            <div id="list"></div>
+            <button class="btn btn-primary btn-sm" id="createAccountBtn">Create Account</button>
         </div>
 
-        <div class="p-6 border-t border-gray-200 rounded-b flow-root text-center">
-            <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="showMoreBtn">Show More</button>
+        <div class="card-body">
+            <div class="mb-4">
+                <x-text-input id="search" mode="2" label="Search"></x-text-input>
+            </div>
+            
+            <div id="list" class="mt-4"></div>
+
+            <div class="text-center mt-4 pt-3 border-top">
+                <button class="btn btn-secondary" id="showMoreBtn">Show More</button>
+            </div>
         </div>
     </div>
 
@@ -35,16 +37,18 @@
             order      = 'DESC';
             orderBy    = 'id';
             $el.clear(list);
-            showMoreBtn.classList.remove('hidden');
+            showMoreBtn.classList.remove('d-none');
         }
 
         function renderRows(data){
             
             data.map(item=>{
 
-                let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
-                    t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
-                    t.span({class:'text-xs dark:text-white'},item.status);
+                let row = t.div({class:'card mb-3 cursor-pointer shadow-sm'},()=>{
+                    t.div({class:'card-body d-flex justify-content-between align-items-center'},()=>{
+                        t.h5({class:"h6 mb-0"},item.name);
+                        t.span({class:'badge bg-info text-dark'},item.status);
+                    });
                 });
 
                 row.onclick = ()=>{
@@ -80,7 +84,7 @@
                 if(reply.data.rows.length){
                     renderRows(reply.data.rows); 
                 }else{
-                    showMoreBtn.classList.add('hidden');
+                    showMoreBtn.classList.add('d-none');
                 }
             });
         }
@@ -110,34 +114,6 @@
             },1000);
         }
 
-
-        // sortSelect.onchange = ()=>{
-        //     reinitalize();
-
-        //     let select = parseInt(sortSelect.value);
-
-        //     switch(select){
-        //         case 1:
-        //             order   = 'ASC';
-        //             orderBy = 'name';
-        //             break;
-        //         case 2:
-        //             order   = 'DESC';
-        //             orderBy = 'name';
-        //             break;
-        //         case 3:
-        //             order   = 'DESC';
-        //             orderBy = 'id';
-        //             break;
-        //         case 4:
-        //             order   = 'ASC';
-        //             orderBy = 'id';
-        //         break;
-        //     }
-
-        //     showData();
-        // }
-
         pageDoc.reinitalize();
         pageDoc.showData();
     </script>
@@ -150,20 +126,22 @@
         const description   = $t.textarea();
         const create_btn    = $t.button('Create');
 
-        create_btn.classList.add('float-right');
+        name.className = 'form-control';
+        description.className = 'form-control';
+        create_btn.className = 'btn btn-primary float-end';
 
-        const create_ledger_account_form = t.div({class:'p-6 space-y-6 mb-10'},()=>{
+        const create_ledger_account_form = t.div({class:'p-4 mb-4'},()=>{
 
-            t.div({class:'grid grid-cols-12 gap-6 mb-5'},()=>{
+            t.div({class:'row g-3 mb-4'},()=>{
 
-                t.div({class:'col-span-12 sm:col-span-12'},(el)=>{
-                    el.append($t.label('Name'));
+                t.div({class:'col-12'},(el)=>{
+                    el.append($t.label('Name','form-label'));
                     el.append(name);
                 });             
 
             });//div
 
-            t.div((el)=>{
+            t.div({class: 'clearfix'}, (el)=>{
                 el.append(create_btn);
             });
 

@@ -1,25 +1,38 @@
 <x-app-layout>
+    <div id="employee_record_display" class="card shadow-sm border-0 m-4">
 
-    <div id="employee_record_display" class="border border-1 rounded-lg shadow relative m-10">
-
-        <div class="flex items-start justify-between p-5 border-b rounded-t">
-            <h3 class="text-xl font-semibold text-white">
+        <div class="card-header bg-body py-3">
+            <h3 class="h5 mb-0">
                 Employee Record
             </h3>
         </div>
 
-        <x-tab-controls tab_scope=".tabs">
-            <c-tab default target="#employee_data_display_view">Data</c-tab>
-            <c-tab target="#employee_options_display_view">Options</c-tab>
-        </x-tab-contols>
+        <div class="card-header bg-body border-top-0 p-0">
+            <x-tab-controls tab_scope=".tabs">
+                <ul class="nav nav-tabs px-3 border-bottom-0">
+                    <li class="nav-item">
+                        <c-tab default target="#employee_data_display_view" class="nav-link active">Data</c-tab>
+                    </li>
+                    <li class="nav-item">
+                        <c-tab target="#employee_options_display_view" class="nav-link">Options</c-tab>
+                    </li>
+                </ul>
+            </x-tab-controls>
+        </div>
 
         <div class="tabs" id="employee_data_display_view">
             {!! $employee_data_display_view !!}
         </div>
 
-        <div class="tabs hidden p-5" id="employee_options_display_view">
-            
-            <x-primary-button id="generate_id_btn">Generate ID</x-primary-button>
+        <div class="tabs d-none p-4" id="employee_options_display_view">
+            <div class="card bg-body-tertiary">
+                <div class="card-body">
+                    <h5 class="card-title">Administrative Actions</h5>
+                    <div class="mt-3">
+                        <x-primary-button id="generate_id_btn">Generate ID</x-primary-button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

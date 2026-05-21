@@ -7,24 +7,24 @@
     'disabled'      => 'false'
 ])
 
-<div id="image_upload_card_{{$name}}" disabled="{{$disabled}}"  {{ $attributes->merge(['class' => 'grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-4']) }}>
-    <div id="canvas_container_{{$name}}" class="grid grid-cols-1">
-        <div class="flex justify-center">
-            <canvas class="" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$displayHeight}}px"></canvas>
+<div id="image_upload_card_{{$name}}" disabled="{{$disabled}}"  {{ $attributes->merge(['class' => 'row g-4 p-4']) }}>
+    <div id="canvas_container_{{$name}}" class="col-lg-6">
+        <div class="d-flex justify-content-center">
+            <canvas class="border shadow-sm bg-white" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$displayHeight}}px"></canvas>
         </div>
-        <div class="flex justify-center mt-3">
-            <input class="" type="range" min="1" max="200" value="1" id="zoom_{{$name}}">
+        <div class="d-flex justify-content-center mt-3">
+            <input class="form-range" type="range" min="1" max="200" value="1" id="zoom_{{$name}}">
         </div>
     </div>
 
-    <div id="image_upload_controls_{{$name}}">
-        <div>
+    <div id="image_upload_controls_{{$name}}" class="col-lg-6">
+        <div class="mb-3">
             <input type="hidden" name="{{$name}}" value="{{$value}}" id="data_{{$name}}"/>
-            <input type="file" id="input_{{$name}}" accept="image/jpeg;capture=enviroment" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"/>
+            <input type="file" id="input_{{$name}}" accept="image/jpeg;capture=enviroment" class="form-control form-control-sm"/>
         </div>
-        <div class="text-center mt-6">
-            <button id="clear_data_{{$name}}" class="w-[30%] text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm py-2.5 text-center">Clear</button>
-            <button id="upload_data_{{$name}}" class="w-[30%] text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm py-2.5 text-center">Upload</button>
+        <div class="d-flex justify-content-around mt-4">
+            <button id="clear_data_{{$name}}" class="btn btn-secondary w-25">Clear</button>
+            <button id="upload_data_{{$name}}" class="btn btn-primary w-25">Upload</button>
         </div>
     </div>
 </div>
@@ -126,16 +126,18 @@
         enabled:()=>{
             Mode.value = 'enabled';
             disabled    = false;
-            controls.classList.remove('hidden');
-            range.classList.remove('hidden');
-            container.classList.add('lg:grid-cols-2');
+            controls.classList.remove('d-none');
+            range.classList.remove('d-none');
+            div.classList.remove('col-lg-12');
+            div.classList.add('col-lg-6');
         },
         disabled:()=>{
             Mode.value  = 'disabled';
             disabled    = true;
-            controls.classList.add('hidden');
-            range.classList.add('hidden');
-            container.classList.remove('lg:grid-cols-2');
+            controls.classList.add('d-none');
+            range.classList.add('d-none');
+            div.classList.remove('col-lg-6');
+            div.classList.add('col-lg-12');
         },
         default: ()=>{
 
@@ -182,8 +184,6 @@
                     drawImg();
                     Mode.uploadSuccess();
                 }
-                
-                container.classList.add('lg:grid-cols-2');
                 
                 img.src = "{{asset('storage/employee/photos/'.$value)}}";
             }

@@ -1,25 +1,22 @@
 <x-app-layout>
 
-    <div id="pageDoc" class="border border-1 rounded-lg shadow relative m-10">
-
-        <div class="flex items-start justify-between p-5 border-b rounded-t">
-            <h3 class="text-xl font-semibold dark:text-white">
+    <div id="pageDoc" class="card shadow-sm border-0 m-4">
+        <div class="card-header bg-body py-3">
+            <h3 class="h5 mb-0">
                 Review Ledgers
             </h3>
-
-        
         </div>
 
-        <div class="pt-6 ps-6 pe-6 space-y-6">
-            <x-text-input id="search" mode="2" label="Search"></x-text-input>
-        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <x-text-input id="search" mode="2" label="Search"></x-text-input>
+            </div>
 
-        <div class="p-6 space-y-6">
-            <div id="list"></div>
-        </div>
+            <div id="list" class="mt-4"></div>
 
-        <div class="p-6 border-t border-gray-200 rounded-b flow-root text-center">
-            <button class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" id="showMoreBtn">Show More</button>
+            <div class="text-center mt-4 pt-3 border-top">
+                <button class="btn btn-secondary" id="showMoreBtn">Show More</button>
+            </div>
         </div>
     </div>
 
@@ -38,17 +35,19 @@
             order      = 'DESC';
             orderBy    = 'id';
             $el.clear(list);
-            showMoreBtn.classList.remove('hidden');
+            showMoreBtn.classList.remove('d-none');
         }
 
         function renderRows(data){
             
             data.map(item=>{
 
-                let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
-                    t.h2({class:'font-semibold dark:text-white'},item.account.name);
-                    t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
-                    t.span({class:'text-xs dark:text-white'},item.status);
+                let row = t.div({class:'card mb-3 cursor-pointer shadow-sm'},()=>{
+                    t.div({class:'card-body'},()=>{
+                        t.h5({class:'h6 text-secondary mb-1'},item.account.name);
+                        t.h4({class:"h5 mb-2"},item.name);
+                        t.span({class:'badge bg-info text-dark'},item.status);
+                    });
                 });
 
                 row.onclick = ()=>{
@@ -84,16 +83,10 @@
                 if(reply.data.rows.length){
                     renderRows(reply.data.rows); 
                 }else{
-                    showMoreBtn.classList.add('hidden');
+                    showMoreBtn.classList.add('d-none');
                 }
             });
         }
-
-        // searchBtn.onclick = ()=>{
-        //     showMoreBtn.style.display = 'block';
-        //     reinitalize();
-        //     showData();
-        // }
 
         showMoreBtn.onclick = ()=>{
             pageDoc.showData();
@@ -119,33 +112,6 @@
                 pageDoc.showData();
             },1000);
         }
-
-        // sortSelect.onchange = ()=>{
-        //     reinitalize();
-
-        //     let select = parseInt(sortSelect.value);
-
-        //     switch(select){
-        //         case 1:
-        //             order   = 'ASC';
-        //             orderBy = 'name';
-        //             break;
-        //         case 2:
-        //             order   = 'DESC';
-        //             orderBy = 'name';
-        //             break;
-        //         case 3:
-        //             order   = 'DESC';
-        //             orderBy = 'id';
-        //             break;
-        //         case 4:
-        //             order   = 'ASC';
-        //             orderBy = 'id';
-        //         break;
-        //     }
-
-        //     showData();
-        // }
 
         pageDoc.reinitalize();
         pageDoc.showData();
