@@ -102,8 +102,10 @@ Route::middleware('auth')->group(function () {
 
 
 Route::get('/public/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'public_display']);
-   
 
+Route::get('/miran', function () {
+    return view('miran');
+});
 
 Route::get('/employee/photo/{photo}', function($photo){
 
