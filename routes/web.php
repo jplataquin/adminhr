@@ -118,6 +118,17 @@ Route::get('/miran.jpg', function () {
     return $response;
 });
 
+Route::get('/prize_miran.jpg', function () {
+    $path = base_path('resources/img/prize_miran.jpg');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    $file = File::get($path);
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", 'image/jpeg');
+    return $response;
+});
+
 Route::get('/employee/photo/{photo}', function($photo){
 
     $path = storage_path('app/public/employee/photos/'.$photo);
