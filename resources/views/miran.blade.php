@@ -40,7 +40,7 @@
         .tile {
             width: var(--tile-size);
             height: var(--tile-size);
-            background-image: url('https://picsum.photos/id/237/600/600'); /* Dog image */
+            background-image: url('/miran.jpg'); 
             background-size: calc(3 * var(--tile-size)) calc(3 * var(--tile-size));
             cursor: pointer;
             transition: all 0.2s ease-in-out;
@@ -213,8 +213,8 @@
                 renderBoard();
             });
 
-            // Initial render
-            renderBoard();
+            // Initial render - randomize at start
+            shuffleTiles();
         });
     </script>
 </body>
