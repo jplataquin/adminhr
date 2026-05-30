@@ -240,7 +240,10 @@
                         }
                     }
 
-                    tile.addEventListener('click', () => handleTileClick(index));
+                    tile.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        handleTileClick(index);
+                    });
                     board.appendChild(tile);
                 });
 
