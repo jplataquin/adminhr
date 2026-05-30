@@ -165,7 +165,7 @@
 </head>
 <body class="font-sans antialiased bg-body-tertiary">
     <div id="countdown-overlay"></div>
-    
+    <img src="/miran.jpg" alt="Prize" class="d-none">
     <div id="prize-modal">
         <div class="prize-content">
             <h2 class="text-primary fw-bold mb-4">You Won a Prize! 🎁</h2>
