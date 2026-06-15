@@ -6,6 +6,7 @@
                 Employees
             </h3>
             <div>
+                <button class="btn btn-success btn-sm me-2" id="bulkUpdateBtn">Bulk Update</button>
                 <button class="btn btn-primary btn-sm me-2" id="exportCSVBtn">Export CSV</button>
                 <button class="btn btn-primary btn-sm" id="createRecordBtn">Create Record</button>
             </div>
@@ -51,6 +52,7 @@
 
         const createRecordBtn   = $q('#createRecordBtn').first();
         const exportCSVBtn      = $q('#exportCSVBtn').first();
+        const bulkUpdateBtn     = $q('#bulkUpdateBtn').first();
         const division          = $q('#division').first();
         const department        = $q('#department').first();
 
@@ -61,6 +63,10 @@
         
         createRecordBtn.onclick = (e)=>{
             document.location.href = '/employee/create';
+        }
+
+        bulkUpdateBtn.onclick = (e)=>{
+            document.location.href = '/employees/bulk-update';
         }
 
         exportCSVBtn.onclick = (e)=>{

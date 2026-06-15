@@ -21,6 +21,11 @@ class LedgerAccount extends Model
         return $this->hasMany(Ledger::class);
     }
 
+    public function Employee(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Employee::class, 'employee_id');
+    }
+
 
     public function CreatedByUser(){   
 

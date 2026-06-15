@@ -52,10 +52,10 @@ Route::middleware('auth')->group(function () {
         return $response;
     });
 
-    // Route::get('/employee/bulk/upload', function(){
-    //     return view('employee/bulk/upload');
-    // });
-    // Route::post('/employee/bulk/review', [App\Http\Controllers\EmployeeController::class, 'bulk_review']);
+    Route::get('/employees/bulk-update', [App\Http\Controllers\EmployeeController::class, 'bulk_update_view'])->name('employees');
+    Route::get('/employees/export/excel', [App\Http\Controllers\EmployeeController::class, 'export_excel'])->name('employees');
+    Route::post('/employees/bulk-update/preview', [App\Http\Controllers\EmployeeController::class, 'upload_preview'])->name('employees');
+    Route::post('/employees/bulk-update/commit', [App\Http\Controllers\EmployeeController::class, 'commit_bulk_update'])->name('employees');
 
     
 

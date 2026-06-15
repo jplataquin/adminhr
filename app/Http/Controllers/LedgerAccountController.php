@@ -26,7 +26,8 @@ class LedgerAccountController extends Controller
                 'required',
                 'max:255',
                 Rule::unique('ledger_accounts','name')
-            ]
+            ],
+            'employee_id' => 'nullable|exists:employees,id'
         ]);
 
         if ($validator->fails()) {
@@ -42,8 +43,9 @@ class LedgerAccountController extends Controller
 
         $ledger_account = new LedgerAccount();
 
-        $ledger_account->name       = $name;
-        $ledger_account->created_by = $user_id;
+        $ledger_account->name        = $name;
+        $ledger_account->employee_id = $request->input('employee_id');
+        $ledger_account->created_by  = $user_id;
 
         $ledger_account->save();
 
@@ -139,7 +141,8 @@ class LedgerAccountController extends Controller
                 'required',
                 'max:255',
                 Rule::unique('ledger_accounts','name')->where(fn (Builder $query) => $query->where('id','!=',$id))
-            ]
+            ],
+            'employee_id' => 'nullable|exists:employees,id'
         ]);
 
         if ($validator->fails()) {
@@ -155,6 +158,7 @@ class LedgerAccountController extends Controller
         $user_id = Auth::user()->id;
         
         $ledger_account->name           = $name;
+        $ledger_account->employee_id    = $request->input('employee_id');
         $ledger_account->updated_by     = $user_id;
 
         $ledger_account->save();
