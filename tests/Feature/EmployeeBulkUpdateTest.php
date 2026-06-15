@@ -84,11 +84,11 @@ it('validates uploaded files and returns parsed preview rows', function () {
                 ['ID', 'Prefix', 'First Name', 'Middle Name', 'Last Name', 'Suffix', 'Birth Date', 'Gender', 'Marital Status', 'Religion', 'Mobile No', 'Email', 'Current Address', 'Permanent Address', 'Employment Start Date', 'Employment End Date', 'Employment Status', 'Duty Status', 'Division', 'Department', 'Position', 'SSS', 'PhilHealth', 'Pag-IBIG', 'TIN', 'Passport No', 'Drivers License No', 'Educational Attainment', 'School University', 'Degree', 'Bank Name', 'Bank Account No', 'Emergency Contact Person', 'Emergency Contact No'],
                 // Row 2: Valid Row (Update existing employee)
                 [
-                    $employee->id, 'Mr.', 'UpdatedFirst', '', 'UpdatedLast', '', '1990-01-01', 'M', 'MARD', 'Christian', '09123456789', 'updated@example.com', 'Current Address 123', 'Permanent Address 123', '2020-01-01', '', 'REGU', 'ONDU', 'ADMNHR', 'PURCHA', 'ADHRST', '1234', '5678', '9012', '3456', '', '', 'BD', 'A University', 'BS IT', 'A Bank', '123456', 'Emergency contact', '09123456780'
+                    $employee->id, 'Mr.', 'UpdatedFirst', '', 'UpdatedLast', '', '1990-01-01', 'Male', 'Married', 'Christian', '09123456789', 'updated@example.com', 'Current Address 123', 'Permanent Address 123', '2020-01-01', '', 'Regular', 'On Duty', 'Administrative & Human Resource', 'Purchasing', 'Admin/HR Staff 1', '1234', '5678', '9012', '3456', '', '', "Bachelor's Degree", 'A University', 'BS IT', 'A Bank', '123456', 'Emergency contact', '09123456780'
                 ],
                 // Row 3: Invalid Row (Missing first name, invalid gender)
                 [
-                    $employee->id, 'Mr.', '', '', 'UpdatedLast2', '', '1990-01-01', 'X', 'MARD', 'Christian', '09123456789', 'updated2@example.com', 'Current Address 123', 'Permanent Address 123', '2020-01-01', '', 'REGU', 'ONDU', 'ADMNHR', 'PURCHA', 'ADHRST', '1234', '5678', '9012', '3456', '', '', 'BD', 'A University', 'BS IT', 'A Bank', '123456', 'Emergency contact', '09123456780'
+                    $employee->id, 'Mr.', '', '', 'UpdatedLast2', '', '1990-01-01', 'InvalidGenderText', 'Married', 'Christian', '09123456789', 'updated2@example.com', 'Current Address 123', 'Permanent Address 123', '2020-01-01', '', 'Regular', 'On Duty', 'Administrative & Human Resource', 'Purchasing', 'Admin/HR Staff 1', '1234', '5678', '9012', '3456', '', '', "Bachelor's Degree", 'A University', 'BS IT', 'A Bank', '123456', 'Emergency contact', '09123456780'
                 ]
             ]
         ]);

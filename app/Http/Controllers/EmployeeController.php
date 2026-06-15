@@ -930,42 +930,53 @@ class EmployeeController extends Controller
             $formatted_rows = [];
             $has_errors = false;
             $row_index = 2; // Excel row index starts at 1, header is 1, data starts at 2
+            
+            $employee = new Employee();
 
             foreach ($rows as $index => $data) {
                 // If the entire row is empty (all values null or empty strings), skip it
-                if (empty(array_filter($data, fn($val) => $val !== null && trim($val) !== ''))) {
+                if (empty(array_filter($data, fn($val) => $val !== null && trim((string)$val) !== ''))) {
                     continue;
                 }
 
+                $division_key = $this->reverse_map_key($employee->division_options(), $data[18] ?? '');
+                
+                $department_text = trim((string)($data[19] ?? ''));
+                $department_key = null;
+                if ($department_text !== '') {
+                    $dept_options = $employee->department_options_grouped($division_key);
+                    $department_key = $this->reverse_map_key($dept_options, $department_text);
+                }
+
                 $mapped_row = [
-                    'id' => trim($data[0] ?? ''),
+                    'id' => trim((string)($data[0] ?? '')),
                     'prefix' => $this->null_or_trim($data[1] ?? ''),
-                    'firstname' => trim($data[2] ?? ''),
+                    'firstname' => trim((string)($data[2] ?? '')),
                     'middlename' => $this->null_or_trim($data[3] ?? ''),
-                    'lastname' => trim($data[4] ?? ''),
+                    'lastname' => trim((string)($data[4] ?? '')),
                     'suffix' => $this->null_or_trim($data[5] ?? ''),
-                    'birthdate' => trim($data[6] ?? ''),
-                    'gender' => strtoupper(trim($data[7] ?? '')),
-                    'marital_status' => strtoupper(trim($data[8] ?? '')),
-                    'religion' => trim($data[9] ?? ''),
+                    'birthdate' => trim((string)($data[6] ?? '')),
+                    'gender' => strtoupper((string)$this->reverse_map_key($employee->gender_options(), $data[7] ?? '')),
+                    'marital_status' => strtoupper((string)$this->reverse_map_key($employee->marital_status_options(), $data[8] ?? '')),
+                    'religion' => trim((string)($data[9] ?? '')),
                     'mobile_no' => $this->null_or_trim($data[10] ?? ''),
                     'email' => $this->null_or_trim($data[11] ?? ''),
-                    'current_address' => trim($data[12] ?? ''),
-                    'permanent_address' => trim($data[13] ?? ''),
-                    'employment_start_date' => trim($data[14] ?? ''),
+                    'current_address' => trim((string)($data[12] ?? '')),
+                    'permanent_address' => trim((string)($data[13] ?? '')),
+                    'employment_start_date' => trim((string)($data[14] ?? '')),
                     'employment_end_date' => $this->null_or_trim($data[15] ?? ''),
-                    'employment_status' => strtoupper(trim($data[16] ?? '')),
-                    'duty_status' => strtoupper(trim($data[17] ?? '')),
-                    'division' => strtoupper(trim($data[18] ?? '')),
-                    'department' => $this->null_or_trim($data[19] ?? ''),
-                    'position' => strtoupper(trim($data[20] ?? '')),
+                    'employment_status' => strtoupper((string)$this->reverse_map_key($employee->employment_status_options(), $data[16] ?? '')),
+                    'duty_status' => strtoupper((string)$this->reverse_map_key($employee->duty_status_options(), $data[17] ?? '')),
+                    'division' => strtoupper((string)$division_key),
+                    'department' => $department_key,
+                    'position' => strtoupper((string)$this->reverse_map_key($employee->position_options(), $data[20] ?? '')),
                     'sss' => $this->null_or_trim($data[21] ?? ''),
                     'philhealth' => $this->null_or_trim($data[22] ?? ''),
                     'pagibig' => $this->null_or_trim($data[23] ?? ''),
                     'tin' => $this->null_or_trim($data[24] ?? ''),
                     'passport_no' => $this->null_or_trim($data[25] ?? ''),
                     'drivers_license_no' => $this->null_or_trim($data[26] ?? ''),
-                    'educational_attainment' => strtoupper(trim($data[27] ?? '')),
+                    'educational_attainment' => strtoupper((string)$this->reverse_map_key($employee->educational_attainment_options(), $data[27] ?? '')),
                     'school_university' => $this->null_or_trim($data[28] ?? ''),
                     'degree' => $this->null_or_trim($data[29] ?? ''),
                     'bank_name' => $this->null_or_trim($data[30] ?? ''),
@@ -1000,6 +1011,19 @@ class EmployeeController extends Controller
                 'message' => 'Error parsing Excel file: ' . $e->getMessage()
             ]);
         }
+    }
+
+    private function reverse_map_key($options, $text) {
+        $text = trim((string)$text);
+        if ($text === '') return null;
+        
+        $optionsArray = (array) $options;
+        foreach ($optionsArray as $key => $value) {
+            if (strtoupper(trim((string)$value)) === strtoupper($text)) {
+                return (string)$key;
+            }
+        }
+        return $text; // Return original if not found
     }
 
     public function commit_bulk_update(Request $request) {
