@@ -221,3 +221,117 @@ it('rejects invalid bulk updates', function () {
     $response->assertJsonPath("errors.{$employee->id}.firstname.0", "The firstname field is required.");
     $response->assertJsonPath("errors.{$employee->id}.gender.0", "The selected gender is invalid.");
 });
+
+it('accepts bulk update with null department', function () {
+    $employee = createEmployee($this->user, [
+        'division' => 'ADMNHR',
+        'department' => 'PURCHA'
+    ]);
+
+    $payload = [
+        'rows' => [
+            [
+                'id' => $employee->id,
+                'prefix' => 'Mr.',
+                'firstname' => 'John',
+                'middlename' => null,
+                'lastname' => 'Doe',
+                'suffix' => null,
+                'birthdate' => '1990-01-01',
+                'gender' => 'M',
+                'marital_status' => 'SING',
+                'religion' => 'None',
+                'mobile_no' => '09123456789',
+                'email' => 'john@example.com',
+                'current_address' => '123 St',
+                'permanent_address' => '123 St',
+                'employment_start_date' => '2020-01-01',
+                'employment_end_date' => null,
+                'employment_status' => 'REGU',
+                'duty_status' => 'ONDU',
+                'division' => 'ADMNHR',
+                'department' => null, // null department
+                'position' => 'ADHRST',
+                'sss' => null,
+                'philhealth' => null,
+                'pagibig' => null,
+                'tin' => null,
+                'passport_no' => null,
+                'drivers_license_no' => null,
+                'educational_attainment' => 'BD',
+                'school_university' => null,
+                'degree' => null,
+                'bank_name' => null,
+                'bank_account_no' => null,
+                'emergency_contact_person' => null,
+                'emergency_contact_no' => null,
+            ]
+        ]
+    ];
+
+    $response = $this->actingAs($this->user)->postJson('/employees/bulk-update/commit', $payload);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    // Verify DB update
+    $employee->refresh();
+    expect($employee->department)->toBeNull();
+});
+
+it('accepts bulk update with empty string department', function () {
+    $employee = createEmployee($this->user, [
+        'division' => 'ADMNHR',
+        'department' => 'PURCHA'
+    ]);
+
+    $payload = [
+        'rows' => [
+            [
+                'id' => $employee->id,
+                'prefix' => 'Mr.',
+                'firstname' => 'John',
+                'middlename' => null,
+                'lastname' => 'Doe',
+                'suffix' => null,
+                'birthdate' => '1990-01-01',
+                'gender' => 'M',
+                'marital_status' => 'SING',
+                'religion' => 'None',
+                'mobile_no' => '09123456789',
+                'email' => 'john@example.com',
+                'current_address' => '123 St',
+                'permanent_address' => '123 St',
+                'employment_start_date' => '2020-01-01',
+                'employment_end_date' => null,
+                'employment_status' => 'REGU',
+                'duty_status' => 'ONDU',
+                'division' => 'ADMNHR',
+                'department' => '', // empty string department
+                'position' => 'ADHRST',
+                'sss' => null,
+                'philhealth' => null,
+                'pagibig' => null,
+                'tin' => null,
+                'passport_no' => null,
+                'drivers_license_no' => null,
+                'educational_attainment' => 'BD',
+                'school_university' => null,
+                'degree' => null,
+                'bank_name' => null,
+                'bank_account_no' => null,
+                'emergency_contact_person' => null,
+                'emergency_contact_no' => null,
+            ]
+        ]
+    ];
+
+    $response = $this->actingAs($this->user)->postJson('/employees/bulk-update/commit', $payload);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    // Verify DB update
+    $employee->refresh();
+    expect($employee->department)->toBeNull();
+});

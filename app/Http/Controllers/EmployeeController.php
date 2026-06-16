@@ -182,6 +182,7 @@ class EmployeeController extends Controller
                 'in:'.$this->format_in( $employee->division_options() )
             ],
             'department'                => [
+                'nullable',
                 'min:6'
             ],
             'position'                  => [
@@ -294,6 +295,7 @@ class EmployeeController extends Controller
                 'in:'.$this->format_in( $employee->division_options() )
             ],
             'department'                => [
+                'nullable',
                 'min:6'
             ],
             'position'                  => [
@@ -1053,10 +1055,10 @@ class EmployeeController extends Controller
             $rules['employment_end_date'] = 'required|date_format:Y-m-d';
         }
 
-        if (!empty($row['division']) && !empty($row['department'])) {
+        if (!empty($row['division'])) {
             $deptOptions = Employee::department_options_grouped($row['division']);
             if (!empty($deptOptions)) {
-                $rules['department'] = 'required|in:' . $this->format_in($deptOptions);
+                $rules['department'] = 'nullable|in:' . $this->format_in($deptOptions);
             }
         }
 
