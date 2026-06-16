@@ -335,3 +335,38 @@ it('accepts bulk update with empty string department', function () {
     $employee->refresh();
     expect($employee->department)->toBeNull();
 });
+
+it('cleans up legacy and invalid department data using the artisan command', function () {
+    // 1. Employee with legacy dummy department matching division (should be cleaned to null)
+    $employee1 = createEmployee($this->user, [
+        'division' => 'ADMNHR',
+        'department' => 'ADMNHR'
+    ]);
+
+    // 2. Employee with invalid department for division (should be cleaned to null)
+    $employee2 = createEmployee($this->user, [
+        'division' => 'ACCFIN',
+        'department' => 'OCUSAF' // invalid for ACCFIN
+    ]);
+
+    // 3. Employee with already valid department (should remain untouched)
+    $employee3 = createEmployee($this->user, [
+        'division' => 'ADMNHR',
+        'department' => 'OCUSAF' // valid
+    ]);
+
+    // Run the Artisan command
+    $this->artisan('employees:clean-departments')
+         ->expectsOutput("Scanning 3 employee records...")
+         ->expectsOutput("Scan completed! 2 records were fixed.")
+         ->assertExitCode(0);
+
+    // Refresh and assert database state
+    $employee1->refresh();
+    $employee2->refresh();
+    $employee3->refresh();
+
+    expect($employee1->department)->toBeNull();
+    expect($employee2->department)->toBeNull();
+    expect($employee3->department)->toBe('OCUSAF');
+});

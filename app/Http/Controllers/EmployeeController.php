@@ -898,7 +898,6 @@ class EmployeeController extends Controller
         
         $employees = Employee::whereNull('deleted_at')->orderBy('id', 'ASC')->get();
         
-        print_r($employees->toJson());exit;
         $options = [
             'gender' => $employeeModel->gender_options(),
             'marital_status' => $employeeModel->marital_status_options(),
