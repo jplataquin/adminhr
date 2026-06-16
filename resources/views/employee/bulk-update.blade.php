@@ -8,11 +8,21 @@
             padding-right: 0px !important;
         }
 
-        /* Custom CSS for frozen columns on horizontal and page-level vertical scroll */
+        /* Custom CSS for frozen columns on horizontal and vertical scroll inside the container */
         .table-responsive {
             position: relative;
             overflow-x: auto;
-            overflow-y: visible; /* Let vertical scroll propagate to page level */
+            overflow-y: auto;
+            max-height: calc(100vh - 220px); /* Restrict height to enable vertical scrolling within the container */
+        }
+
+        /* Ensure all table headers are sticky and have a correct z-index */
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 30 !important;
+            background-color: #212529 !important; /* Keep the dark header background */
+            color: #fff !important;
         }
 
         /* Ensure sticky columns have correct width and left offsets */
