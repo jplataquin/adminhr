@@ -424,7 +424,7 @@ class EmployeeController extends Controller
         $employee->employment_status        = $employment_status;
         $employee->duty_status              = $duty_status;
         $employee->division                 = $division;
-        $employee->department               = $department;
+        $employee->department               = ($department === $division) ? null : $department;
         $employee->position                 = $position;
         $employee->sss                      = $sss;
         $employee->philhealth               = $philhealth;
@@ -552,7 +552,7 @@ class EmployeeController extends Controller
         $employee->employment_status        = $employment_status;
         $employee->duty_status              = $duty_status;
         $employee->division                 = $division;
-        $employee->department               = $department;
+        $employee->department               = ($department === $division) ? null : $department;
         $employee->position                 = $position;
         $employee->sss                      = $sss;
         $employee->philhealth               = $philhealth;
@@ -990,7 +990,7 @@ class EmployeeController extends Controller
                 $employee->employment_status        = $row['employment_status'];
                 $employee->duty_status              = $row['duty_status'];
                 $employee->division                 = $row['division'];
-                $employee->department               = $row['department'];
+                $employee->department               = ($row['department'] === $row['division']) ? null : $row['department'];
                 $employee->position                 = $row['position'];
                 $employee->sss                      = $row['sss'];
                 $employee->philhealth               = $row['philhealth'];

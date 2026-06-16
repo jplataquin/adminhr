@@ -330,7 +330,7 @@
                     }
                     const group = this.options.department_grouped[divisionCode];
                     return Object.entries(group).map(([key, val]) => ({
-                        value: key,
+                        value: val === ' - ' ? '' : key,
                         label: val
                     }));
                 },
