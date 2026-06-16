@@ -1,5 +1,13 @@
 <x-app-layout>
     <style>
+        /* Override Bootstrap container width specifically for this page to make it full screen width */
+        main > .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding-left: 24px !important;
+            padding-right: 24px !important;
+        }
+
         /* Custom CSS for frozen columns on horizontal and vertical scroll */
         .table-responsive {
             position: relative;
