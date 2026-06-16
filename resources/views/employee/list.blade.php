@@ -117,7 +117,7 @@
 
         pageDoc.showData = ()=>{
 
-            consle.log(department.value);
+            console.log(department.value);
             $_GET('/api/employees',{
                 query           : search.value,
                 page            : page,
