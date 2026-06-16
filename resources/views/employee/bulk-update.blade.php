@@ -1,4 +1,57 @@
 <x-app-layout>
+    <style>
+        /* Custom CSS for frozen columns on horizontal and vertical scroll */
+        .table-responsive {
+            position: relative;
+            max-height: 650px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        /* Ensure sticky columns have correct width and left offsets */
+        .col-freeze-1 { position: sticky; left: 0px; min-width: 60px; max-width: 60px; width: 60px; }
+        .col-freeze-2 { position: sticky; left: 60px; min-width: 80px; max-width: 80px; width: 80px; }
+        .col-freeze-3 { position: sticky; left: 140px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-4 { position: sticky; left: 280px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-5 { position: sticky; left: 420px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-6 { position: sticky; left: 560px; min-width: 80px; max-width: 80px; width: 80px; }
+
+        /* Headings: Sticky top AND sticky left, highest z-index */
+        thead th.col-freeze-1, thead th.col-freeze-2, thead th.col-freeze-3,
+        thead th.col-freeze-4, thead th.col-freeze-5, thead th.col-freeze-6 {
+            top: 0;
+            z-index: 40 !important;
+            background-color: #212529 !important;
+            color: #fff !important;
+        }
+
+        thead th.col-freeze-6 {
+            border-right: 2px solid #dee2e6 !important;
+        }
+
+        /* Body cells: Sticky left, background-color so scrolled rows go behind them, z-index lower than headings */
+        tbody td.col-freeze-1, tbody td.col-freeze-2, tbody td.col-freeze-3,
+        tbody td.col-freeze-4, tbody td.col-freeze-5, tbody td.col-freeze-6 {
+            z-index: 20 !important;
+        }
+
+        tbody td.col-freeze-1 { background-color: #f8f9fa !important; }
+        tbody td.col-freeze-2 { background-color: #f8f9fa !important; }
+        tbody td.col-freeze-3 { background-color: #ffffff !important; }
+        tbody td.col-freeze-4 { background-color: #ffffff !important; }
+        tbody td.col-freeze-5 { background-color: #ffffff !important; }
+        tbody td.col-freeze-6 { 
+            background-color: #f8f9fa !important; 
+            border-right: 2px solid #6c757d !important;
+        }
+
+        /* Highlight frozen cells on row hover */
+        tr:hover td.col-freeze-1, tr:hover td.col-freeze-2, tr:hover td.col-freeze-3,
+        tr:hover td.col-freeze-4, tr:hover td.col-freeze-5, tr:hover td.col-freeze-6 {
+            background-color: #ececec !important;
+        }
+    </style>
+
     <div class="container-fluid px-4 py-4" x-data="bulkUpdateHandler()">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-body d-flex align-items-center justify-content-between py-3">
@@ -34,16 +87,16 @@
                 </div>
 
                 <!-- Table Container with Horizontal and Vertical Scrolling -->
-                <div class="table-responsive border rounded" style="max-height: 600px; overflow-y: auto; overflow-x: auto;">
-                    <table class="table table-sm table-bordered table-striped table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                <div class="table-responsive border rounded">
+                    <table class="table table-sm table-bordered table-striped table-hover align-middle mb-0" style="font-size: 0.85rem; width: max-content; min-width: 100%;">
                         <thead class="table-dark sticky-top">
                             <tr>
-                                <th class="text-center" style="min-width: 50px; z-index: 10;">ID</th>
-                                <th style="min-width: 80px;">Prefix</th>
-                                <th style="min-width: 140px;">First Name *</th>
-                                <th style="min-width: 140px;">Middle Name</th>
-                                <th style="min-width: 140px;">Last Name *</th>
-                                <th style="min-width: 80px;">Suffix</th>
+                                <th class="text-center col-freeze-1">ID</th>
+                                <th class="col-freeze-2">Prefix</th>
+                                <th class="col-freeze-3">First Name *</th>
+                                <th class="col-freeze-4">Middle Name</th>
+                                <th class="col-freeze-5">Last Name *</th>
+                                <th class="col-freeze-6">Suffix</th>
                                 <th style="min-width: 150px;">Birth Date *</th>
                                 <th style="min-width: 110px;">Gender *</th>
                                 <th style="min-width: 130px;">Marital Status *</th>
@@ -77,20 +130,20 @@
                         <tbody>
                             <template x-for="(emp, index) in filteredEmployees()" :key="emp.id">
                                 <tr :class="emp.has_validation_error ? 'table-danger' : ''">
-                                    <td class="text-center fw-bold bg-light" x-text="emp.id"></td>
-                                    <td>
+                                    <td class="text-center fw-bold col-freeze-1" x-text="emp.id"></td>
+                                    <td class="col-freeze-2">
                                         <input type="text" class="form-control form-control-sm" x-model="emp.prefix">
                                     </td>
-                                    <td>
+                                    <td class="col-freeze-3">
                                         <input type="text" class="form-control form-control-sm" x-model="emp.firstname" required>
                                     </td>
-                                    <td>
+                                    <td class="col-freeze-4">
                                         <input type="text" class="form-control form-control-sm" x-model="emp.middlename">
                                     </td>
-                                    <td>
+                                    <td class="col-freeze-5">
                                         <input type="text" class="form-control form-control-sm" x-model="emp.lastname" required>
                                     </td>
-                                    <td>
+                                    <td class="col-freeze-6">
                                         <input type="text" class="form-control form-control-sm" x-model="emp.suffix">
                                     </td>
                                     <td>
