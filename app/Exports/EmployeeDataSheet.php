@@ -135,7 +135,7 @@ class EmployeeDataSheet implements FromCollection, WithHeadings, WithMapping, Wi
                 ];
 
                 foreach ($cols as $dataCol => $dropCol) {
-                    $formula = 'Dropdowns!$' . $dropCol . '$2:$' . $dropCol . '$' . ($counts[$dataCol] + 1);
+                    $formula = '=Dropdowns!$' . $dropCol . '$2:$' . $dropCol . '$' . ($counts[$dataCol] + 1);
                     $validation = $sheet->getCell($dataCol . '2')->getDataValidation();
                     $validation->setType(DataValidation::TYPE_LIST);
                     $validation->setErrorStyle(DataValidation::STYLE_INFORMATION);

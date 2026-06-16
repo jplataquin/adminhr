@@ -157,7 +157,7 @@ class EmployeeController extends Controller
                 'required',
                 'in:'.$this->format_in( $employee->marital_status_options() )
             ],
-            'religion'                  => ['max:255'],
+            'religion'                  => ['nullable', 'max:255'],
             'current_address'           => [
                 'required',
                 'max:600'
@@ -270,7 +270,7 @@ class EmployeeController extends Controller
                 'required',
                 'in:'.$this->format_in( $employee->marital_status_options() )
             ],
-            'religion'                  => ['max:255'],
+            'religion'                  => ['nullable', 'max:255'],
             'current_address'           => [
                 'required',
                 'max:600'
@@ -958,7 +958,7 @@ class EmployeeController extends Controller
                     'birthdate' => trim((string)($data[6] ?? '')),
                     'gender' => strtoupper((string)$this->reverse_map_key($employee->gender_options(), $data[7] ?? '')),
                     'marital_status' => strtoupper((string)$this->reverse_map_key($employee->marital_status_options(), $data[8] ?? '')),
-                    'religion' => trim((string)($data[9] ?? '')),
+                    'religion' => $this->null_or_trim($data[9] ?? ''),
                     'mobile_no' => $this->null_or_trim($data[10] ?? ''),
                     'email' => $this->null_or_trim($data[11] ?? ''),
                     'current_address' => trim((string)($data[12] ?? '')),
@@ -1123,7 +1123,7 @@ class EmployeeController extends Controller
             'birthdate' => 'required|date_format:Y-m-d',
             'gender' => 'required|in:' . $this->format_in($employee->gender_options()),
             'marital_status' => 'required|in:' . $this->format_in($employee->marital_status_options()),
-            'religion' => 'required|max:255',
+            'religion' => 'nullable|max:255',
             'mobile_no' => 'nullable|max:255',
             'email' => 'nullable|email|max:255',
             'current_address' => 'required|max:600',

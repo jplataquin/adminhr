@@ -239,3 +239,122 @@ it('commits valid bulk updates to the database', function () {
         'duty_status' => 'ONLV'
     ]);
 });
+
+it('has correct data validation formulas in EmployeeDataSheet', function () {
+    $sheet = new \App\Exports\EmployeeDataSheet();
+    $events = $sheet->registerEvents();
+    
+    expect($events)->toHaveKey(\Maatwebsite\Excel\Events\AfterSheet::class);
+    
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $worksheet = $spreadsheet->getActiveSheet();
+    
+    $eventCallback = $events[\Maatwebsite\Excel\Events\AfterSheet::class];
+    
+    $sheetWrapper = new \Maatwebsite\Excel\Sheet($worksheet);
+    $eventWrapper = new \Maatwebsite\Excel\Events\AfterSheet($sheetWrapper, $sheet);
+    
+    $eventCallback($eventWrapper);
+    
+    // Now let's retrieve the validation on S2 (Division) and T2 (Department)
+    $validationS = $worksheet->getCell('S2')->getDataValidation();
+    expect($validationS->getFormula1())->toStartWith('=Dropdowns!$E$2:');
+    
+    $validationT = $worksheet->getCell('T2')->getDataValidation();
+    expect($validationT->getFormula1())->toStartWith('=Dropdowns!$F$2:');
+    
+    // Also check other dropdowns like Gender (H2) and Position (U2)
+    $validationH = $worksheet->getCell('H2')->getDataValidation();
+    expect($validationH->getFormula1())->toStartWith('=Dropdowns!$A$2:');
+    
+    $validationU = $worksheet->getCell('U2')->getDataValidation();
+    expect($validationU->getFormula1())->toStartWith('=Dropdowns!$G$2:');
+});
+
+it('allows creating an employee with a null or empty religion', function () {
+    // Create temp_uploads directory and dummy photo
+    $tempDir = storage_path('app/private/temp_uploads');
+    if (!file_exists($tempDir)) {
+        mkdir($tempDir, 0775, true);
+    }
+    file_put_contents($tempDir . '/test.jpg', 'dummy content');
+
+    $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/employee/create', [
+        'photo'                    => 'test.jpg',
+        'prefix'                   => 'Mr.',
+        'birthdate'                => '1995-05-05',
+        'firstname'                => 'Optional',
+        'lastname'                 => 'Religion',
+        'gender'                   => 'M',
+        'marital_status'           => 'SING',
+        'religion'                 => null, // Null religion
+        'current_address'          => 'Address 1',
+        'permanent_address'        => 'Address 1',
+        'employment_start_date'    => '2021-01-01',
+        'employment_status'        => 'REGU',
+        'duty_status'              => 'ONDU',
+        'division'                 => 'ADMNHR',
+        'department'               => 'PURCHA',
+        'position'                 => 'ADHRST',
+        'educational_attainment'   => 'BD',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+    
+    $this->assertDatabaseHas('employees', [
+        'firstname' => 'Optional',
+        'lastname'  => 'Religion',
+        'religion'  => null,
+    ]);
+
+    // Clean up created file if it still exists
+    $destFile = storage_path('app/public/employee/photos/test.jpg');
+    if (file_exists($destFile)) {
+        unlink($destFile);
+    }
+});
+
+it('validates uploaded files and handles null religion successfully', function () {
+    $employee = createEmployee($this->user, [
+        'firstname' => 'NullRelig',
+        'lastname' => 'Employee',
+        'gender' => 'M',
+        'marital_status' => 'SING',
+        'employment_status' => 'REGU',
+        'duty_status' => 'ONDU',
+        'division' => 'ADMNHR',
+        'department' => 'PURCHA',
+        'position' => 'ADHRST',
+        'educational_attainment' => 'BD'
+    ]);
+
+    // Mock Excel::toArray where religion is empty
+    Excel::shouldReceive('toArray')
+        ->once()
+        ->andReturn([
+            [
+                ['ID', 'Prefix', 'First Name', 'Middle Name', 'Last Name', 'Suffix', 'Birth Date', 'Gender', 'Marital Status', 'Religion', 'Mobile No', 'Email', 'Current Address', 'Permanent Address', 'Employment Start Date', 'Employment End Date', 'Employment Status', 'Duty Status', 'Division', 'Department', 'Position', 'SSS', 'PhilHealth', 'Pag-IBIG', 'TIN', 'Passport No', 'Drivers License No', 'Educational Attainment', 'School University', 'Degree', 'Bank Name', 'Bank Account No', 'Emergency Contact Person', 'Emergency Contact No'],
+                [
+                    $employee->id, 'Mr.', 'NullRelig', '', 'Employee', '', '1990-01-01', 'Male', 'Married', '', '09123456789', 'updated@example.com', 'Current Address 123', 'Permanent Address 123', '2020-01-01', '', 'Regular', 'On Duty', 'Administrative & Human Resource', 'Purchasing', 'Admin/HR Staff 1', '1234', '5678', '9012', '3456', '', '', "Bachelor's Degree", 'A University', 'BS IT', 'A Bank', '123456', 'Emergency contact', '09123456780'
+                ]
+            ]
+        ]);
+
+    $file = UploadedFile::fake()->create('employees.xlsx');
+
+    $response = $this->actingAs($this->user)->postJson('/employees/bulk-update/preview', [
+        'file' => $file
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+    $response->assertJsonPath('has_errors', false); // No errors because religion is now optional!
+
+    $rows = $response->json('rows');
+    expect($rows)->toHaveCount(1);
+    expect($rows[0]['errors'])->toBeEmpty();
+    expect($rows[0]['data']['religion'])->toBeNull();
+});
+
+
