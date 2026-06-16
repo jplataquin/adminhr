@@ -43,22 +43,23 @@
             z-index: 20 !important;
         }
 
-        tbody td.col-freeze-1 { background-color: #f8f9fa !important; }
-        tbody td.col-freeze-status { background-color: #f8f9fa !important; text-align: center; }
-        tbody td.col-freeze-2 { background-color: #f8f9fa !important; }
-        tbody td.col-freeze-3 { background-color: #ffffff !important; }
-        tbody td.col-freeze-4 { background-color: #ffffff !important; }
-        tbody td.col-freeze-5 { background-color: #ffffff !important; }
+        tbody td.col-freeze-1 { background-color: var(--bs-card-bg) !important; color: inherit !important; }
+        tbody td.col-freeze-status { background-color: var(--bs-card-bg) !important; color: inherit !important; text-align: center; }
+        tbody td.col-freeze-2 { background-color: var(--bs-card-bg) !important; color: inherit !important; }
+        tbody td.col-freeze-3 { background-color: var(--bs-card-bg) !important; color: inherit !important; }
+        tbody td.col-freeze-4 { background-color: var(--bs-card-bg) !important; color: inherit !important; }
+        tbody td.col-freeze-5 { background-color: var(--bs-card-bg) !important; color: inherit !important; }
         tbody td.col-freeze-6 { 
-            background-color: #f8f9fa !important; 
+            background-color: var(--bs-card-bg) !important; 
+            color: inherit !important;
             border-right: 2px solid #6c757d !important;
         }
 
         /* Highlight frozen cells on row hover */
         tr:hover td.col-freeze-1, tr:hover td.col-freeze-status, tr:hover td.col-freeze-2, tr:hover td.col-freeze-3,
         tr:hover td.col-freeze-4, tr:hover td.col-freeze-5, tr:hover td.col-freeze-6 {
-            background-color: #ececec !important;
-            color:#000000;
+            background-color: var(--bs-tertiary-bg) !important;
+            color: inherit !important;
         }
     </style>
 
