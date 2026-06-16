@@ -307,6 +307,7 @@
 
     <script>
         function bulkUpdateHandler() {
+
             return {
                 employees: JSON.parse('{!! addslashes($employeesJson) !!}').map(emp => {
                     // Convert dummy department codes (which equal division code) to empty string on load
@@ -331,10 +332,12 @@
                 },
 
                 getDepartmentOptions(divisionCode) {
+                    
                     if (!divisionCode || !this.options.department_grouped[divisionCode]) {
                         return [];
                     }
                     const group = this.options.department_grouped[divisionCode];
+
                     return Object.entries(group).map(([key, val]) => ({
                         value: val === ' - ' ? '' : key,
                         label: val
@@ -342,6 +345,9 @@
                 },
 
                 async commitUpdates() {
+
+                console.log(this.employees);
+                
                     const confirm = await Swal.fire({
                         title: 'Are you sure?',
                         text: `You are about to save changes for all ${this.employees.length} employee records. This will update the database directly.`,
