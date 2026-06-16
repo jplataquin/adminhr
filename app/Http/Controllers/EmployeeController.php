@@ -931,20 +931,27 @@ class EmployeeController extends Controller
         $updated_count = 0;
         $user_id = Auth::user()->id;
 
+        $all_errors = [];
+
+        foreach ($rows as $row) {
+            $row_validator = $this->validate_bulk_row($row);
+            if ($row_validator->fails()) {
+                $all_errors[$row['id']] = $row_validator->errors()->toArray();
+            }
+        }
+
+        if (!empty($all_errors)) {
+            return response()->json([
+                'status' => -2,
+                'message' => 'Validation failed for one or more rows.',
+                'errors' => $all_errors
+            ]);
+        }
+
         try {
             \DB::beginTransaction();
 
             foreach ($rows as $row) {
-                $row_validator = $this->validate_bulk_row($row);
-                if ($row_validator->fails()) {
-                    \DB::rollBack();
-                    return response()->json([
-                        'status' => -2,
-                        'message' => 'Row validation failed for row with ID ' . ($row['id'] ?? 'unknown'),
-                        'data' => $row_validator->errors()->toArray()
-                    ]);
-                }
-
                 $employee = Employee::findOrFail($row['id']);
 
                 $employee->prefix                   = $row['prefix'];

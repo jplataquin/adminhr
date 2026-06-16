@@ -217,4 +217,7 @@ it('rejects invalid bulk updates', function () {
 
     $response->assertStatus(200);
     $response->assertJsonPath('status', -2); // Validation error code
+    $response->assertJsonStructure(['errors']);
+    $response->assertJsonPath("errors.{$employee->id}.firstname.0", "The firstname field is required.");
+    $response->assertJsonPath("errors.{$employee->id}.gender.0", "The selected gender is invalid.");
 });

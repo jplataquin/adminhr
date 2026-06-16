@@ -17,14 +17,15 @@
 
         /* Ensure sticky columns have correct width and left offsets */
         .col-freeze-1 { position: sticky; left: 0px; min-width: 60px; max-width: 60px; width: 60px; }
-        .col-freeze-2 { position: sticky; left: 60px; min-width: 80px; max-width: 80px; width: 80px; }
-        .col-freeze-3 { position: sticky; left: 140px; min-width: 140px; max-width: 140px; width: 140px; }
-        .col-freeze-4 { position: sticky; left: 280px; min-width: 140px; max-width: 140px; width: 140px; }
-        .col-freeze-5 { position: sticky; left: 420px; min-width: 140px; max-width: 140px; width: 140px; }
-        .col-freeze-6 { position: sticky; left: 560px; min-width: 80px; max-width: 80px; width: 80px; }
+        .col-freeze-status { position: sticky; left: 60px; min-width: 60px; max-width: 60px; width: 60px; }
+        .col-freeze-2 { position: sticky; left: 120px; min-width: 80px; max-width: 80px; width: 80px; }
+        .col-freeze-3 { position: sticky; left: 200px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-4 { position: sticky; left: 340px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-5 { position: sticky; left: 480px; min-width: 140px; max-width: 140px; width: 140px; }
+        .col-freeze-6 { position: sticky; left: 620px; min-width: 80px; max-width: 80px; width: 80px; }
 
         /* Headings: Sticky top AND sticky left, highest z-index */
-        thead th.col-freeze-1, thead th.col-freeze-2, thead th.col-freeze-3,
+        thead th.col-freeze-1, thead th.col-freeze-status, thead th.col-freeze-2, thead th.col-freeze-3,
         thead th.col-freeze-4, thead th.col-freeze-5, thead th.col-freeze-6 {
             top: 0;
             z-index: 40 !important;
@@ -37,17 +38,24 @@
         }
 
         /* Body cells: Sticky left, background-color so scrolled rows go behind them, z-index lower than headings */
-        tbody td.col-freeze-1, tbody td.col-freeze-2, tbody td.col-freeze-3,
+        tbody td.col-freeze-1, tbody td.col-freeze-status, tbody td.col-freeze-2, tbody td.col-freeze-3,
         tbody td.col-freeze-4, tbody td.col-freeze-5, tbody td.col-freeze-6 {
             z-index: 20 !important;
         }
 
+        tbody td.col-freeze-1 { background-color: #f8f9fa !important; }
+        tbody td.col-freeze-status { background-color: #f8f9fa !important; text-align: center; }
+        tbody td.col-freeze-2 { background-color: #f8f9fa !important; }
+        tbody td.col-freeze-3 { background-color: #ffffff !important; }
+        tbody td.col-freeze-4 { background-color: #ffffff !important; }
+        tbody td.col-freeze-5 { background-color: #ffffff !important; }
         tbody td.col-freeze-6 { 
+            background-color: #f8f9fa !important; 
             border-right: 2px solid #6c757d !important;
         }
 
         /* Highlight frozen cells on row hover */
-        tr:hover td.col-freeze-1, tr:hover td.col-freeze-2, tr:hover td.col-freeze-3,
+        tr:hover td.col-freeze-1, tr:hover td.col-freeze-status, tr:hover td.col-freeze-2, tr:hover td.col-freeze-3,
         tr:hover td.col-freeze-4, tr:hover td.col-freeze-5, tr:hover td.col-freeze-6 {
             background-color: #ececec !important;
             color:#000000;
@@ -94,6 +102,7 @@
                         <thead class="table-dark sticky-top">
                             <tr>
                                 <th class="text-center col-freeze-1">ID</th>
+                                <th class="text-center col-freeze-status">Status</th>
                                 <th class="col-freeze-2">Prefix</th>
                                 <th class="col-freeze-3">First Name *</th>
                                 <th class="col-freeze-4">Middle Name</th>
@@ -131,77 +140,87 @@
                         </thead>
                         <tbody>
                             <template x-for="(emp, index) in filteredEmployees()" :key="emp.id">
-                                <tr :class="emp.has_validation_error ? 'table-danger' : ''">
+                                <tr :class="emp.errors ? 'table-danger' : ''">
                                     <td class="text-center fw-bold col-freeze-1" x-text="emp.id"></td>
+                                    <td class="col-freeze-status text-center">
+                                        <template x-if="emp.errors">
+                                            <i class="bi bi-exclamation-circle-fill text-danger h5 m-0" 
+                                               :title="Object.values(emp.errors).flat().join(' | ')" 
+                                               style="cursor: help;"></i>
+                                        </template>
+                                        <template x-if="!emp.errors">
+                                            <i class="bi bi-check-circle-fill text-success h5 m-0"></i>
+                                        </template>
+                                    </td>
                                     <td class="col-freeze-2">
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.prefix">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.prefix" :class="emp.errors?.prefix ? 'is-invalid' : ''" :title="emp.errors?.prefix?.join(' ')">
                                     </td>
                                     <td class="col-freeze-3">
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.firstname" required>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.firstname" required :class="emp.errors?.firstname ? 'is-invalid' : ''" :title="emp.errors?.firstname?.join(' ')">
                                     </td>
                                     <td class="col-freeze-4">
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.middlename">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.middlename" :class="emp.errors?.middlename ? 'is-invalid' : ''" :title="emp.errors?.middlename?.join(' ')">
                                     </td>
                                     <td class="col-freeze-5">
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.lastname" required>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.lastname" required :class="emp.errors?.lastname ? 'is-invalid' : ''" :title="emp.errors?.lastname?.join(' ')">
                                     </td>
                                     <td class="col-freeze-6">
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.suffix">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.suffix" :class="emp.errors?.suffix ? 'is-invalid' : ''" :title="emp.errors?.suffix?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control form-control-sm" x-model="emp.birthdate" required>
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.birthdate" required :class="emp.errors?.birthdate ? 'is-invalid' : ''" :title="emp.errors?.birthdate?.join(' ')">
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.gender" required>
+                                        <select class="form-select form-select-sm" x-model="emp.gender" required :class="emp.errors?.gender ? 'is-invalid' : ''" :title="emp.errors?.gender?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.gender)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.gender === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.marital_status" required>
+                                        <select class="form-select form-select-sm" x-model="emp.marital_status" required :class="emp.errors?.marital_status ? 'is-invalid' : ''" :title="emp.errors?.marital_status?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.marital_status)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.marital_status === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.religion">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.religion" :class="emp.errors?.religion ? 'is-invalid' : ''" :title="emp.errors?.religion?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.mobile_no">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.mobile_no" :class="emp.errors?.mobile_no ? 'is-invalid' : ''" :title="emp.errors?.mobile_no?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="email" class="form-control form-control-sm" x-model="emp.email">
+                                        <input type="email" class="form-control form-control-sm" x-model="emp.email" :class="emp.errors?.email ? 'is-invalid' : ''" :title="emp.errors?.email?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.current_address" required>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.current_address" required :class="emp.errors?.current_address ? 'is-invalid' : ''" :title="emp.errors?.current_address?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.permanent_address" required>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.permanent_address" required :class="emp.errors?.permanent_address ? 'is-invalid' : ''" :title="emp.errors?.permanent_address?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_start_date" required>
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_start_date" required :class="emp.errors?.employment_start_date ? 'is-invalid' : ''" :title="emp.errors?.employment_start_date?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_end_date">
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_end_date" :class="emp.errors?.employment_end_date ? 'is-invalid' : ''" :title="emp.errors?.employment_end_date?.join(' ')">
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.employment_status" required>
+                                        <select class="form-select form-select-sm" x-model="emp.employment_status" required :class="emp.errors?.employment_status ? 'is-invalid' : ''" :title="emp.errors?.employment_status?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.employment_status)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.employment_status === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.duty_status" required>
+                                        <select class="form-select form-select-sm" x-model="emp.duty_status" required :class="emp.errors?.duty_status ? 'is-invalid' : ''" :title="emp.errors?.duty_status?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.duty_status)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.duty_status === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.division" @change="emp.department = ''" required>
+                                        <select class="form-select form-select-sm" x-model="emp.division" @change="emp.department = ''" required :class="emp.errors?.division ? 'is-invalid' : ''" :title="emp.errors?.division?.join(' ')">
                                             <option value="">- Select -</option>
                                             <template x-for="[key, val] in Object.entries(options.division)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.division === key"></option>
@@ -209,7 +228,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.department">
+                                        <select class="form-select form-select-sm" x-model="emp.department" :class="emp.errors?.department ? 'is-invalid' : ''" :title="emp.errors?.department?.join(' ')">
                                             <option value="">- Select -</option>
                                             <template x-for="dept in getDepartmentOptions(emp.division)" :key="dept.value">
                                                 <option :value="dept.value" x-text="dept.label" :selected="emp.department === dept.value"></option>
@@ -217,54 +236,54 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.position" required>
+                                        <select class="form-select form-select-sm" x-model="emp.position" required :class="emp.errors?.position ? 'is-invalid' : ''" :title="emp.errors?.position?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.position)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.position === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.sss">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.sss" :class="emp.errors?.sss ? 'is-invalid' : ''" :title="emp.errors?.sss?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.philhealth">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.philhealth" :class="emp.errors?.philhealth ? 'is-invalid' : ''" :title="emp.errors?.philhealth?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.pagibig">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.pagibig" :class="emp.errors?.pagibig ? 'is-invalid' : ''" :title="emp.errors?.pagibig?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.tin">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.tin" :class="emp.errors?.tin ? 'is-invalid' : ''" :title="emp.errors?.tin?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.passport_no">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.passport_no" :class="emp.errors?.passport_no ? 'is-invalid' : ''" :title="emp.errors?.passport_no?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.drivers_license_no">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.drivers_license_no" :class="emp.errors?.drivers_license_no ? 'is-invalid' : ''" :title="emp.errors?.drivers_license_no?.join(' ')">
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.educational_attainment" required>
+                                        <select class="form-select form-select-sm" x-model="emp.educational_attainment" required :class="emp.errors?.educational_attainment ? 'is-invalid' : ''" :title="emp.errors?.educational_attainment?.join(' ')">
                                             <template x-for="[key, val] in Object.entries(options.educational_attainment)" :key="key">
                                                 <option :value="key" x-text="val" :selected="emp.educational_attainment === key"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.school_university">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.school_university" :class="emp.errors?.school_university ? 'is-invalid' : ''" :title="emp.errors?.school_university?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.degree">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.degree" :class="emp.errors?.degree ? 'is-invalid' : ''" :title="emp.errors?.degree?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_name">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_name" :class="emp.errors?.bank_name ? 'is-invalid' : ''" :title="emp.errors?.bank_name?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_account_no">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_account_no" :class="emp.errors?.bank_account_no ? 'is-invalid' : ''" :title="emp.errors?.bank_account_no?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_person">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_person" :class="emp.errors?.emergency_contact_person ? 'is-invalid' : ''" :title="emp.errors?.emergency_contact_person?.join(' ')">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_no">
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_no" :class="emp.errors?.emergency_contact_no ? 'is-invalid' : ''" :title="emp.errors?.emergency_contact_no?.join(' ')">
                                     </td>
                                 </tr>
                             </template>
@@ -319,6 +338,7 @@
                     if (!confirm.isConfirmed) return;
 
                     this.loading = true;
+                    this.employees.forEach(emp => emp.errors = null);
 
                     // Clean the data to map to expected parameters
                     const payload = {
@@ -381,7 +401,12 @@
                             });
                             window.location.href = '/employees';
                         } else if (result.status === -2) {
-                            // Validation error
+                            // Validation error: Map errors back to employees
+                            if (result.errors) {
+                                this.employees.forEach(emp => {
+                                    emp.errors = result.errors[emp.id] || null;
+                                });
+                            }
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Validation Failed',
