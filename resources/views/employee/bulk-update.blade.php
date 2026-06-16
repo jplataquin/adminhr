@@ -240,7 +240,6 @@
                                     </td>
                                     <td>
                                         <select class="form-select form-select-sm" x-model="emp.department" :class="emp.errors?.department ? 'is-invalid' : ''" :title="emp.errors?.department?.join(' ')">
-                                            <option value="">- Select -</option>
                                             <template x-for="dept in getDepartmentOptions(emp.division)" :key="dept.value">
                                                 <option :value="dept.value" x-text="dept.label" :selected="emp.department === dept.value"></option>
                                             </template>
