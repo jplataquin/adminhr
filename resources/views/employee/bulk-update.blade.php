@@ -43,6 +43,7 @@
         tr:hover td.col-freeze-1, tr:hover td.col-freeze-2, tr:hover td.col-freeze-3,
         tr:hover td.col-freeze-4, tr:hover td.col-freeze-5, tr:hover td.col-freeze-6 {
             background-color: #ececec !important;
+            color:#000000;
         }
     </style>
 
