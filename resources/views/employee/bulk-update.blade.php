@@ -35,13 +35,7 @@
             z-index: 20 !important;
         }
 
-        tbody td.col-freeze-1 { background-color: #f8f9fa !important; }
-        tbody td.col-freeze-2 { background-color: #f8f9fa !important; }
-        tbody td.col-freeze-3 { background-color: #ffffff !important; }
-        tbody td.col-freeze-4 { background-color: #ffffff !important; }
-        tbody td.col-freeze-5 { background-color: #ffffff !important; }
         tbody td.col-freeze-6 { 
-            background-color: #f8f9fa !important; 
             border-right: 2px solid #6c757d !important;
         }
 
