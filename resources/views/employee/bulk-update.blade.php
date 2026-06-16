@@ -346,8 +346,7 @@
 
                 async commitUpdates() {
 
-                console.log(this.employees);
-                
+
                     const confirm = await Swal.fire({
                         title: 'Are you sure?',
                         text: `You are about to save changes for all ${this.employees.length} employee records. This will update the database directly.`,
