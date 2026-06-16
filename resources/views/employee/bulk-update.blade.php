@@ -1,19 +1,18 @@
 <x-app-layout>
     <style>
-        /* Override Bootstrap container width specifically for this page to make it full screen width */
+        /* Override Bootstrap container width specifically for this page to make it full screen width and edge-to-edge */
         main > .container {
             max-width: 100% !important;
             width: 100% !important;
-            padding-left: 24px !important;
-            padding-right: 24px !important;
+            padding-left: 0px !important;
+            padding-right: 0px !important;
         }
 
-        /* Custom CSS for frozen columns on horizontal and vertical scroll */
+        /* Custom CSS for frozen columns on horizontal and page-level vertical scroll */
         .table-responsive {
             position: relative;
-            max-height: 650px;
-            overflow-y: auto;
             overflow-x: auto;
+            overflow-y: visible; /* Let vertical scroll propagate to page level */
         }
 
         /* Ensure sticky columns have correct width and left offsets */
@@ -55,9 +54,9 @@
         }
     </style>
 
-    <div class="container-fluid px-4 py-4" x-data="bulkUpdateHandler()">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-body d-flex align-items-center justify-content-between py-3">
+    <div class="container-fluid px-0 py-0" x-data="bulkUpdateHandler()">
+        <div class="card shadow-sm border-0 rounded-0 mb-0">
+            <div class="card-header bg-body d-flex align-items-center justify-content-between py-3 px-4">
                 <h3 class="h5 mb-0">Bulk Update Employees (Table View)</h3>
                 <div class="d-flex align-items-center">
                     <a href="{{ route('employees') }}" class="btn btn-outline-secondary btn-sm me-2">Back to List</a>
@@ -68,9 +67,9 @@
                 </div>
             </div>
 
-            <div class="card-body">
+            <div class="card-body px-0 pb-0">
                 <!-- Filtering & Summary Info Bar -->
-                <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="row g-3 mb-4 align-items-center justify-content-between px-4">
                     <div class="col-md-4">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-body"><i class="bi bi-search"></i></span>
