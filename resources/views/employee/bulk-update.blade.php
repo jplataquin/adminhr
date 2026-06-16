@@ -308,7 +308,13 @@
     <script>
         function bulkUpdateHandler() {
             return {
-                employees: JSON.parse('{!! addslashes($employeesJson) !!}'),
+                employees: JSON.parse('{!! addslashes($employeesJson) !!}').map(emp => {
+                    // Convert dummy department codes (which equal division code) to empty string on load
+                    if (emp.department === emp.division) {
+                        emp.department = '';
+                    }
+                    return emp;
+                }),
                 options: JSON.parse('{!! addslashes($optionsJson) !!}'),
                 searchQuery: '',
                 loading: false,
