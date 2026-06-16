@@ -1,112 +1,220 @@
 <x-app-layout>
-    <div class="container py-4" x-data="bulkUpdateHandler()">
+    <div class="container-fluid px-4 py-4" x-data="bulkUpdateHandler()">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-body d-flex align-items-center justify-content-between py-3">
-                <h3 class="h5 mb-0">Bulk Update Employees</h3>
-                <div>
+                <h3 class="h5 mb-0">Bulk Update Employees (Table View)</h3>
+                <div class="d-flex align-items-center">
                     <a href="{{ route('employees') }}" class="btn btn-outline-secondary btn-sm me-2">Back to List</a>
-                    <button class="btn btn-primary btn-sm" @click="downloadTemplate()">
-                        <i class="bi bi-download me-1"></i> Download Template
+                    <button class="btn btn-success btn-sm" @click="commitUpdates()" :disabled="loading">
+                        <span x-show="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        <i class="bi bi-check-lg me-1" x-show="!loading"></i> Save All Changes
                     </button>
                 </div>
             </div>
 
             <div class="card-body">
-                <!-- Initial State: Upload Form -->
-                <div x-show="state === 'initial'">
-                    <div class="p-5 border-2 border-dashed rounded text-center bg-body-tertiary">
-                        <i class="bi bi-file-earmark-excel h1 text-success mb-3 d-block"></i>
-                        <h5>Upload Employee Masterlist</h5>
-                        <p class="text-secondary small mb-4">
-                            Download the template containing current employee records, update details in Excel, then upload the file here.<br>
-                            <strong>Note:</strong> Photo updates are excluded from this process. Keep the first row (headers) intact.
-                        </p>
-                        
-                        <div class="col-md-6 mx-auto">
-                            <div class="input-group">
-                                <input type="file" class="form-control" id="excelFile" accept=".xlsx, .xls" @change="onFileChange($event)">
-                                <button class="btn btn-success" type="button" :disabled="!fileSelected || loading" @click="uploadFile()">
-                                    <span x-show="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                                    Upload & Preview
-                                </button>
-                            </div>
+                <!-- Filtering & Summary Info Bar -->
+                <div class="row g-3 mb-4 align-items-center justify-content-between">
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-body"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Quick search by name or ID..." x-model="searchQuery">
                         </div>
+                    </div>
+                    <div class="col-md-auto text-end">
+                        <span class="badge bg-secondary text-wrap" style="font-size: 0.85rem;">
+                            Total Records: <span x-text="employees.length"></span>
+                        </span>
+                        <template x-if="searchQuery">
+                            <span class="badge bg-info text-wrap" style="font-size: 0.85rem;">
+                                Filtered: <span x-text="filteredEmployees().length"></span>
+                            </span>
+                        </template>
                     </div>
                 </div>
 
-                <!-- Preview State -->
-                <div x-show="state === 'preview'">
-                    <div class="alert d-flex align-items-center mb-4" :class="hasErrors ? 'alert-danger' : 'alert-success'">
-                        <i class="bi h4 mb-0 me-3" :class="hasErrors ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
-                        <div>
-                            <span x-text="hasErrors ? 'Validation Errors Detected: Please review the errors below and correct them in your Excel file before uploading again.' : 'Validation Successful! All records are valid and ready to be committed.'"></span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="h6 mb-0">Parsed Rows Preview (<span x-text="rows.length"></span> rows)</h4>
-                        <div>
-                            <button class="btn btn-secondary btn-sm me-2" @click="resetState()" :disabled="loading">
-                                <i class="bi bi-arrow-left me-1"></i> Cancel & Upload New
-                            </button>
-                            <button class="btn btn-success btn-sm" @click="commitUpdates()" :disabled="hasErrors || loading">
-                                <span x-show="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                                <i class="bi bi-check-lg me-1" x-show="!loading"></i> Commit Updates
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive" style="max-height: 500px;">
-                        <table class="table table-bordered table-striped table-hover align-middle">
-                            <thead class="table-dark sticky-top">
-                                <tr>
-                                    <th style="width: 80px;">Row</th>
-                                    <th style="width: 100px;">ID</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Division / Dept</th>
-                                    <th>Validation Status</th>
+                <!-- Table Container with Horizontal and Vertical Scrolling -->
+                <div class="table-responsive border rounded" style="max-height: 600px; overflow-y: auto; overflow-x: auto;">
+                    <table class="table table-sm table-bordered table-striped table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                        <thead class="table-dark sticky-top">
+                            <tr>
+                                <th class="text-center" style="min-width: 50px; z-index: 10;">ID</th>
+                                <th style="min-width: 80px;">Prefix</th>
+                                <th style="min-width: 140px;">First Name *</th>
+                                <th style="min-width: 140px;">Middle Name</th>
+                                <th style="min-width: 140px;">Last Name *</th>
+                                <th style="min-width: 80px;">Suffix</th>
+                                <th style="min-width: 150px;">Birth Date *</th>
+                                <th style="min-width: 110px;">Gender *</th>
+                                <th style="min-width: 130px;">Marital Status *</th>
+                                <th style="min-width: 130px;">Religion</th>
+                                <th style="min-width: 130px;">Mobile No</th>
+                                <th style="min-width: 180px;">Email</th>
+                                <th style="min-width: 220px;">Current Address *</th>
+                                <th style="min-width: 220px;">Permanent Address *</th>
+                                <th style="min-width: 150px;">Emp Start Date *</th>
+                                <th style="min-width: 150px;">Emp End Date</th>
+                                <th style="min-width: 150px;">Employment Status *</th>
+                                <th style="min-width: 130px;">Duty Status *</th>
+                                <th style="min-width: 200px;">Division *</th>
+                                <th style="min-width: 200px;">Department</th>
+                                <th style="min-width: 200px;">Position *</th>
+                                <th style="min-width: 140px;">SSS</th>
+                                <th style="min-width: 140px;">PhilHealth</th>
+                                <th style="min-width: 140px;">Pag-IBIG</th>
+                                <th style="min-width: 140px;">TIN</th>
+                                <th style="min-width: 140px;">Passport No</th>
+                                <th style="min-width: 140px;">Driver's License</th>
+                                <th style="min-width: 180px;">Edu Attainment *</th>
+                                <th style="min-width: 180px;">School / University</th>
+                                <th style="min-width: 150px;">Degree</th>
+                                <th style="min-width: 130px;">Bank Name</th>
+                                <th style="min-width: 150px;">Bank Account No</th>
+                                <th style="min-width: 150px;">Emergency Contact</th>
+                                <th style="min-width: 130px;">Emergency No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(emp, index) in filteredEmployees()" :key="emp.id">
+                                <tr :class="emp.has_validation_error ? 'table-danger' : ''">
+                                    <td class="text-center fw-bold bg-light" x-text="emp.id"></td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.prefix">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.firstname" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.middlename">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.lastname" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.suffix">
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.birthdate" required>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.gender" required>
+                                            <template x-for="[key, val] in Object.entries(options.gender)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.gender === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.marital_status" required>
+                                            <template x-for="[key, val] in Object.entries(options.marital_status)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.marital_status === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.religion">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.mobile_no">
+                                    </td>
+                                    <td>
+                                        <input type="email" class="form-control form-control-sm" x-model="emp.email">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.current_address" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.permanent_address" required>
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_start_date" required>
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control form-control-sm" x-model="emp.employment_end_date">
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.employment_status" required>
+                                            <template x-for="[key, val] in Object.entries(options.employment_status)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.employment_status === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.duty_status" required>
+                                            <template x-for="[key, val] in Object.entries(options.duty_status)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.duty_status === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.division" @change="emp.department = ''" required>
+                                            <option value="">- Select -</option>
+                                            <template x-for="[key, val] in Object.entries(options.division)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.division === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.department">
+                                            <option value="">- Select -</option>
+                                            <template x-for="dept in getDepartmentOptions(emp.division)" :key="dept.value">
+                                                <option :value="dept.value" x-text="dept.label" :selected="emp.department === dept.value"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.position" required>
+                                            <template x-for="[key, val] in Object.entries(options.position)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.position === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.sss">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.philhealth">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.pagibig">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.tin">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.passport_no">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.drivers_license_no">
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm" x-model="emp.educational_attainment" required>
+                                            <template x-for="[key, val] in Object.entries(options.educational_attainment)" :key="key">
+                                                <option :value="key" x-text="val" :selected="emp.educational_attainment === key"></option>
+                                            </template>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.school_university">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.degree">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_name">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.bank_account_no">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_person">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" x-model="emp.emergency_contact_no">
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="row in rows" :key="row.row_num">
-                                    <tr :class="Object.keys(row.errors).length > 0 ? 'table-danger' : ''">
-                                        <td x-text="row.row_num" class="fw-bold"></td>
-                                        <td x-text="row.data.id || 'N/A'"></td>
-                                        <td>
-                                            <span x-text="(row.data.firstname || '') + ' ' + (row.data.lastname || '')"></span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-secondary" x-text="row.data.employment_status"></span>
-                                        </td>
-                                        <td>
-                                            <span x-text="row.data.division"></span>
-                                            <template x-if="row.data.department">
-                                                <span x-text="' / ' + row.data.department" class="text-secondary small"></span>
-                                            </template>
-                                        </td>
-                                        <td>
-                                            <template x-if="Object.keys(row.errors).length > 0">
-                                                <div class="text-danger small">
-                                                    <template x-for="[field, msgs] in Object.entries(row.errors)">
-                                                        <div class="mb-1">
-                                                            <strong class="text-capitalize" x-text="field.replace(/_/g, ' ')"></strong>: 
-                                                            <span x-text="msgs.join(', ')"></span>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                            </template>
-                                            <template x-if="Object.keys(row.errors).length === 0">
-                                                <span class="text-success small fw-bold">
-                                                    <i class="bi bi-check-circle-fill me-1"></i> Valid
-                                                </span>
-                                            </template>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -115,97 +223,86 @@
     <script>
         function bulkUpdateHandler() {
             return {
-                state: 'initial',
+                employees: JSON.parse('{!! addslashes($employeesJson) !!}'),
+                options: JSON.parse('{!! addslashes($optionsJson) !!}'),
+                searchQuery: '',
                 loading: false,
-                fileSelected: false,
-                file: null,
-                rows: [],
-                hasErrors: false,
 
-                onFileChange(e) {
-                    this.file = e.target.files[0];
-                    this.fileSelected = !!this.file;
+                filteredEmployees() {
+                    if (!this.searchQuery) return this.employees;
+                    const q = this.searchQuery.toLowerCase();
+                    return this.employees.filter(emp => {
+                        const first = (emp.firstname || '').toLowerCase();
+                        const last = (emp.lastname || '').toLowerCase();
+                        const idStr = (emp.id || '').toString();
+                        return first.includes(q) || last.includes(q) || idStr.includes(q);
+                    });
                 },
 
-                downloadTemplate() {
-                    window.location.href = '/employees/export/excel';
-                },
-
-                resetState() {
-                    this.state = 'initial';
-                    this.fileSelected = false;
-                    this.file = null;
-                    this.rows = [];
-                    this.hasErrors = false;
-                    const fileInput = document.getElementById('excelFile');
-                    if (fileInput) fileInput.value = '';
-                },
-
-                async uploadFile() {
-                    if (!this.file) return;
-
-                    this.loading = true;
-                    const formData = new FormData();
-                    formData.append('file', this.file);
-
-                    try {
-                        const response = await fetch('/employees/bulk-update/preview', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json'
-                            },
-                            body: formData
-                        });
-
-                        const result = await response.json();
-
-                        if (result.status === 1) {
-                            this.rows = result.rows;
-                            this.hasErrors = result.has_errors;
-                            this.state = 'preview';
-                        } else if (result.status === -2) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Validation Failed',
-                                text: result.message || 'File validation failed. Ensure it is a valid Excel file.'
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: result.message || 'An error occurred while uploading.'
-                            });
-                        }
-                    } catch (err) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Network Error',
-                            text: 'Could not connect to the server. Please try again.'
-                        });
-                    } finally {
-                        this.loading = false;
+                getDepartmentOptions(divisionCode) {
+                    if (!divisionCode || !this.options.department_grouped[divisionCode]) {
+                        return [];
                     }
+                    const group = this.options.department_grouped[divisionCode];
+                    return Object.entries(group).map(([key, val]) => ({
+                        value: key,
+                        label: val
+                    }));
                 },
 
                 async commitUpdates() {
-                    if (this.hasErrors) return;
-
                     const confirm = await Swal.fire({
                         title: 'Are you sure?',
-                        text: `You are about to update ${this.rows.length} employee records directly in the database. This action cannot be undone.`,
+                        text: `You are about to save changes for all ${this.employees.length} employee records. This will update the database directly.`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#198754',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, Commit Changes'
+                        confirmButtonText: 'Yes, Save All Changes'
                     });
 
                     if (!confirm.isConfirmed) return;
 
                     this.loading = true;
+
+                    // Clean the data to map to expected parameters
                     const payload = {
-                        rows: this.rows.map(r => r.data)
+                        rows: this.employees.map(emp => ({
+                            id: emp.id,
+                            prefix: emp.prefix || null,
+                            firstname: emp.firstname,
+                            middlename: emp.middlename || null,
+                            lastname: emp.lastname,
+                            suffix: emp.suffix || null,
+                            birthdate: emp.birthdate,
+                            gender: emp.gender,
+                            marital_status: emp.marital_status,
+                            religion: emp.religion || null,
+                            mobile_no: emp.mobile_no || null,
+                            email: emp.email || null,
+                            current_address: emp.current_address,
+                            permanent_address: emp.permanent_address,
+                            employment_start_date: emp.employment_start_date,
+                            employment_end_date: emp.employment_end_date || null,
+                            employment_status: emp.employment_status,
+                            duty_status: emp.duty_status,
+                            division: emp.division,
+                            department: emp.department || null,
+                            position: emp.position,
+                            sss: emp.sss || null,
+                            philhealth: emp.philhealth || null,
+                            pagibig: emp.pagibig || null,
+                            tin: emp.tin || null,
+                            passport_no: emp.passport_no || null,
+                            drivers_license_no: emp.drivers_license_no || null,
+                            educational_attainment: emp.educational_attainment,
+                            school_university: emp.school_university || null,
+                            degree: emp.degree || null,
+                            bank_name: emp.bank_name || null,
+                            bank_account_no: emp.bank_account_no || null,
+                            emergency_contact_person: emp.emergency_contact_person || null,
+                            emergency_contact_no: emp.emergency_contact_no || null,
+                        }))
                     };
 
                     try {
@@ -228,11 +325,18 @@
                                 text: result.message
                             });
                             window.location.href = '/employees';
+                        } else if (result.status === -2) {
+                            // Validation error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Failed',
+                                text: result.message || 'Please verify the records. Ensure required fields are not empty.'
+                            });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: result.message || 'Failed to commit updates.'
+                                text: result.message || 'Failed to save changes.'
                             });
                         }
                     } catch (err) {

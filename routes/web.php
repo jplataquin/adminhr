@@ -53,8 +53,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/employees/bulk-update', [App\Http\Controllers\EmployeeController::class, 'bulk_update_view'])->name('employees');
-    Route::get('/employees/export/excel', [App\Http\Controllers\EmployeeController::class, 'export_excel'])->name('employees');
-    Route::post('/employees/bulk-update/preview', [App\Http\Controllers\EmployeeController::class, 'upload_preview'])->name('employees');
     Route::post('/employees/bulk-update/commit', [App\Http\Controllers\EmployeeController::class, 'commit_bulk_update'])->name('employees');
 
     
