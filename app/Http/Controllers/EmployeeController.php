@@ -930,6 +930,22 @@ class EmployeeController extends Controller
         }
 
         $rows = $request->input('rows');
+
+        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'division', 'department', 'position', 'educational_attainment'];
+
+        foreach ($rows as $index => $row) {
+            foreach ($row as $key => $value) {
+                if (is_string($value)) {
+                    $trimmed = trim($value);
+                    if (in_array($key, $uppercase_fields)) {
+                        $rows[$index][$key] = strtoupper($trimmed);
+                    } else {
+                        $rows[$index][$key] = $trimmed === '' ? null : $trimmed;
+                    }
+                }
+            }
+        }
+
         $updated_count = 0;
         $user_id = Auth::user()->id;
 
@@ -1014,6 +1030,19 @@ class EmployeeController extends Controller
     private function validate_bulk_row($row) {
         $employee = new Employee();
         
+        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'division', 'department', 'position', 'educational_attainment'];
+
+        foreach ($row as $key => $value) {
+            if (is_string($value)) {
+                $trimmed = trim($value);
+                if (in_array($key, $uppercase_fields)) {
+                    $row[$key] = strtoupper($trimmed);
+                } else {
+                    $row[$key] = $trimmed === '' ? null : $trimmed;
+                }
+            }
+        }
+
         $rules = [
             'id' => 'required|integer|exists:employees,id',
             'prefix' => 'nullable|max:255',
