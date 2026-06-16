@@ -118,6 +118,7 @@
 
         pageDoc.showData = ()=>{
 
+        console.log(division.value);
             console.log(department.value);
             $_GET('/api/employees',{
                 query           : search.value,
