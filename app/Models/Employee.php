@@ -109,8 +109,8 @@ class Employee extends Model
             'ADMNHR'    => 'Administrative & Human Resource',
             'ACCFIN'    => 'Accounting & Finance',
             'CONOPS'    => 'Construction',
-            'WARLOG'    => 'Warehousing & Logistics',
-            'EQUMAI'    => 'Equipment & Maintenance',
+            'WARLOG'    => 'Warehousing',
+            'EQUMAI'    => 'Equipment, Logistics, & Maintenance',
             'SAPRDE'    => 'Sales & Project Development',
             'TOPMGT'    => 'Top Management',
             
@@ -144,12 +144,12 @@ class Employee extends Model
             ],
             'WARLOG'    => [
                 'WARLOG' => ' - ',
-                'WARHOU' => 'Warehousing',
-                'LOGAGR' => 'Logistics & Aggregates'
             ],
             'EQUMAI'    => [
-                'EQUMAI' => ' - ',
-                'REPMAI' => 'Repair & Maintenance'
+                'EQUMAI'    => ' - ',
+                'REPMAI'    => 'Repair & Maintenance',
+                'Equipment' => 'Equipment',
+                'LOGAGR'    => 'Logistics & Aggregates'
             ],
             'SAPRDE' => [
                 'SAPRDE' => ' - '
@@ -199,9 +199,16 @@ class Employee extends Model
                 'OFUTI2' => 'Office Utility 2',
                 'OFUTI3' => 'Office Utility 3',
                 
+                'ITHEAD' => 'IT Department Head',
                 
+                'PURCDH' => 'Purchasing Department Head',
+                    'PUROF1' => 'Purchasing Officer 1',
+                    'PUROF2' => 'Purchasing Officer 2',
+                    'PUROF3' => 'Purchasing Officer 3',
+            
+
                 'OSHODH' => 'OSHO Department Head',
-                    'OSHO__' => 'Occupational Safety & Health Officer 1',
+                    'OSHO_1' => 'Occupational Safety & Health Officer 1',
                     'OSHO_2' => 'Occupational Safety & Health Officer 2',
                     'OSHO_3' => 'Occupational Safety & Health Officer 3',
                 
@@ -254,11 +261,7 @@ class Employee extends Model
                     
                     
                 
-                'PURCDH' => 'Purchasing Department Head',
-                    'PUROF1' => 'Purchasing Officer 1',
-                    'PUROF2' => 'Purchasing Officer 2',
-                    'PUROF3' => 'Purchasing Officer 3',
-            
+              
             'WARHDM' => 'Warehouse & Logistics Division Manager',
                 'WARHDH' => 'Warehouse Department Head',
                     
@@ -308,19 +311,27 @@ class Employee extends Model
             
             'EQMADM' => 'Equipment & Maintenance Division Manager',
 
-                'MAINDH'  => 'Maintenance Department Head',
+                'MAINDH'  => 'Repair & Maintenance Department Head',
                     'CHEMEC' => 'Chief Mechanic',
                         'MECHAN1' => 'Mechanic 1',
                         'MECHAN2' => 'Mechanic 2',
                         'MECHAN3' => 'Mechanic 3',
                             'ASTMEC' => 'Assitant Mechanic',
+                            'TIREMN' => 'Tire Man',
+                            
 
                         'AUTELC1' => 'Auto Electrician 1',
                         'AUTELC2' => 'Auto Electrician 2',
                         'AUTELC3' => 'Auto Electrician 3',
                         
+                        'SMECH1' => 'Small Engines Mechanic 1',
+                        'SMECH2' => 'Small Engines Mechanic 2',
+                        'SMECH3' => 'Small Engines Mechanic 3',
+
                 'GPSOPE' => 'GPS Operator',
                 
+                'EQUDHD' => 'Equipment Department Head',
+
                 'EQUDIS' => 'Equipment Dispacher',
                     'BHOPER1' => 'Backhoe Operator 1',
                     'BHOPER2' => 'Backhoe Operator 2',
@@ -341,6 +352,15 @@ class Employee extends Model
                     'VIROOP1' => 'Vibro Roller Operator 1',
                     'VIROOP2' => 'Vibro Roller Operator 2',
                     'VIROOP3' => 'Vibro Roller Operator 3',
+
+                    'PAYLDR1' => 'Payloader Operator 1',
+                    'PAYLDR2' => 'Payloader Operator 2',
+                    'PAYLDR3' => 'Payloader Operator 3',
+
+                    
+                    'SELFLD1' => 'Self Loading Driver 1',
+                    'SELFLD2' => 'Self Loading Driver 2',
+                    'SELFLD3' => 'Self Loading Driver 3',
                     
                     'CRAOPR1' => 'Crane Operator 1',
                     'CRAOPR2' => 'Crane Operator 2',
@@ -361,6 +381,8 @@ class Employee extends Model
                     'DTDRIV1' => 'Dumptruck Driver 1',
                     'DTDRIV2' => 'Dumptruck Driver 2',
                     'DTDRIV3' => 'Dumptruck Driver 3',
+
+
 
             'TOPSTF1'   => 'Top Managment Staff 1',
             'TOPSTF2'   => 'Top Managment Staff 2', 
