@@ -230,8 +230,8 @@
                                             </template>
                                         </select>
                                     </td>
-                                    <td>
-                                        <div class="position-relative" x-data="{ 
+                                    <td class="position-relative" 
+                                        x-data="{ 
                                             open: false, 
                                             search: '',
                                             get filteredOptions() {
@@ -246,6 +246,7 @@
                                                 return options.division[emp.division] || '- Select -';
                                             }
                                         }" @click.away="open = false"
+                                           :style="open ? 'z-index: 1060 !important;' : ''"
                                            x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
                                             <!-- Selected value preview / dropdown button -->
                                             <button type="button" 
@@ -284,10 +285,9 @@
                                                     </template>
                                                 </div>
                                             </div>
-                                        </div>
                                     </td>
-                                    <td>
-                                        <div class="position-relative" x-data="{ 
+                                    <td class="position-relative" 
+                                        x-data="{ 
                                             open: false, 
                                             search: '',
                                             get filteredOptions() {
@@ -302,8 +302,10 @@
                                                 const selected = options.find(dept => (dept.value || '') === (emp.department || ''));
                                                 return selected ? selected.label : '- Select -';
                                             }
-                                        }" @click.away="open = false"
-                                           x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
+                                        }" 
+                                        :style="open ? 'z-index: 1060 !important;' : ''"
+                                        @click.away="open = false"
+                                        x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
                                             <!-- Selected value preview / dropdown button -->
                                             <button type="button" 
                                                     class="form-select form-select-sm text-start text-truncate" 
@@ -341,10 +343,9 @@
                                                     </template>
                                                 </div>
                                             </div>
-                                        </div>
                                     </td>
-                                    <td>
-                                        <div class="position-relative" x-data="{ 
+                                    <td class="position-relative" 
+                                        x-data="{ 
                                             open: false, 
                                             search: '',
                                             get filteredOptions() {
@@ -356,8 +357,10 @@
                                             getSelectedLabel() {
                                                 return options.position[emp.position] || '- Select Position -';
                                             }
-                                        }" @click.away="open = false"
-                                           x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
+                                        }" 
+                                        :style="open ? 'z-index: 1060 !important;' : ''"
+                                        @click.away="open = false"
+                                        x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
                                             <!-- Selected value preview / dropdown button -->
                                             <button type="button" 
                                                     class="form-select form-select-sm text-start text-truncate" 
@@ -395,7 +398,6 @@
                                                     </template>
                                                 </div>
                                             </div>
-                                        </div>
                                     </td>
                                     <td>
                                         <input type="text" class="form-control form-control-sm" x-model="emp.sss" :class="emp.errors?.sss ? 'is-invalid' : ''" :title="emp.errors?.sss?.join(' ')">
