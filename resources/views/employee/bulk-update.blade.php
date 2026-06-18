@@ -246,11 +246,58 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select form-select-sm" x-model="emp.position" required :class="emp.errors?.position ? 'is-invalid' : ''" :title="emp.errors?.position?.join(' ')">
-                                            <template x-for="[key, val] in Object.entries(options.position)" :key="key">
-                                                <option :value="key" x-text="val" :selected="emp.position === key"></option>
-                                            </template>
-                                        </select>
+                                        <div class="position-relative" x-data="{ 
+                                            open: false, 
+                                            search: '',
+                                            get filteredOptions() {
+                                                const q = this.search.toLowerCase();
+                                                return Object.entries(options.position).filter(([key, val]) => 
+                                                    val.toLowerCase().includes(q) || key.toLowerCase().includes(q)
+                                                );
+                                            },
+                                            getSelectedLabel() {
+                                                return options.position[emp.position] || '- Select Position -';
+                                            }
+                                        }" @click.away="open = false"
+                                           x-init="$watch('open', value => { if (value) { $nextTick(() => $refs.searchInput.focus()) } })">
+                                            <!-- Selected value preview / dropdown button -->
+                                            <button type="button" 
+                                                    class="form-select form-select-sm text-start text-truncate" 
+                                                    style="width: 220px;"
+                                                    :class="emp.errors?.position ? 'is-invalid' : ''"
+                                                    :title="emp.errors?.position?.join(' ')"
+                                                    @click="open = !open">
+                                                <span x-text="getSelectedLabel()"></span>
+                                            </button>
+
+                                            <!-- Dropdown Menu -->
+                                            <div x-show="open" 
+                                                 class="dropdown-menu show p-2 position-absolute shadow-lg" 
+                                                 style="z-index: 1050; max-height: 250px; overflow-y: auto; width: 220px; left: 0; right: auto; top: 100%;">
+                                                <!-- Search Input -->
+                                                <input type="text" 
+                                                       class="form-control form-control-sm mb-2" 
+                                                       placeholder="Search..." 
+                                                       x-model="search"
+                                                       @click.stop
+                                                       x-ref="searchInput">
+                                                
+                                                <!-- Options List -->
+                                                <div class="list-group list-group-flush" style="max-height: 180px; overflow-y: auto;">
+                                                    <template x-for="[key, val] in filteredOptions" :key="key">
+                                                        <button type="button" 
+                                                                class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small"
+                                                                :class="emp.position === key ? 'active bg-success text-white' : ''"
+                                                                @click="emp.position = key; open = false; search = ''">
+                                                            <span x-text="val"></span>
+                                                        </button>
+                                                    </template>
+                                                    <template x-if="filteredOptions.length === 0">
+                                                        <div class="text-muted text-center p-2 small">No matches found</div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <input type="text" class="form-control form-control-sm" x-model="emp.sss" :class="emp.errors?.sss ? 'is-invalid' : ''" :title="emp.errors?.sss?.join(' ')">
