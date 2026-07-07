@@ -94,7 +94,8 @@
 
         tomSelectInstance.disable();
 
-        if(typeof reviewLinkBtn != 'undefined'){
+        const reviewLinkBtn = document.getElementById('reviewLinkBtn');
+        if(reviewLinkBtn){
 
             reviewLinkBtn.onclick = async ()=>{
                 let test = await $copyToClipboard('{{ url("/review/ledger/account/".$ledger_account->id); }}');
