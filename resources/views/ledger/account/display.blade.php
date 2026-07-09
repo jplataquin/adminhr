@@ -68,7 +68,7 @@
 
     <script type="module">
         import {$q} from '/adarna.js';
-        import TomSelect from 'https://cdn.jsdelivr.net/npm/tom-select@2.4.1/dist/esm/tom-select.complete.js';
+        import TomSelect from 'https://esm.sh/tom-select@2.4.1';
 
         const tomSelectInstance = new TomSelect("#employee_id", {
             valueField: 'id',
