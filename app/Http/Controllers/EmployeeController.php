@@ -380,14 +380,17 @@ class EmployeeController extends Controller
 
         try{
 
-            $path = storage_path('app/public/employee/photos/');
+            $path = Storage::disk('public')->path('employee/photos/');
 
             if(!File::isDirectory($path)){
     
                 File::makeDirectory($path, 0775, true, true);
             }
             
-            rename(storage_path('app/private/temp_uploads/'.$photo), storage_path('app/public/employee/photos/'.$photo));
+            rename(
+                Storage::disk('local')->path('temp_uploads/'.$photo), 
+                Storage::disk('public')->path('employee/photos/'.$photo)
+            );
 
         }catch(\Exception $e){
             return response()->json([
@@ -513,9 +516,15 @@ class EmployeeController extends Controller
 
             try{
 
+                $path = Storage::disk('public')->path('employee/photos/');
+
+                if(!File::isDirectory($path)){
+                    File::makeDirectory($path, 0775, true, true);
+                }
+
                 rename(
-                    storage_path('app/private/temp_uploads/'.$photo), 
-                    storage_path('app/public/employee/photos/'.$photo)
+                    Storage::disk('local')->path('temp_uploads/'.$photo), 
+                    Storage::disk('public')->path('employee/photos/'.$photo)
                 );
             
             }catch(\Exception $e){

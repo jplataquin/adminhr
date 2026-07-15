@@ -129,7 +129,7 @@ Route::get('/prize_miran.jpg', function () {
 
 Route::get('/employee/photo/{photo}', function($photo){
 
-    $path = storage_path('app/public/employee/photos/'.$photo);
+    $path = \Illuminate\Support\Facades\Storage::disk('public')->path('employee/photos/'.$photo);
 
     if(!file_exists($path)){
         return 'asdasd';

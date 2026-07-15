@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ledgers', function (Blueprint $table) {
-            try {
+        try {
+            Schema::table('ledgers', function (Blueprint $table) {
                 $table->dropUnique('ledgers_name_unique');
-            } catch (\Exception $e) {
-                // Index might not exist, ignore
-            }
-        });
+            });
+        } catch (\Exception $e) {
+            // Index might not exist, ignore
+        }
     }
 
     /**
