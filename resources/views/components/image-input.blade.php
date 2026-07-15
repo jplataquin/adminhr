@@ -10,7 +10,7 @@
 <div id="image_upload_card_{{$name}}" disabled="{{$disabled}}"  {{ $attributes->merge(['class' => 'row g-4 p-4']) }}>
     <div id="canvas_container_{{$name}}" class="col-lg-6">
         <div class="d-flex justify-content-center">
-            <canvas class="border shadow-sm bg-white" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$displayHeight}}px"></canvas>
+            <canvas class="shadow-sm bg-white" id="canvas_{{$name}}" width="{{$displayWidth}}px" height="{{$displayHeight}}px"></canvas>
         </div>
         <div class="d-flex justify-content-center mt-3">
             <input class="form-range" type="range" min="1" max="200" value="1" id="zoom_{{$name}}">
@@ -86,7 +86,7 @@
             
             Mode.value  = 'uploaded_success';
 
-            canvas.style.border = 'solid 3px #008000';
+            canvas.style.border = 'solid 4px #008000';
 
             canvas.classList.remove('shadow-loading');
             
@@ -100,7 +100,7 @@
 
             Mode.value = 'uploaing';
             
-            canvas.style.border = 'solid 3px rgb(210, 217, 10)';
+            canvas.style.border = 'solid 4px rgb(210, 217, 10)';
             canvas.classList.add('shadow-loading');
 
             uploadBtn.disabled = true;
@@ -109,13 +109,13 @@
         },
         imageChange:()=>{
             Mode.value = 'image_change';
-            canvas.style.border = 'solid 3px rgb(210, 217, 10)';
+            canvas.style.border = 'solid 4px rgb(210, 217, 10)';
             canvas.classList.remove('shadow-loading');
         },
         clearedImage:()=>{
             Mode.value = 'cleared_image';
             Mode.dry.empty();
-            canvas.style.border = 'solid 3px rgb(210, 217, 10)';
+            canvas.style.border = 'solid 4px rgb(210, 217, 10)';
             canvas.classList.remove('shadow-loading');
             
         },
