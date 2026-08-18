@@ -148,7 +148,7 @@ class Employee extends Model
             'EQUMAI'    => [
                 'EQUMAI'    => ' - ',
                 'REPMAI'    => 'Repair & Maintenance',
-                'Equipment' => 'Equipment',
+                'EQUIPM'    => 'Equipment',
                 'LOGAGR'    => 'Logistics & Aggregates'
             ],
             'SAPRDE' => [

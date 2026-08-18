@@ -69,4 +69,24 @@ class AdminTest extends TestCase
         $user->refresh();
         $this->assertNotEquals($oldPasswordHash, $user->password);
     }
+
+    public function test_non_admin_cannot_access_master_data(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+
+        $response = $this->actingAs($user)->get('/admin/master-data');
+
+        $response->assertRedirect('/dashboard');
+        $response->assertSessionHas('error', 'You do not have administrative access.');
+    }
+
+    public function test_admin_can_access_master_data(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->actingAs($user)->get('/admin/master-data');
+
+        $response->assertStatus(200);
+        $response->assertSee('Master Data');
+    }
 }

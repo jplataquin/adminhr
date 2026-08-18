@@ -22,8 +22,21 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- More cards can be added here -->
+
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3 text-secondary">
+                                <i class="bi bi-database-fill fs-1"></i>
+                            </div>
+                            <h5 class="card-title mb-3">Master Data</h5>
+                            <p class="card-text text-muted small">Configure and manage system-wide static options and master records.</p>
+                            <a href="{{ route('admin.master-data') }}" class="btn btn-primary w-100 mt-3">
+                                Go to Master Data
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

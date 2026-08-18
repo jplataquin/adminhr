@@ -224,6 +224,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
     Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
     Route::post('/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::get('/master-data', [App\Http\Controllers\Admin\MasterDataController::class, 'index'])->name('master-data');
 });
 
 require __DIR__.'/auth.php';
