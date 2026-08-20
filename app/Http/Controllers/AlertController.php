@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Alert;
 use App\Models\Employee;
+use App\Models\AlertDocumentType;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -40,7 +41,7 @@ class AlertController extends Controller
         $alerts = $query->paginate(15)->withQueryString();
 
         // Get distinct document types for filters / datalists
-        $documentTypes = Alert::distinct()->pluck('document_type')->filter()->values();
+        $documentTypes = AlertDocumentType::orderBy('name')->pluck('name');
 
         // Count metrics for cards
         $expiredCount = Alert::where('status', 'Expired')->count();
@@ -62,7 +63,7 @@ class AlertController extends Controller
     public function create()
     {
         $employees = Employee::orderBy('lastname')->orderBy('firstname')->get();
-        $documentTypes = Alert::distinct()->pluck('document_type')->filter()->values();
+        $documentTypes = AlertDocumentType::orderBy('name')->pluck('name');
 
         return view('alerts/create', [
             'employees' => $employees,
@@ -104,7 +105,7 @@ class AlertController extends Controller
     public function edit(Alert $alert)
     {
         $employees = Employee::orderBy('lastname')->orderBy('firstname')->get();
-        $documentTypes = Alert::distinct()->pluck('document_type')->filter()->values();
+        $documentTypes = AlertDocumentType::orderBy('name')->pluck('name');
 
         return view('alerts/edit', [
             'alert' => $alert,

@@ -42,16 +42,16 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <!-- Document Type (with Datalist) -->
+                                    <!-- Document Type (Dropdown) -->
                                     <div class="col-md-6">
                                         <label for="document_type" class="form-label small font-weight-bold">Document / Item Type <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="document_type" name="document_type" value="{{ old('document_type', $alert->document_type) }}" required list="document-types" placeholder="e.g. License, Visa, Contract">
-                                        <datalist id="document-types">
+                                        <select class="form-select" id="document_type" name="document_type" required>
+                                            <option value="">-- Select Type --</option>
                                             @foreach ($documentTypes as $type)
-                                                <option value="{{ $type }}">
+                                                <option value="{{ $type }}" {{ old('document_type', $alert->document_type) == $type ? 'selected' : '' }}>{{ $type }}</option>
                                             @endforeach
-                                        </datalist>
-                                        <div class="form-text small text-muted">Type to select an existing option or enter a custom one.</div>
+                                        </select>
+                                        <div class="form-text small text-muted">Select from the configured document/item types.</div>
                                     </div>
 
                                     <!-- Employee Link (Optional) -->
