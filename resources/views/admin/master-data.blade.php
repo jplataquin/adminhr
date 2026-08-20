@@ -4,18 +4,20 @@
             <h2 class="h4 font-weight-bold mb-0">
                 {{ __('Master Data') }}
             </h2>
+            
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="container">
+           
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Master Data</li>
                 </ol>
             </nav>
-        </div>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="container">
-            <h4 class="mb-4">Master Data Configurations</h4>
+            
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm border-0 h-100">
