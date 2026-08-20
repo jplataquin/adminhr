@@ -38,22 +38,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm border-0 h-100 bg-light text-muted">
-                        <div class="card-body p-4 text-center d-flex flex-column justify-content-between">
-                            <div>
-                                <div class="mb-3 text-secondary">
-                                    <i class="bi bi-lock-fill fs-1"></i>
-                                </div>
-                                <h5 class="card-title mb-2">General Configurations</h5>
-                                <p class="card-text small">System configuration settings are currently locked.</p>
-                            </div>
-                            <div class="mt-4">
-                                <button class="btn btn-outline-secondary btn-sm w-100" disabled>Under Construction</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            
             </div>
         </div>
     </div>
