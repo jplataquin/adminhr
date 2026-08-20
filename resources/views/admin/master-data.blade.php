@@ -11,7 +11,7 @@
     <div class="py-12">
         <div class="container">
            
-            <nav aria-label="breadcrumb">
+            <nav class="mb-4" aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Master Data</li>
