@@ -435,4 +435,9 @@ class Employee extends Model
 
         return $user;
     }
+
+    public function alerts()
+    {
+        return $this->hasMany(Alert::class, 'employee_id');
+    }
 }

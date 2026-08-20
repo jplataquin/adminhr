@@ -24,6 +24,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Alerts
+    Route::get('/alerts', [App\Http\Controllers\AlertController::class, 'index'])->name('alerts.index');
+    Route::get('/alerts/create', [App\Http\Controllers\AlertController::class, 'create'])->name('alerts.create');
+    Route::post('/alerts', [App\Http\Controllers\AlertController::class, 'store'])->name('alerts.store');
+    Route::get('/alerts/{alert}/edit', [App\Http\Controllers\AlertController::class, 'edit'])->name('alerts.edit');
+    Route::put('/alerts/{alert}', [App\Http\Controllers\AlertController::class, 'update'])->name('alerts.update');
+    Route::delete('/alerts/{alert}', [App\Http\Controllers\AlertController::class, 'destroy'])->name('alerts.destroy');
+    Route::post('/alerts/{alert}/renew', [App\Http\Controllers\AlertController::class, 'renew'])->name('alerts.renew');
 
     //Employee
     Route::get('/employee/create', [App\Http\Controllers\EmployeeController::class, 'create'])->name('employees');

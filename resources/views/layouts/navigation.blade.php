@@ -33,6 +33,11 @@
                         Employees
                     </x-nav-link>
                 </li>
+                <li class="nav-item">
+                    <x-nav-link :href="route('alerts.index')" :active="request()->routeIs('alerts.*')">
+                        Alerts
+                    </x-nav-link>
+                </li>
                 @if (Auth::user()->is_admin)
                     <li class="nav-item">
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
