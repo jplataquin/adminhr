@@ -107,6 +107,11 @@
                                         <td>No</td>
                                         <td>Optional contextual notes for the alert.</td>
                                     </tr>
+                                    <tr>
+                                        <td class="text-white fw-semibold">Reference</td>
+                                        <td>No</td>
+                                        <td>Optional serial number, passport number, transaction ID, etc. (max 250 chars).</td>
+                                    </tr>
                                 </tbody>
                             </table>
 

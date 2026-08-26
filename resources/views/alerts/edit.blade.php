@@ -85,6 +85,13 @@
                                     </div>
                                 </div>
 
+                                <!-- Reference -->
+                                <div class="mb-3">
+                                    <label for="reference" class="form-label small font-weight-bold">Reference <span class="text-muted">(Optional)</span></label>
+                                    <input type="text" class="form-control" id="reference" name="reference" value="{{ old('reference', $alert->reference) }}" placeholder="e.g. Passport number, contract reference, transaction ID">
+                                    <div class="form-text small text-muted">A code, identifier, or serial number related to this alert (max 250 characters).</div>
+                                </div>
+
                                 <!-- Description -->
                                 <div class="mb-4">
                                     <label for="description" class="form-label small font-weight-bold">Description / Additional Notes</label>

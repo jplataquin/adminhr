@@ -80,6 +80,7 @@ class AlertController extends Controller
             'expiry_date' => 'required|date',
             'alert_days_before' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'reference' => 'nullable|string|max:250',
         ]);
 
         $expiryDate = Carbon::parse($validated['expiry_date']);
@@ -123,6 +124,7 @@ class AlertController extends Controller
             'expiry_date' => 'required|date',
             'alert_days_before' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'reference' => 'nullable|string|max:250',
         ]);
 
         $expiryDate = Carbon::parse($validated['expiry_date']);
@@ -198,9 +200,9 @@ class AlertController extends Controller
 
         $callback = function () use ($validTypesList) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Title', 'Document Type', 'Employee ID', 'Expiry Date', 'Alert Days Before', 'Description']);
-            fputcsv($file, ['Visa Renewal - John Doe', 'Visa', '1', Carbon::now()->addMonths(6)->format('Y-m-d'), '30', 'John Doe Visa Expiry alert']);
-            fputcsv($file, ['Driving License - Jane Smith', 'License', '', Carbon::now()->addDays(15)->format('Y-m-d'), '15', 'Jane Smith driving license renewal alert']);
+            fputcsv($file, ['Title', 'Document Type', 'Employee ID', 'Expiry Date', 'Alert Days Before', 'Description', 'Reference']);
+            fputcsv($file, ['Visa Renewal - John Doe', 'Visa', '1', Carbon::now()->addMonths(6)->format('Y-m-d'), '30', 'John Doe Visa Expiry alert', 'REF-VISA-01']);
+            fputcsv($file, ['Driving License - Jane Smith', 'License', '', Carbon::now()->addDays(15)->format('Y-m-d'), '15', 'Jane Smith driving license renewal alert', 'REF-DL-02']);
             fputcsv($file, []);
             fputcsv($file, ['NOTE: Document Type must match one of the following valid options:']);
             fputcsv($file, [$validTypesList]);
@@ -307,6 +309,7 @@ class AlertController extends Controller
                 'expiry_date' => $expiryDate->format('Y-m-d'),
                 'alert_days_before' => $alertDays,
                 'description' => $alert['description'] ?? null,
+                'reference' => !empty($alert['reference']) ? trim($alert['reference']) : null,
                 'status' => $status,
                 'created_by' => Auth::id(),
             ]);
@@ -342,6 +345,7 @@ class AlertController extends Controller
                 'expiry_date' => '',
                 'alert_days_before' => 30,
                 'description' => '',
+                'reference' => '',
             ];
 
             foreach ($headers as $index => $header) {
@@ -371,6 +375,8 @@ class AlertController extends Controller
                     $item['alert_days_before'] = is_numeric($value) ? (int)$value : 30;
                 } elseif (in_array($header, ['description', 'details', 'notes', 'desc'])) {
                     $item['description'] = trim($value);
+                } elseif (in_array($header, ['reference', 'ref', 'refnum', 'referenceno'])) {
+                    $item['reference'] = trim($value);
                 }
             }
 

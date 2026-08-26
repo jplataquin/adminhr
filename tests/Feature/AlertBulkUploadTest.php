@@ -40,14 +40,15 @@ test('user can download sample upload template', function () {
                     ->toContain('Employee ID')
                     ->toContain('Expiry Date')
                     ->toContain('Alert Days Before')
-                    ->toContain('Description');
+                    ->toContain('Description')
+                    ->toContain('Reference');
 });
 
 test('user can upload file and see tabular preview', function () {
     $user = User::factory()->create();
 
-    $header = 'Title,Document Type,Employee ID,Expiry Date,Alert Days Before,Description';
-    $row1 = 'Uploaded Visa Alert,Visa,,2026-12-31,30,Visa details here';
+    $header = 'Title,Document Type,Employee ID,Expiry Date,Alert Days Before,Description,Reference';
+    $row1 = 'Uploaded Visa Alert,Visa,,2026-12-31,30,Visa details here,REF-TEST-999';
     $content = "{$header}\n{$row1}";
 
     $file = UploadedFile::fake()->createWithContent('alerts.csv', $content);
@@ -66,6 +67,7 @@ test('user can upload file and see tabular preview', function () {
     expect($parsed[0]['title'])->toBe('Uploaded Visa Alert');
     expect($parsed[0]['document_type'])->toBe('Visa');
     expect($parsed[0]['expiry_date'])->toBe('2026-12-31');
+    expect($parsed[0]['reference'])->toBe('REF-TEST-999');
 });
 
 test('user can store bulk uploaded alerts', function () {
@@ -79,6 +81,7 @@ test('user can store bulk uploaded alerts', function () {
             'expiry_date' => Carbon::now()->addDays(40)->toDateString(),
             'alert_days_before' => 10,
             'description' => 'First bulk desc',
+            'reference' => 'REF-BULK-01',
         ],
         [
             'title' => 'Bulk Alert Two',
@@ -87,6 +90,7 @@ test('user can store bulk uploaded alerts', function () {
             'expiry_date' => Carbon::now()->addDays(5)->toDateString(),
             'alert_days_before' => 10,
             'description' => 'Second bulk desc',
+            'reference' => 'REF-BULK-02',
         ],
     ];
 
@@ -102,12 +106,14 @@ test('user can store bulk uploaded alerts', function () {
         'title' => 'Bulk Alert One',
         'document_type' => 'Visa',
         'status' => 'Active',
+        'reference' => 'REF-BULK-01',
     ]);
 
     $this->assertDatabaseHas('alerts', [
         'title' => 'Bulk Alert Two',
         'document_type' => 'License',
         'status' => 'Warning', // 5 days is within 10 days warning threshold
+        'reference' => 'REF-BULK-02',
     ]);
 });
 

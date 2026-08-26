@@ -31,6 +31,7 @@ test('user can register an alert document', function () {
             'expiry_date' => Carbon::tomorrow()->toDateString(),
             'alert_days_before' => 5,
             'description' => 'Need to renew tomorrow.',
+            'reference' => 'REF-VISA-TEST',
         ]);
 
     $response->assertRedirect('/alerts');
@@ -40,6 +41,7 @@ test('user can register an alert document', function () {
         'title' => 'Visa Renewal',
         'document_type' => 'Visa',
         'status' => 'Warning', // Tomorrow is within 5 days threshold, so status should be Warning
+        'reference' => 'REF-VISA-TEST',
         'created_by' => $user->id,
     ]);
 });
@@ -92,6 +94,7 @@ test('user can update an alert', function () {
             'expiry_date' => Carbon::now()->addDays(30)->toDateString(),
             'alert_days_before' => 5,
             'description' => 'Updated desc',
+            'reference' => 'REF-NEW-DL',
         ]);
 
     $response->assertRedirect('/alerts');
@@ -99,6 +102,7 @@ test('user can update an alert', function () {
     $alert->refresh();
     $this->assertSame('New Title', $alert->title);
     $this->assertSame('Updated desc', $alert->description);
+    $this->assertSame('REF-NEW-DL', $alert->reference);
     $this->assertSame($user->id, $alert->updated_by);
 });
 

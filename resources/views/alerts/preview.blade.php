@@ -59,6 +59,7 @@
                                     <th style="width: 220px;">Linked Employee</th>
                                     <th style="width: 170px;">Expiry Date <span class="text-danger">*</span></th>
                                     <th style="width: 110px;">Threshold (Days)</th>
+                                    <th style="width: 160px;">Reference</th>
                                     <th>Description</th>
                                     <th class="text-center" style="width: 80px;">Actions</th>
                                 </tr>
@@ -123,6 +124,11 @@
                                         <!-- Alert Days Before Column -->
                                         <td>
                                             <input type="number" x-model.number="alert.alert_days_before" min="0" class="form-control form-control-sm border-secondary text-white bg-dark" required>
+                                        </td>
+
+                                        <!-- Reference Column -->
+                                        <td>
+                                            <input type="text" x-model="alert.reference" class="form-control form-control-sm border-secondary text-white bg-dark" placeholder="Optional ref...">
                                         </td>
 
                                         <!-- Description Column -->

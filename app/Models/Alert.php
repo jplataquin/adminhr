@@ -18,6 +18,7 @@ class Alert extends Model
         'title',
         'document_type',
         'description',
+        'reference',
         'expiry_date',
         'alert_days_before',
         'status',
