@@ -45,11 +45,11 @@
                             <tbody>
                                 @forelse ($types as $type)
                                     <tr>
-                                        <td class="px-4 text-muted">{{ $type->id }}</td>
+                                        <td class="px-4 text-white-50">{{ $type->id }}</td>
                                         <td>
-                                            <strong class="text-dark">{{ $type->name }}</strong>
+                                            <strong class="text-white">{{ $type->name }}</strong>
                                         </td>
-                                        <td class="small text-muted">
+                                        <td class="small text-white-50">
                                             {{ $type->created_at->format('M d, Y H:i') }}
                                         </td>
                                         <td class="text-end px-4">
@@ -69,7 +69,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center py-5 text-muted">
+                                        <td colspan="4" class="text-center py-5 text-white-50">
                                             <div class="fs-4 mb-2"><i class="bi bi-info-circle"></i></div>
                                             No alert document types are configured yet.
                                         </td>
@@ -79,7 +79,7 @@
                         </table>
                     </div>
                     @if ($types->hasPages())
-                        <div class="card-footer bg-white border-0 py-3">
+                        <div class="card-footer bg-transparent border-0 py-3">
                             {{ $types->links() }}
                         </div>
                     @endif
