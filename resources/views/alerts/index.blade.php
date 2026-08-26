@@ -4,9 +4,14 @@
             <h2 class="h4 font-weight-bold mb-0">
                 {{ __('Alerts Dashboard') }}
             </h2>
-            <a href="{{ route('alerts.create') }}" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle me-1"></i> Register New Alert
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('alerts.upload') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-file-earmark-excel me-1"></i> Bulk Upload
+                </a>
+                <a href="{{ route('alerts.create') }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Register New Alert
+                </a>
+            </div>
         </div>
     </x-slot>
 

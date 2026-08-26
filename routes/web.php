@@ -25,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Alerts
+    Route::get('/alerts/upload', [App\Http\Controllers\AlertController::class, 'showUploadForm'])->name('alerts.upload');
+    Route::get('/alerts/sample', [App\Http\Controllers\AlertController::class, 'downloadSample'])->name('alerts.sample');
+    Route::post('/alerts/preview', [App\Http\Controllers\AlertController::class, 'previewUpload'])->name('alerts.preview');
+    Route::post('/alerts/bulk-store', [App\Http\Controllers\AlertController::class, 'bulkStore'])->name('alerts.bulk-store');
     Route::get('/alerts', [App\Http\Controllers\AlertController::class, 'index'])->name('alerts.index');
     Route::get('/alerts/create', [App\Http\Controllers\AlertController::class, 'create'])->name('alerts.create');
     Route::post('/alerts', [App\Http\Controllers\AlertController::class, 'store'])->name('alerts.store');

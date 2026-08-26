@@ -180,4 +180,194 @@ class AlertController extends Controller
 
         return redirect()->route('alerts.index')->with('success', 'Alert renewed successfully.');
     }
+
+    public function showUploadForm()
+    {
+        return view('alerts/upload');
+    }
+
+    public function downloadSample()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="alerts_bulk_upload_sample.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Title', 'Document Type', 'Employee ID', 'Expiry Date', 'Alert Days Before', 'Description']);
+            fputcsv($file, ['Visa Renewal - John Doe', 'Visa', '1', Carbon::now()->addMonths(6)->format('Y-m-d'), '30', 'John Doe Visa Expiry alert']);
+            fputcsv($file, ['Driving License - Jane Smith', 'License', '', Carbon::now()->addDays(15)->format('Y-m-d'), '15', 'Jane Smith driving license renewal alert']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function previewUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file');
+        $parsedAlerts = $this->parseExcelFile($file);
+
+        if (empty($parsedAlerts)) {
+            return redirect()->back()->withErrors(['file' => 'No valid data found in the uploaded file.']);
+        }
+
+        $employees = Employee::orderBy('lastname')->orderBy('firstname')->get(['id', 'firstname', 'lastname']);
+        $documentTypes = AlertDocumentType::orderBy('name')->pluck('name');
+        $existingTitles = Alert::whereNull('deleted_at')->pluck('title')->toArray();
+
+        return view('alerts/preview', [
+            'parsedAlerts' => $parsedAlerts,
+            'employees' => $employees,
+            'documentTypes' => $documentTypes,
+            'existingTitles' => $existingTitles,
+        ]);
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $request->validate([
+            'alerts' => 'required|string',
+        ]);
+
+        $alerts = json_decode($request->input('alerts'), true);
+
+        if (!is_array($alerts)) {
+            return redirect()->back()->withErrors(['alerts' => 'Invalid data format.']);
+        }
+
+        $errors = [];
+        $titlesInUpload = [];
+        $existingTitles = Alert::whereNull('deleted_at')->pluck('title')->toArray();
+
+        foreach ($alerts as $index => $alert) {
+            $rowNum = $index + 1;
+            $title = trim($alert['title'] ?? '');
+
+            if ($title === '') {
+                $errors[] = "Row {$rowNum}: Title (Item Name) is required.";
+                continue;
+            }
+
+            if (in_array($title, $titlesInUpload)) {
+                $errors[] = "Row {$rowNum}: Item Name '{$title}' is duplicated in the uploaded list.";
+            } else {
+                $titlesInUpload[] = $title;
+            }
+
+            if (in_array($title, $existingTitles)) {
+                $errors[] = "Row {$rowNum}: Item Name '{$title}' already exists in the system.";
+            }
+
+            if (empty($alert['document_type'] ?? '')) {
+                $errors[] = "Row {$rowNum}: Document type is required.";
+            }
+
+            if (empty($alert['expiry_date'] ?? '')) {
+                $errors[] = "Row {$rowNum}: Expiry date is required.";
+            } elseif (!strtotime($alert['expiry_date'])) {
+                $errors[] = "Row {$rowNum}: Expiry date is invalid.";
+            }
+        }
+
+        if (!empty($errors)) {
+            return redirect()->back()->withInput()->withErrors($errors);
+        }
+
+        foreach ($alerts as $alert) {
+            $expiryDate = Carbon::parse($alert['expiry_date']);
+            $alertDays = (int) ($alert['alert_days_before'] ?? 30);
+            $today = Carbon::today();
+
+            $status = 'Active';
+            if ($today->greaterThanOrEqualTo($expiryDate)) {
+                $status = 'Expired';
+            } elseif ($today->greaterThanOrEqualTo($expiryDate->copy()->subDays($alertDays))) {
+                $status = 'Warning';
+            }
+
+            Alert::create([
+                'title' => trim($alert['title']),
+                'document_type' => trim($alert['document_type']),
+                'employee_id' => !empty($alert['employee_id']) ? (int) $alert['employee_id'] : null,
+                'expiry_date' => $expiryDate->format('Y-m-d'),
+                'alert_days_before' => $alertDays,
+                'description' => $alert['description'] ?? null,
+                'status' => $status,
+                'created_by' => Auth::id(),
+            ]);
+        }
+
+        return redirect()->route('alerts.index')->with('success', count($alerts) . ' alerts imported successfully.');
+    }
+
+    private function parseExcelFile($file)
+    {
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray([], $file);
+        $rows = $sheets[0] ?? [];
+        if (empty($rows)) {
+            return [];
+        }
+
+        $headers = array_map(function ($h) {
+            return strtolower(trim(str_replace(['_', ' ', '-'], '', $h)));
+        }, $rows[0]);
+
+        $data = [];
+        $count = count($rows);
+        for ($i = 1; $i < $count; $i++) {
+            $row = $rows[$i];
+            if (empty(array_filter($row))) {
+                continue;
+            }
+
+            $item = [
+                'title' => '',
+                'document_type' => '',
+                'employee_id' => null,
+                'expiry_date' => '',
+                'alert_days_before' => 30,
+                'description' => '',
+            ];
+
+            foreach ($headers as $index => $header) {
+                $value = $row[$index] ?? null;
+                if ($value === null) {
+                    continue;
+                }
+
+                if (in_array($header, ['title', 'itemname', 'name', 'item'])) {
+                    $item['title'] = trim($value);
+                } elseif (in_array($header, ['documenttype', 'type', 'doctype'])) {
+                    $item['document_type'] = trim($value);
+                } elseif (in_array($header, ['employeeid', 'employee', 'linkedemployee', 'empid'])) {
+                    $item['employee_id'] = is_numeric($value) ? (int)$value : null;
+                } elseif (in_array($header, ['expirydate', 'expiry', 'date', 'exp'])) {
+                    if (is_numeric($value)) {
+                        try {
+                            $dateValue = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
+                            $item['expiry_date'] = $dateValue->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            $item['expiry_date'] = $value;
+                        }
+                    } else {
+                        $item['expiry_date'] = trim($value);
+                    }
+                } elseif (in_array($header, ['alertdaysbefore', 'alertdays', 'days', 'threshold'])) {
+                    $item['alert_days_before'] = is_numeric($value) ? (int)$value : 30;
+                } elseif (in_array($header, ['description', 'details', 'notes', 'desc'])) {
+                    $item['description'] = trim($value);
+                }
+            }
+
+            $data[] = $item;
+        }
+
+        return $data;
+    }
 }
