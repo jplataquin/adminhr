@@ -3,8 +3,14 @@
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Alert;
+use App\Models\AlertDocumentType;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
+
+beforeEach(function () {
+    AlertDocumentType::create(['name' => 'Visa']);
+    AlertDocumentType::create(['name' => 'License']);
+});
 
 test('guest cannot access bulk upload page', function () {
     $this->get('/alerts/upload')->assertRedirect('/login');
@@ -174,4 +180,33 @@ test('bulk store enforces unique title/item name against existing database alert
 
     $response->assertRedirect('/alerts/preview');
     $response->assertSessionHasErrors();
+});
+
+test('bulk store blocks unknown document types', function () {
+    $user = User::factory()->create();
+
+    // Payload with an unrecognized document type "Passport" (not created in beforeEach)
+    $alertsData = [
+        [
+            'title' => 'Test with Unknown Doc Type',
+            'document_type' => 'Passport',
+            'employee_id' => null,
+            'expiry_date' => '2026-10-15',
+            'alert_days_before' => 15,
+            'description' => '',
+        ],
+    ];
+
+    $response = $this->actingAs($user)
+         ->from('/alerts/preview')
+         ->post('/alerts/bulk-store', [
+             'alerts' => json_encode($alertsData),
+         ]);
+
+    $response->assertRedirect('/alerts/preview');
+    $response->assertSessionHasErrors();
+    
+    $this->assertDatabaseMissing('alerts', [
+        'title' => 'Test with Unknown Doc Type',
+    ]);
 });

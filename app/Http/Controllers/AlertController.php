@@ -193,11 +193,17 @@ class AlertController extends Controller
             'Content-Disposition' => 'attachment; filename="alerts_bulk_upload_sample.csv"',
         ];
 
-        $callback = function () {
+        $validTypes = AlertDocumentType::orderBy('name')->pluck('name')->toArray();
+        $validTypesList = implode(', ', $validTypes);
+
+        $callback = function () use ($validTypesList) {
             $file = fopen('php://output', 'w');
             fputcsv($file, ['Title', 'Document Type', 'Employee ID', 'Expiry Date', 'Alert Days Before', 'Description']);
             fputcsv($file, ['Visa Renewal - John Doe', 'Visa', '1', Carbon::now()->addMonths(6)->format('Y-m-d'), '30', 'John Doe Visa Expiry alert']);
             fputcsv($file, ['Driving License - Jane Smith', 'License', '', Carbon::now()->addDays(15)->format('Y-m-d'), '15', 'Jane Smith driving license renewal alert']);
+            fputcsv($file, []);
+            fputcsv($file, ['NOTE: Document Type must match one of the following valid options:']);
+            fputcsv($file, [$validTypesList]);
             fclose($file);
         };
 
@@ -244,6 +250,7 @@ class AlertController extends Controller
         $errors = [];
         $titlesInUpload = [];
         $existingTitles = Alert::whereNull('deleted_at')->pluck('title')->toArray();
+        $validDocumentTypes = AlertDocumentType::pluck('name')->toArray();
 
         foreach ($alerts as $index => $alert) {
             $rowNum = $index + 1;
@@ -266,6 +273,8 @@ class AlertController extends Controller
 
             if (empty($alert['document_type'] ?? '')) {
                 $errors[] = "Row {$rowNum}: Document type is required.";
+            } elseif (!in_array($alert['document_type'], $validDocumentTypes)) {
+                $errors[] = "Row {$rowNum}: Document type '{$alert['document_type']}' is unrecognized.";
             }
 
             if (empty($alert['expiry_date'] ?? '')) {

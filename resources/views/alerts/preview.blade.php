@@ -65,7 +65,7 @@
                             </thead>
                             <tbody>
                                 <template x-for="(alert, index) in alerts" :key="index">
-                                    <tr :class="{'table-danger-subtle': !isTitleValid(alert.title, index) || !alert.document_type || !alert.expiry_date}">
+                                    <tr :class="{'table-danger-subtle': !isTitleValid(alert.title, index) || !isDocTypeValid(alert.document_type) || !alert.expiry_date}">
                                         <td class="px-3 text-muted fw-semibold" x-text="index + 1"></td>
                                         
                                         <!-- Title Column -->
@@ -92,10 +92,13 @@
                                                     <option :value="type" x-text="type" :selected="alert.document_type === type"></option>
                                                 </template>
                                                 <!-- If it is custom and not in list, add it as option -->
-                                                <option x-show="alert.document_type && !documentTypes.includes(alert.document_type)" :value="alert.document_type" x-text="alert.document_type" selected></option>
+                                                <option x-show="alert.document_type && !documentTypes.includes(alert.document_type)" :value="alert.document_type" x-text="alert.document_type + ' (Unrecognized)'" selected></option>
                                             </select>
                                             <div x-show="!alert.document_type" class="text-danger small mt-1">
                                                 <i class="bi bi-x-circle me-1"></i> Required.
+                                            </div>
+                                            <div x-show="alert.document_type && !documentTypes.includes(alert.document_type)" class="text-danger small mt-1">
+                                                <i class="bi bi-exclamation-triangle me-1"></i> Unrecognized document type.
                                             </div>
                                         </td>
 
@@ -217,12 +220,16 @@
                     return true;
                 },
 
+                isDocTypeValid(type) {
+                    return type && this.documentTypes.includes(type);
+                },
+
                 hasErrors() {
                     for (let i = 0; i < this.alerts.length; i++) {
                         const alert = this.alerts[i];
                         if (!alert.title || alert.title.trim() === '') return true;
                         if (!this.isTitleValid(alert.title, i)) return true;
-                        if (!alert.document_type || alert.document_type.trim() === '') return true;
+                        if (!alert.document_type || !this.isDocTypeValid(alert.document_type)) return true;
                         if (!alert.expiry_date || alert.expiry_date.trim() === '') return true;
                     }
                     return false;
