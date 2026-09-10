@@ -344,10 +344,12 @@ it('cleans up legacy and invalid department data using the artisan command', fun
     ]);
 
     // 2. Employee with invalid department for division (should be cleaned to null)
+    // We set department_id directly to bypass the mutator validation and force an invalid relation state.
     $employee2 = createEmployee($this->user, [
         'division' => 'ACCFIN',
-        'department' => 'OCUSAF' // invalid for ACCFIN
     ]);
+    $employee2->department_id = \Illuminate\Support\Facades\DB::table('departments')->where('code', 'OCUSAF')->value('id');
+    $employee2->save();
 
     // 3. Employee with already valid department (should remain untouched)
     $employee3 = createEmployee($this->user, [

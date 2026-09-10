@@ -238,6 +238,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
     Route::get('/master-data', [App\Http\Controllers\Admin\MasterDataController::class, 'index'])->name('master-data');
     Route::resource('/master-data/alert-document-types', App\Http\Controllers\Admin\AlertDocumentTypeController::class)->except(['show']);
+    Route::resource('/master-data/divisions', App\Http\Controllers\Admin\DivisionController::class)->except(['show']);
+    Route::resource('/master-data/departments', App\Http\Controllers\Admin\DepartmentController::class)->except(['show']);
+    Route::resource('/master-data/positions', App\Http\Controllers\Admin\PositionController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';
