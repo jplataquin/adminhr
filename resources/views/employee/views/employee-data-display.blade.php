@@ -50,26 +50,26 @@
                     </div>
 
                     <div class="col-md-6">
-                        <x-select-input label="Division" id="division" data-value="{{$employee->division}}" disabled="true" class="editable">
+                        <x-select-input label="Division" id="division_id" data-value="{{$employee->division_id}}" disabled="true" class="editable">
                             @foreach($employee->division_options() as $val=>$text)
-                                <option value="{{$val}}" @if($employee->division == $val) selected @endif>{{$text}}</option>
+                                <option value="{{$val}}" @if($employee->division_id == $val) selected @endif>{{$text}}</option>
                             @endforeach
                         </x-select-input>
                     </div>
                     <div class="col-md-6">
-                        <x-select-input label="Department" id="department" data-value="{{$employee->department}}" dependon="#division" disabled="true" class="editable">
+                        <x-select-input label="Department" id="department_id" data-value="{{$employee->department_id}}" dependon="#division_id" disabled="true" class="editable">
                             @foreach($employee->department_options_grouped() as $group=>$options)
                                 @foreach($options as $val=>$text)
-                                    <option group="{{$group}}" value="{{$val}}" @if($employee->department == $val) selected @endif >{{$text}}</option>
+                                    <option group="{{$group}}" value="{{$val}}" @if($employee->department_id == $val) selected @endif >{{$text}}</option>
                                 @endforeach
                             @endforeach
                         </x-select-input>
                     </div>
 
                     <div class="col-12">
-                        <x-select-input label="Position" id="position" data-value="{{$employee->position}}" disabled="true" class="editable">
+                        <x-select-input label="Position" id="position_id" data-value="{{$employee->position_id}}" disabled="true" class="editable">
                             @foreach($employee->position_options() as $val=>$text)
-                                <option value="{{$val}}" @if($employee->position == $val) selected @endif>{{$text}}</option>
+                                <option value="{{$val}}" @if($employee->position_id == $val) selected @endif>{{$text}}</option>
                             @endforeach
                         </x-select-input>
                     </div>
@@ -266,9 +266,9 @@
                     employment_end_date      : employment_end_date.value,
                     employment_status        : employment_status.value,
                     duty_status              : duty_status.value,
-                    division                 : division.value,
-                    department               : department.value,
-                    position                 : position.value,
+                    division_id              : division_id.value,
+                    department_id            : department_id.value,
+                    position_id              : position_id.value,
                     sss                      : sss.value,
                     philhealth               : philhealth.value,
                     pagibig                  : pagibig.value,

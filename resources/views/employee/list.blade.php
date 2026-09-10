@@ -19,7 +19,7 @@
 
             <div class="row g-3 mb-4">
                  <div class="col-md-6">
-                    <x-select-input label="Division" id="division">
+                    <x-select-input label="Division" id="division_id">
                         <option value=""> - </option>
                         @foreach($employee->division_options() as $val=>$text)
                             <option value="{{$val}}">{{$text}}</option>
@@ -27,7 +27,7 @@
                     </x-select-input>
                 </div>
                 <div class="col-md-6">
-                    <x-select-input label="Department" id="department" dependon="#division">
+                    <x-select-input label="Department" id="department_id" dependon="#division_id">
                         <option value=""> - </option>
                         @foreach($employee->department_options_grouped() as $group=>$options)
                             @foreach($options as $val=>$text)
@@ -54,8 +54,8 @@
         const createRecordBtn   = $q('#createRecordBtn').first();
         const exportCSVBtn      = $q('#exportCSVBtn').first();
         const bulkUpdateBtn     = $q('#bulkUpdateBtn').first();
-        const division          = $q('#division').first();
-        const department        = $q('#department').first();
+        const division_id          = $q('#division_id').first();
+        const department_id        = $q('#department_id').first();
 
 
         let page            = 1;
@@ -118,16 +118,16 @@
 
         pageDoc.showData = ()=>{
 
-        console.log(division.value);
-            console.log(department.value);
+        console.log(division_id.value);
+            console.log(department_id.value);
             $_GET('/api/employees',{
                 query           : search.value,
                 page            : page,
                 order           : order,
                 order_by        : orderBy,
                 limit           : 10,
-                division        : division.value,
-                department      : department.value
+                division_id     : division_id.value,
+                department_id   : department_id.value
             }).then(reply=>{
 
                 
@@ -172,13 +172,13 @@
             },1000);
         }
 
-        division.onchange = () => {
+        division_id.onchange = () => {
             
             pageDoc.reinitalize();
             pageDoc.showData();
         }
 
-        department.onchange = () => {
+        department_id.onchange = () => {
             pageDoc.reinitalize();
             pageDoc.showData();
         }

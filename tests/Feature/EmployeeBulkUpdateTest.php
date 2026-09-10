@@ -2,6 +2,9 @@
 
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\Division;
+use App\Models\Department;
+use App\Models\Position;
 
 beforeEach(function () {
     // Create an admin or regular user to authenticate
@@ -9,6 +12,10 @@ beforeEach(function () {
 });
 
 function createEmployee(User $user, array $attributes = []) {
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRST')->first() ?? Position::first();
+
     $employee = new Employee();
     $employee->firstname = $attributes['firstname'] ?? 'John';
     $employee->lastname = $attributes['lastname'] ?? 'Doe';
@@ -19,9 +26,9 @@ function createEmployee(User $user, array $attributes = []) {
     $employee->current_address = $attributes['current_address'] ?? '123 St';
     $employee->permanent_address = $attributes['permanent_address'] ?? '123 St';
     $employee->educational_attainment = $attributes['educational_attainment'] ?? 'BD';
-    $employee->position = $attributes['position'] ?? 'ADHRST';
-    $employee->division = $attributes['division'] ?? 'ADMNHR';
-    $employee->department = $attributes['department'] ?? 'PURCHA';
+    $employee->position_id = $attributes['position_id'] ?? $position->id;
+    $employee->division_id = $attributes['division_id'] ?? $division->id;
+    $employee->department_id = $attributes['department_id'] ?? $department->id;
     $employee->employment_status = $attributes['employment_status'] ?? 'REGU';
     $employee->duty_status = $attributes['duty_status'] ?? 'ONDU';
     $employee->employment_start_date = $attributes['employment_start_date'] ?? '2020-01-01';
@@ -71,6 +78,11 @@ it('commits valid bulk updates to the database via JSON', function () {
         'duty_status' => 'ONDU'
     ]);
 
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department1 = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $department2 = Department::where('code', 'OCUSAF')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRST')->first() ?? Position::first();
+
     $payload = [
         'rows' => [
             [
@@ -92,9 +104,9 @@ it('commits valid bulk updates to the database via JSON', function () {
                 'employment_end_date' => null,
                 'employment_status' => 'REGU',
                 'duty_status' => 'ONDU',
-                'division' => 'ADMNHR',
-                'department' => 'PURCHA',
-                'position' => 'ADHRST',
+                'division_id' => $division->id,
+                'department_id' => $department1->id,
+                'position_id' => $position->id,
                 'sss' => null,
                 'philhealth' => null,
                 'pagibig' => null,
@@ -128,9 +140,9 @@ it('commits valid bulk updates to the database via JSON', function () {
                 'employment_end_date' => null,
                 'employment_status' => 'REGU',
                 'duty_status' => 'ONLV',
-                'division' => 'ADMNHR',
-                'department' => 'OCUSAF',
-                'position' => 'ADHRST',
+                'division_id' => $division->id,
+                'department_id' => $department2->id,
+                'position_id' => $position->id,
                 'sss' => null,
                 'philhealth' => null,
                 'pagibig' => null,
@@ -172,6 +184,10 @@ it('commits valid bulk updates to the database via JSON', function () {
 it('rejects invalid bulk updates', function () {
     $employee = createEmployee($this->user);
 
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRST')->first() ?? Position::first();
+
     $payload = [
         'rows' => [
             [
@@ -193,9 +209,9 @@ it('rejects invalid bulk updates', function () {
                 'employment_end_date' => null,
                 'employment_status' => 'REGU',
                 'duty_status' => 'ONDU',
-                'division' => 'ADMNHR',
-                'department' => 'PURCHA',
-                'position' => 'ADHRST',
+                'division_id' => $division->id,
+                'department_id' => $department->id,
+                'position_id' => $position->id,
                 'sss' => null,
                 'philhealth' => null,
                 'pagibig' => null,
@@ -223,9 +239,13 @@ it('rejects invalid bulk updates', function () {
 });
 
 it('accepts bulk update with null department', function () {
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRST')->first() ?? Position::first();
+
     $employee = createEmployee($this->user, [
-        'division' => 'ADMNHR',
-        'department' => 'PURCHA'
+        'division_id' => $division->id,
+        'department_id' => $department->id
     ]);
 
     $payload = [
@@ -249,9 +269,9 @@ it('accepts bulk update with null department', function () {
                 'employment_end_date' => null,
                 'employment_status' => 'REGU',
                 'duty_status' => 'ONDU',
-                'division' => 'ADMNHR',
-                'department' => null, // null department
-                'position' => 'ADHRST',
+                'division_id' => $division->id,
+                'department_id' => null, // null department
+                'position_id' => $position->id,
                 'sss' => null,
                 'philhealth' => null,
                 'pagibig' => null,
@@ -276,13 +296,17 @@ it('accepts bulk update with null department', function () {
 
     // Verify DB update
     $employee->refresh();
-    expect($employee->department)->toBeNull();
+    expect($employee->department_id)->toBeNull();
 });
 
 it('accepts bulk update with empty string department', function () {
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRST')->first() ?? Position::first();
+
     $employee = createEmployee($this->user, [
-        'division' => 'ADMNHR',
-        'department' => 'PURCHA'
+        'division_id' => $division->id,
+        'department_id' => $department->id
     ]);
 
     $payload = [
@@ -306,9 +330,9 @@ it('accepts bulk update with empty string department', function () {
                 'employment_end_date' => null,
                 'employment_status' => 'REGU',
                 'duty_status' => 'ONDU',
-                'division' => 'ADMNHR',
-                'department' => '', // empty string department
-                'position' => 'ADHRST',
+                'division_id' => $division->id,
+                'department_id' => '', // empty string department
+                'position_id' => $position->id,
                 'sss' => null,
                 'philhealth' => null,
                 'pagibig' => null,
@@ -333,28 +357,36 @@ it('accepts bulk update with empty string department', function () {
 
     // Verify DB update
     $employee->refresh();
-    expect($employee->department)->toBeNull();
+    expect($employee->department_id)->toBeNull();
 });
 
 it('cleans up legacy and invalid department data using the artisan command', function () {
+    $division1 = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $dummy_dept1 = Department::where('division_id', $division1->id)->where('code', 'ADMNHR')->first() ?? Department::first();
+
+    $division2 = Division::where('code', 'ACCFIN')->first() ?? Division::first();
+    $invalid_dept2 = Department::where('code', 'OCUSAF')->first() ?? Department::first(); // Belong to ADMNHR, not ACCFIN
+
+    $division3 = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $valid_dept3 = Department::where('division_id', $division3->id)->where('code', 'OCUSAF')->first() ?? Department::first();
+
     // 1. Employee with legacy dummy department matching division (should be cleaned to null)
     $employee1 = createEmployee($this->user, [
-        'division' => 'ADMNHR',
-        'department' => 'ADMNHR'
+        'division_id' => $division1->id,
+        'department_id' => $dummy_dept1->id
     ]);
 
     // 2. Employee with invalid department for division (should be cleaned to null)
-    // We set department_id directly to bypass the mutator validation and force an invalid relation state.
     $employee2 = createEmployee($this->user, [
-        'division' => 'ACCFIN',
+        'division_id' => $division2->id,
     ]);
-    $employee2->department_id = \Illuminate\Support\Facades\DB::table('departments')->where('code', 'OCUSAF')->value('id');
+    $employee2->department_id = $invalid_dept2->id;
     $employee2->save();
 
     // 3. Employee with already valid department (should remain untouched)
     $employee3 = createEmployee($this->user, [
-        'division' => 'ADMNHR',
-        'department' => 'OCUSAF' // valid
+        'division_id' => $division3->id,
+        'department_id' => $valid_dept3->id
     ]);
 
     // Run the Artisan command
@@ -368,7 +400,7 @@ it('cleans up legacy and invalid department data using the artisan command', fun
     $employee2->refresh();
     $employee3->refresh();
 
-    expect($employee1->department)->toBeNull();
-    expect($employee2->department)->toBeNull();
-    expect($employee3->department)->toBe('OCUSAF');
+    expect($employee1->department_id)->toBeNull();
+    expect($employee2->department_id)->toBeNull();
+    expect($employee3->department_id)->toBe($valid_dept3->id);
 });

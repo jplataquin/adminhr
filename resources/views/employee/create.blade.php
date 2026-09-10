@@ -57,14 +57,14 @@
                     </div>
 
                     <div class="col-md-6">
-                        <x-select-input label="Division" id="division">
+                        <x-select-input label="Division" id="division_id">
                             @foreach($employee->division_options() as $val=>$text)
                                 <option value="{{$val}}">{{$text}}</option>
                             @endforeach
                         </x-select-input>
                     </div>
                     <div class="col-md-6">
-                        <x-select-input label="Department" id="department" dependon="#division">
+                        <x-select-input label="Department" id="department_id" dependon="#division_id">
                             @foreach($employee->department_options_grouped() as $group=>$options)
                                 @foreach($options as $val=>$text)
                                     <option group="{{$group}}" value="{{$val}}">{{$text}}</option>
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="col-12">
-                        <x-select-input label="Position" id="position">
+                        <x-select-input label="Position" id="position_id">
                             @foreach($employee->position_options() as $val=>$text)
                                 <option value="{{$val}}">{{$text}}</option>
                             @endforeach
@@ -221,9 +221,9 @@
                 employment_end_date      : employment_end_date.value,
                 employment_status        : employment_status.value,
                 duty_status              : duty_status.value,
-                division                 : division.value,
-                department               : department.value,
-                position                 : position.value,
+                division_id              : division_id.value,
+                department_id            : department_id.value,
+                position_id              : position_id.value,
                 sss                      : sss.value,
                 philhealth               : philhealth.value,
                 pagibig                  : pagibig.value,

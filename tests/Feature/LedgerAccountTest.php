@@ -3,9 +3,16 @@
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\LedgerAccount;
+use App\Models\Division;
+use App\Models\Department;
+use App\Models\Position;
 
 it('can create a ledger account with an employee', function () {
     $user = User::factory()->create();
+
+    $division = Division::first();
+    $department = Department::first();
+    $position = Position::first();
 
     $employee = new Employee();
     $employee->firstname = 'John';
@@ -17,8 +24,9 @@ it('can create a ledger account with an employee', function () {
     $employee->current_address = '123 St';
     $employee->permanent_address = '123 St';
     $employee->educational_attainment = 'GR';
-    $employee->position = 'STAFF';
-    $employee->division = 'DIV001';
+    $employee->position_id = $position ? $position->id : null;
+    $employee->division_id = $division ? $division->id : null;
+    $employee->department_id = $department ? $department->id : null;
     $employee->employment_start_date = '2020-01-01';
     $employee->created_by = $user->id;
     $employee->save();
@@ -41,6 +49,10 @@ it('can create a ledger account with an employee', function () {
 it('can update a ledger account employee link', function () {
     $user = User::factory()->create();
 
+    $division = Division::first();
+    $department = Department::first();
+    $position = Position::first();
+
     $employee1 = new Employee();
     $employee1->firstname = 'John';
     $employee1->lastname = 'Doe';
@@ -51,8 +63,9 @@ it('can update a ledger account employee link', function () {
     $employee1->current_address = '123 St';
     $employee1->permanent_address = '123 St';
     $employee1->educational_attainment = 'GR';
-    $employee1->position = 'STAFF';
-    $employee1->division = 'DIV001';
+    $employee1->position_id = $position ? $position->id : null;
+    $employee1->division_id = $division ? $division->id : null;
+    $employee1->department_id = $department ? $department->id : null;
     $employee1->employment_start_date = '2020-01-01';
     $employee1->created_by = $user->id;
     $employee1->save();
@@ -67,8 +80,9 @@ it('can update a ledger account employee link', function () {
     $employee2->current_address = '456 St';
     $employee2->permanent_address = '456 St';
     $employee2->educational_attainment = 'GR';
-    $employee2->position = 'STAFF';
-    $employee2->division = 'DIV001';
+    $employee2->position_id = $position ? $position->id : null;
+    $employee2->division_id = $division ? $division->id : null;
+    $employee2->department_id = $department ? $department->id : null;
     $employee2->employment_start_date = '2020-01-01';
     $employee2->created_by = $user->id;
     $employee2->save();

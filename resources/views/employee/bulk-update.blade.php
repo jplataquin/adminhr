@@ -242,8 +242,8 @@
                                                 );
                                             },
                                             getSelectedLabel() {
-                                                if (!emp.division) return '- Select -';
-                                                return options.division[emp.division] || '- Select -';
+                                                if (!emp.division_id) return '- Select -';
+                                                return options.division[emp.division_id] || '- Select -';
                                             }
                                         }" @click.away="open = false"
                                            :style="open ? 'z-index: 1060 !important;' : ''"
@@ -252,8 +252,8 @@
                                             <button type="button" 
                                                     class="form-select form-select-sm text-start text-truncate" 
                                                     style="width: 220px;"
-                                                    :class="emp.errors?.division ? 'is-invalid' : ''"
-                                                    :title="emp.errors?.division?.join(' ')"
+                                                    :class="emp.errors?.division_id ? 'is-invalid' : ''"
+                                                    :title="emp.errors?.division_id?.join(' ')"
                                                     @click="open = !open">
                                                 <span x-text="getSelectedLabel()"></span>
                                             </button>
@@ -275,8 +275,8 @@
                                                     <template x-for="[key, val] in filteredOptions" :key="key">
                                                         <button type="button" 
                                                                 class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small"
-                                                                :class="emp.division === key ? 'active bg-success text-white' : ''"
-                                                                @click="emp.division = key; emp.department = ''; open = false; search = ''">
+                                                                :class="emp.division_id === key ? 'active bg-success text-white' : ''"
+                                                                @click="emp.division_id = key; emp.department_id = ''; open = false; search = ''">
                                                             <span x-text="val"></span>
                                                         </button>
                                                     </template>
@@ -292,14 +292,14 @@
                                             search: '',
                                             get filteredOptions() {
                                                 const q = this.search.toLowerCase();
-                                                const options = getDepartmentOptions(emp.division);
+                                                const options = getDepartmentOptions(emp.division_id);
                                                 return options.filter(dept => 
-                                                    dept.label.toLowerCase().includes(q) || dept.value.toLowerCase().includes(q)
+                                                    dept.label.toLowerCase().includes(q) || dept.value.toString().includes(q)
                                                 );
                                             },
                                             getSelectedLabel() {
-                                                const options = getDepartmentOptions(emp.division);
-                                                const selected = options.find(dept => (dept.value || '') === (emp.department || ''));
+                                                const options = getDepartmentOptions(emp.division_id);
+                                                const selected = options.find(dept => (dept.value || '') == (emp.department_id || ''));
                                                 return selected ? selected.label : '- Select -';
                                             }
                                         }" 
@@ -310,8 +310,8 @@
                                             <button type="button" 
                                                     class="form-select form-select-sm text-start text-truncate" 
                                                     style="width: 220px;"
-                                                    :class="emp.errors?.department ? 'is-invalid' : ''"
-                                                    :title="emp.errors?.department?.join(' ')"
+                                                    :class="emp.errors?.department_id ? 'is-invalid' : ''"
+                                                    :title="emp.errors?.department_id?.join(' ')"
                                                     @click="open = !open">
                                                 <span x-text="getSelectedLabel()"></span>
                                             </button>
@@ -333,8 +333,8 @@
                                                     <template x-for="dept in filteredOptions" :key="dept.value">
                                                         <button type="button" 
                                                                 class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small"
-                                                                :class="(emp.department || '') === (dept.value || '') ? 'active bg-success text-white' : ''"
-                                                                @click="emp.department = dept.value; open = false; search = ''">
+                                                                :class="(emp.department_id || '') == (dept.value || '') ? 'active bg-success text-white' : ''"
+                                                                @click="emp.department_id = dept.value; open = false; search = ''">
                                                             <span x-text="dept.label"></span>
                                                         </button>
                                                     </template>
@@ -351,11 +351,11 @@
                                             get filteredOptions() {
                                                 const q = this.search.toLowerCase();
                                                 return Object.entries(options.position).filter(([key, val]) => 
-                                                    val.toLowerCase().includes(q) || key.toLowerCase().includes(q)
+                                                    val.toLowerCase().includes(q) || key.toString().includes(q)
                                                 );
                                             },
                                             getSelectedLabel() {
-                                                return options.position[emp.position] || '- Select Position -';
+                                                return options.position[emp.position_id] || '- Select Position -';
                                             }
                                         }" 
                                         :style="open ? 'z-index: 1060 !important;' : ''"
@@ -365,8 +365,8 @@
                                             <button type="button" 
                                                     class="form-select form-select-sm text-start text-truncate" 
                                                     style="width: 220px;"
-                                                    :class="emp.errors?.position ? 'is-invalid' : ''"
-                                                    :title="emp.errors?.position?.join(' ')"
+                                                    :class="emp.errors?.position_id ? 'is-invalid' : ''"
+                                                    :title="emp.errors?.position_id?.join(' ')"
                                                     @click="open = !open">
                                                 <span x-text="getSelectedLabel()"></span>
                                             </button>
@@ -388,8 +388,8 @@
                                                     <template x-for="[key, val] in filteredOptions" :key="key">
                                                         <button type="button" 
                                                                 class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small"
-                                                                :class="emp.position === key ? 'active bg-success text-white' : ''"
-                                                                @click="emp.position = key; open = false; search = ''">
+                                                                :class="emp.position_id == key ? 'active bg-success text-white' : ''"
+                                                                @click="emp.position_id = key; open = false; search = ''">
                                                             <span x-text="val"></span>
                                                         </button>
                                                     </template>
@@ -455,13 +455,7 @@
         function bulkUpdateHandler() {
 
             return {
-                employees: JSON.parse('{!! addslashes($employeesJson) !!}').map(emp => {
-                    // Convert dummy department codes (which equal division code) to empty string on load
-                    if (emp.department === emp.division) {
-                        emp.department = '';
-                    }
-                    return emp;
-                }),
+                employees: JSON.parse('{!! addslashes($employeesJson) !!}'),
                 options: JSON.parse('{!! addslashes($optionsJson) !!}'),
                 searchQuery: '',
                 loading: false,
@@ -477,12 +471,12 @@
                     });
                 },
 
-                getDepartmentOptions(divisionCode) {
+                getDepartmentOptions(divisionId) {
                     
-                    if (!divisionCode || !this.options.department_grouped[divisionCode]) {
+                    if (!divisionId || !this.options.department_grouped[divisionId]) {
                         return [];
                     }
-                    const group = this.options.department_grouped[divisionCode];
+                    const group = this.options.department_grouped[divisionId];
 
                     return Object.entries(group).map(([key, val]) => ({
                         value: val === ' - ' ? '' : key,
@@ -529,9 +523,9 @@
                             employment_end_date: emp.employment_end_date || null,
                             employment_status: emp.employment_status,
                             duty_status: emp.duty_status,
-                            division: emp.division,
-                            department: emp.department || null,
-                            position: emp.position,
+                            division_id: emp.division_id,
+                            department_id: emp.department_id || null,
+                            position_id: emp.position_id,
                             sss: emp.sss || null,
                             philhealth: emp.philhealth || null,
                             pagibig: emp.pagibig || null,

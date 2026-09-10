@@ -102,73 +102,24 @@ class Employee extends Model
         return (object) $opt;
     }
 
-    public function divisionRelationship()
+    public function division()
     {
         return $this->belongsTo(Division::class, 'division_id')->withTrashed();
     }
 
-    public function departmentRelationship()
+    public function department()
     {
         return $this->belongsTo(Department::class, 'department_id')->withTrashed();
     }
 
-    public function positionRelationship()
+    public function position()
     {
         return $this->belongsTo(Position::class, 'position_id')->withTrashed();
     }
 
-    public function getDivisionAttribute()
-    {
-        return $this->division_id ? optional($this->divisionRelationship)->code : null;
-    }
-
-    public function setDivisionAttribute($value)
-    {
-        if ($value) {
-            $division = Division::where('code', $value)->first();
-            $this->attributes['division_id'] = $division ? $division->id : null;
-        } else {
-            $this->attributes['division_id'] = null;
-        }
-    }
-
-    public function getDepartmentAttribute()
-    {
-        return $this->department_id ? optional($this->departmentRelationship)->code : null;
-    }
-
-    public function setDepartmentAttribute($value)
-    {
-        if ($value) {
-            $query = Department::where('code', $value);
-            if ($this->division_id) {
-                $query->where('division_id', $this->division_id);
-            }
-            $department = $query->first();
-            $this->attributes['department_id'] = $department ? $department->id : null;
-        } else {
-            $this->attributes['department_id'] = null;
-        }
-    }
-
-    public function getPositionAttribute()
-    {
-        return $this->position_id ? optional($this->positionRelationship)->code : null;
-    }
-
-    public function setPositionAttribute($value)
-    {
-        if ($value) {
-            $position = Position::where('code', $value)->first();
-            $this->attributes['position_id'] = $position ? $position->id : null;
-        } else {
-            $this->attributes['position_id'] = null;
-        }
-    }
-
     public static function division_options($key = null){
         try {
-            $opt = Division::pluck('name', 'code')->toArray();
+            $opt = Division::pluck('name', 'id')->toArray();
         } catch (\Exception $e) {
             $opt = [];
         }
@@ -187,7 +138,7 @@ class Employee extends Model
             $divisions = Division::with('departments')->get();
             $opt = [];
             foreach ($divisions as $div) {
-                $opt[$div->code] = $div->departments->pluck('name', 'code')->toArray();
+                $opt[$div->id] = $div->departments->pluck('name', 'id')->toArray();
             }
         } catch (\Exception $e) {
             $opt = [];
@@ -216,7 +167,7 @@ class Employee extends Model
 
     public static function position_options($key = null){
         try {
-            $opt = Position::pluck('name', 'code')->toArray();
+            $opt = Position::pluck('name', 'id')->toArray();
         } catch (\Exception $e) {
             $opt = [];
         }

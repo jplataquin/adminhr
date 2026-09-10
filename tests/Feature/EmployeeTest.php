@@ -2,6 +2,9 @@
 
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\Division;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -11,6 +14,10 @@ beforeEach(function () {
 });
 
 function createTestEmployee(User $user, array $attributes = []) {
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRDM')->first() ?? Position::first();
+
     $employee = new Employee();
     $employee->firstname = $attributes['firstname'] ?? 'John';
     $employee->lastname = $attributes['lastname'] ?? 'Doe';
@@ -21,9 +28,9 @@ function createTestEmployee(User $user, array $attributes = []) {
     $employee->current_address = $attributes['current_address'] ?? '123 St';
     $employee->permanent_address = $attributes['permanent_address'] ?? '123 St';
     $employee->educational_attainment = $attributes['educational_attainment'] ?? 'BD';
-    $employee->position = $attributes['position'] ?? 'ADHRDM';
-    $employee->division = $attributes['division'] ?? 'ADMNHR';
-    $employee->department = $attributes['department'] ?? 'PURCHA';
+    $employee->position_id = $attributes['position_id'] ?? $position->id;
+    $employee->division_id = $attributes['division_id'] ?? $division->id;
+    $employee->department_id = $attributes['department_id'] ?? $department->id;
     $employee->employment_status = $attributes['employment_status'] ?? 'REGU';
     $employee->duty_status = $attributes['duty_status'] ?? 'ONDU';
     $employee->employment_start_date = $attributes['employment_start_date'] ?? '2020-01-01';
@@ -47,6 +54,10 @@ it('can create an employee and move their temporary photo to public disk', funct
     // Assert that the file exists in the temporary uploads directory
     expect(Storage::disk('local')->exists('temp_uploads/' . $photoName))->toBeTrue();
 
+    $division = Division::where('code', 'ADMNHR')->first() ?? Division::first();
+    $department = Department::where('code', 'PURCHA')->first() ?? Department::first();
+    $position = Position::where('code', 'ADHRDM')->first() ?? Position::first();
+
     // Send the post request to create employee
     $response = $this->actingAs($this->user)->postJson('/api/employee/create', [
         'photo' => $photoName,
@@ -59,9 +70,9 @@ it('can create an employee and move their temporary photo to public disk', funct
         'current_address' => '123 Main St',
         'permanent_address' => '123 Main St',
         'educational_attainment' => 'BD',
-        'position' => 'ADHRDM',
-        'division' => 'ADMNHR',
-        'department' => 'PURCHA',
+        'position_id' => $position->id,
+        'division_id' => $division->id,
+        'department_id' => $department->id,
         'employment_status' => 'REGU',
         'duty_status' => 'ONDU',
         'employment_start_date' => '2023-01-01',
@@ -111,9 +122,9 @@ it('can update an employee and move their new temporary photo to public disk', f
         'current_address' => $employee->current_address,
         'permanent_address' => $employee->permanent_address,
         'educational_attainment' => $employee->educational_attainment,
-        'position' => $employee->position,
-        'division' => $employee->division,
-        'department' => $employee->department,
+        'position_id' => $employee->position_id,
+        'division_id' => $employee->division_id,
+        'department_id' => $employee->department_id,
         'employment_status' => $employee->employment_status,
         'duty_status' => $employee->duty_status,
         'employment_start_date' => $employee->employment_start_date,

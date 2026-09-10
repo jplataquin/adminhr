@@ -61,8 +61,8 @@ class EmployeeController extends Controller
         $order      = $request->input('order')          ?? 'DESC';
         $query      = $request->input('query')          ?? '';
         $status     = $request->input('status')         ?? '';
-        $division   = $request->input('division')       ?? '';
-        $department = $request->input('department')     ?? '';
+        $division_id   = $request->input('division_id')       ?? '';
+        $department_id = $request->input('department_id')     ?? '';
 
         $result = [];
 
@@ -78,12 +78,12 @@ class EmployeeController extends Controller
             $employee = $employee->where('status','=',$status);
         }
 
-        if($division != ''){
-            $employee = $employee->where('division','=',$division);
+        if($division_id != ''){
+            $employee = $employee->where('division_id','=',$division_id);
         } 
 
-        if($department != ''){
-            $department = $employee->where('department','=',$department);
+        if($department_id != ''){
+            $employee = $employee->where('department_id','=',$department_id);
         } 
 
         if($limit > 0){
@@ -177,17 +177,17 @@ class EmployeeController extends Controller
                 'required',
                 'in:'.$this->format_in( $employee->duty_status_options() )
             ],
-            'division'                  => [
+            'division_id'               => [
                 'required',
-                'in:'.$this->format_in( $employee->division_options() )
+                'exists:divisions,id'
             ],
-            'department'                => [
+            'department_id'             => [
                 'nullable',
-                'min:6'
+                'exists:departments,id'
             ],
-            'position'                  => [
+            'position_id'               => [
                 'required',
-                'in:'.$this->format_in( $employee->position_options() )
+                'exists:positions,id'
             ],
             'sss'                       => ['max:255'],
             'philhealth'                => ['max:255'],
@@ -290,17 +290,17 @@ class EmployeeController extends Controller
                 'required',
                 'in:'.$this->format_in( $employee->duty_status_options() )
             ],
-            'division'                  => [
+            'division_id'               => [
                 'required',
-                'in:'.$this->format_in( $employee->division_options() )
+                'exists:divisions,id'
             ],
-            'department'                => [
+            'department_id'             => [
                 'nullable',
-                'min:6'
+                'exists:departments,id'
             ],
-            'position'                  => [
+            'position_id'               => [
                 'required',
-                'in:'.$this->format_in( $employee->position_options() )
+                'exists:positions,id'
             ],
             'sss'                       => ['max:255'],
             'philhealth'                => ['max:255'],
@@ -363,9 +363,9 @@ class EmployeeController extends Controller
         $employment_end_date            = $request->input('employment_end_date');
         $employment_status              = $request->input('employment_status');
         $duty_status                    = $request->input('duty_status');
-        $division                       = $request->input('division');
-        $department                     = $request->input('department');
-        $position                       = $request->input('position');
+        $division_id                    = $request->input('division_id');
+        $department_id                  = $request->input('department_id');
+        $position_id                    = $request->input('position_id');
         $sss                            = $request->input('sss');
         $philhealth                     = $request->input('philhealth');
         $pagibig                        = $request->input('pagibig');
@@ -426,9 +426,9 @@ class EmployeeController extends Controller
         $employee->employment_end_date      = $employment_end_date;
         $employee->employment_status        = $employment_status;
         $employee->duty_status              = $duty_status;
-        $employee->division                 = $division;
-        $employee->department               = ($department === $division) ? null : $department;
-        $employee->position                 = $position;
+        $employee->division_id              = $division_id;
+        $employee->department_id            = $department_id;
+        $employee->position_id              = $position_id;
         $employee->sss                      = $sss;
         $employee->philhealth               = $philhealth;
         $employee->pagibig                  = $pagibig;
@@ -487,9 +487,9 @@ class EmployeeController extends Controller
         $employment_end_date            = $request->input('employment_end_date');
         $employment_status              = $request->input('employment_status');
         $duty_status                    = $request->input('duty_status');
-        $division                       = $request->input('division');
-        $department                     = $request->input('department');
-        $position                       = $request->input('position');
+        $division_id                    = $request->input('division_id');
+        $department_id                  = $request->input('department_id');
+        $position_id                    = $request->input('position_id');
         $sss                            = $request->input('sss');
         $philhealth                     = $request->input('philhealth');
         $pagibig                        = $request->input('pagibig');
@@ -560,9 +560,9 @@ class EmployeeController extends Controller
         $employee->employment_end_date      = $employment_end_date;
         $employee->employment_status        = $employment_status;
         $employee->duty_status              = $duty_status;
-        $employee->division                 = $division;
-        $employee->department               = ($department === $division) ? null : $department;
-        $employee->position                 = $position;
+        $employee->division_id              = $division_id;
+        $employee->department_id            = $department_id;
+        $employee->position_id              = $position_id;
         $employee->sss                      = $sss;
         $employee->philhealth               = $philhealth;
         $employee->pagibig                  = $pagibig;
@@ -624,9 +624,9 @@ class EmployeeController extends Controller
             'employment_end_date',
             'employment_status',
             'duty_status',
-            'division',
-            'department',
-            'position',
+            'division_id',
+            'department_id',
+            'position_id',
             'sss',
             'philhealth',
             'pagibig',
@@ -685,18 +685,12 @@ class EmployeeController extends Controller
                 return $marital_status_options->$key; 
             },'style'=>'text-align:center;min-width:100px'],
 
-            'Department'            => ['key'=>function($data) use ($department_options){
-                $div = $data->divsion;
-                $key = $data->department;
-
-                if(!$div) return '';
-
-                return $department->$div->$key;
+            'Department'            => ['key'=>function($data){
+                return optional($data->department)->name ?? '';
             },'style'=>'text-align:center,min-width:200px'],
 
-            'Position'              => ['key'=>function($data) use ($position_options){
-                $key = $data->position;
-                return $position_options->$key;
+            'Position'              => ['key'=>function($data){
+                return optional($data->position)->name ?? '';
             },'style'=>'text-align:center;min-width:200px'],
 
             'Employment Status'     => ['key'=>function($data) use ($employment_status_options){
@@ -759,11 +753,11 @@ class EmployeeController extends Controller
 
         foreach($employees as $employee){
 
-            if(!isset($divisions[$employee->division])){
-                $divisions[$employee->division] = [];
+            if(!isset($divisions[$employee->division_id])){
+                $divisions[$employee->division_id] = [];
             }
 
-            $divisions[$employee->division][] = $employee;
+            $divisions[$employee->division_id][] = $employee;
         }
 
         ksort($divisions);
@@ -940,7 +934,7 @@ class EmployeeController extends Controller
 
         $rows = $request->input('rows');
 
-        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'division', 'department', 'position', 'educational_attainment'];
+        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'educational_attainment'];
 
         foreach ($rows as $index => $row) {
             foreach ($row as $key => $value) {
@@ -998,9 +992,9 @@ class EmployeeController extends Controller
                 $employee->employment_end_date      = $row['employment_end_date'];
                 $employee->employment_status        = $row['employment_status'];
                 $employee->duty_status              = $row['duty_status'];
-                $employee->division                 = $row['division'];
-                $employee->department               = ($row['department'] === $row['division']) ? null : $row['department'];
-                $employee->position                 = $row['position'];
+                $employee->division_id              = $row['division_id'];
+                $employee->department_id            = $row['department_id'];
+                $employee->position_id              = $row['position_id'];
                 $employee->sss                      = $row['sss'];
                 $employee->philhealth               = $row['philhealth'];
                 $employee->pagibig                  = $row['pagibig'];
@@ -1039,7 +1033,7 @@ class EmployeeController extends Controller
     private function validate_bulk_row($row) {
         $employee = new Employee();
         
-        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'division', 'department', 'position', 'educational_attainment'];
+        $uppercase_fields = ['gender', 'marital_status', 'employment_status', 'duty_status', 'educational_attainment'];
 
         foreach ($row as $key => $value) {
             if (is_string($value)) {
@@ -1071,9 +1065,9 @@ class EmployeeController extends Controller
             'employment_end_date' => 'nullable|date_format:Y-m-d',
             'employment_status' => 'required|in:' . $this->format_in($employee->employment_status_options()),
             'duty_status' => 'required|in:' . $this->format_in($employee->duty_status_options()),
-            'division' => 'required|in:' . $this->format_in($employee->division_options()),
-            'department' => 'nullable|max:255',
-            'position' => 'required|in:' . $this->format_in($employee->position_options()),
+            'division_id' => 'required|exists:divisions,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
             'sss' => 'nullable|max:255',
             'philhealth' => 'nullable|max:255',
             'pagibig' => 'nullable|max:255',
