@@ -38,22 +38,31 @@
                                 @csrf
 
                                 <div class="mb-4">
-                                    <label for="department_id" class="form-label small font-weight-bold">Department <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="department_id" name="department_id" required autofocus>
-                                        <option value="">-- Select Department --</option>
-                                        @foreach ($departments as $department)
-                                            <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
-                                                [{{ $department->division->code }}] {{ $department->code }} - {{ $department->name }}
+                                    <label for="division_id" class="form-label small font-weight-bold">Division <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="division_id" name="division_id" required autofocus>
+                                        <option value="">-- Select Division --</option>
+                                        @foreach ($divisions as $division)
+                                            <option value="{{ $division->id }}" {{ old('division_id') == $division->id ? 'selected' : '' }}>
+                                                {{ $division->name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <div class="form-text small text-muted">Select the department this position belongs to.</div>
+                                    <div class="form-text small text-muted">Select the division this position belongs to.</div>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label for="code" class="form-label small font-weight-bold">Position Code <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control font-monospace text-uppercase" id="code" name="code" value="{{ old('code') }}" required placeholder="e.g. ADHRDM, ADHRST, ITHEAD" maxlength="7">
-                                    <div class="form-text small text-muted">A short globally unique code identifier for the position (up to 7 characters).</div>
+                                    <label for="department_id" class="form-label small font-weight-bold">Department <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="department_id" name="department_id" required disabled>
+                                        <option value="">-- Select Department --</option>
+                                        @foreach ($divisions as $division)
+                                            @foreach ($division->departments as $department)
+                                                <option value="{{ $department->id }}" data-division-id="{{ $division->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }} style="display: none;">
+                                                    {{ $department->name }}
+                                                </option>
+                                            @endforeach
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text small text-muted">Select the department this position belongs to.</div>
                                 </div>
 
                                 <div class="mb-4">
@@ -67,6 +76,51 @@
                                     <button type="submit" class="btn btn-warning text-dark btn-sm font-weight-bold">Create Position</button>
                                 </div>
                             </form>
+
+                            <script type="text/javascript">
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const divisionSelect = document.getElementById('division_id');
+                                    const departmentSelect = document.getElementById('department_id');
+                                    const departmentOptions = departmentSelect.querySelectorAll('option');
+
+                                    function updateDepartments(divisionId) {
+                                        if (divisionId === '') {
+                                            departmentSelect.value = '';
+                                            departmentSelect.disabled = true;
+                                            departmentOptions.forEach(opt => {
+                                                if (opt.value !== '') {
+                                                    opt.style.display = 'none';
+                                                }
+                                            });
+                                        } else {
+                                            departmentSelect.disabled = false;
+                                            departmentOptions.forEach(opt => {
+                                                if (opt.value !== '') {
+                                                    if (opt.getAttribute('data-division-id') == divisionId) {
+                                                        opt.style.display = 'block';
+                                                    } else {
+                                                        opt.style.display = 'none';
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    divisionSelect.addEventListener('change', function() {
+                                        departmentSelect.value = '';
+                                        updateDepartments(this.value);
+                                    });
+
+                                    // Trigger initial on load if division is already selected (e.g. on validation back)
+                                    if (divisionSelect.value !== '') {
+                                        updateDepartments(divisionSelect.value);
+                                        const selectedDept = "{{ old('department_id') }}";
+                                        if (selectedDept !== '') {
+                                            departmentSelect.value = selectedDept;
+                                        }
+                                    }
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>

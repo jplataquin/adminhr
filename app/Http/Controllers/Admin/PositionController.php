@@ -18,8 +18,8 @@ class PositionController extends Controller
 
     public function create()
     {
-        $departments = Department::with('division')->get();
-        return view('admin.positions.create', compact('departments'));
+        $divisions = \App\Models\Division::with('departments')->get();
+        return view('admin.positions.create', compact('divisions'));
     }
 
     public function store(Request $request)
@@ -27,18 +27,16 @@ class PositionController extends Controller
         $request->validate([
             'department_id' => 'required|exists:departments,id',
             'name' => 'required|string|max:255',
-            'code' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('positions')->whereNull('deleted_at'),
-            ],
         ]);
+
+        $baseCode = strtoupper(str_replace(' ', '_', preg_replace('/[^A-Za-z0-9 ]/', '', $request->name)));
+        $baseCode = substr($baseCode, 0, 100);
+        $code = $baseCode . '_' . strtoupper(bin2hex(random_bytes(4)));
 
         Position::create([
             'department_id' => $request->department_id,
             'name' => $request->name,
-            'code' => strtoupper($request->code),
+            'code' => $code,
         ]);
 
         return redirect()->route('admin.positions.index')->with('success', 'Position created successfully.');
@@ -46,8 +44,8 @@ class PositionController extends Controller
 
     public function edit(Position $position)
     {
-        $departments = Department::with('division')->get();
-        return view('admin.positions.edit', compact('position', 'departments'));
+        $divisions = \App\Models\Division::with('departments')->get();
+        return view('admin.positions.edit', compact('position', 'divisions'));
     }
 
     public function update(Request $request, Position $position)
@@ -55,18 +53,11 @@ class PositionController extends Controller
         $request->validate([
             'department_id' => 'required|exists:departments,id',
             'name' => 'required|string|max:255',
-            'code' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('positions')->ignore($position->id)->whereNull('deleted_at'),
-            ],
         ]);
 
         $position->update([
             'department_id' => $request->department_id,
             'name' => $request->name,
-            'code' => strtoupper($request->code),
         ]);
 
         return redirect()->route('admin.positions.index')->with('success', 'Position updated successfully.');
