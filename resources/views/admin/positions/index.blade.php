@@ -50,11 +50,10 @@
                                     <tr>
                                         <td class="px-4 text-white-50">{{ $position->id }}</td>
                                         <td>
-                                            <span class="badge bg-success font-monospace">{{ $position->department->division->code }}</span>
+                                            <span class="text-white">{{ $position->department->division->name }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info font-monospace">{{ $position->department->code }}</span>
-                                            <span class="small text-white-50 ms-1 d-none d-md-inline">{{ $position->department->name }}</span>
+                                            <span class="text-white">{{ $position->department->name }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-warning text-dark font-monospace">{{ $position->code }}</span>
