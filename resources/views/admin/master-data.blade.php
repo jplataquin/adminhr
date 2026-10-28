@@ -99,6 +99,26 @@
                     </div>
                 </div>
 
+                <!-- Ledger Types Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body p-4 text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="mb-3 text-danger">
+                                    <i class="bi bi-tags-fill fs-1"></i>
+                                </div>
+                                <h5 class="card-title mb-2">Ledger Types</h5>
+                                <p class="card-text text-muted small">Configure the master list of ledger account classification types (e.g., Cash Advance, Accounts Receivable).</p>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{{ route('admin.ledger-types.index') }}" class="btn btn-danger btn-sm w-100">
+                                    Manage Types
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             
             </div>
         </div>
