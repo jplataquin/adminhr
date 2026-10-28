@@ -18,7 +18,7 @@
 *   **Authentication:** Powered by Laravel Breeze (Blade/Alpine version) with standard user profiles and session management.
 
 ## Coding Conventions
-*   **Testing:** Write all tests using Pest in the `tests/` directory.
+*   **Testing:** Write all tests using Pest in the `tests/` directory. Only run targeted tests for the specific code, feature, or area being modified (e.g. `php artisan test tests/Feature/...` or `vendor/bin/pest tests/Feature/...`) to save development time; do not run the entire test suite on every change.
 *   **Views & UI:** Heavily rely on Laravel Blade components (both class-based in `app/View/Components/` and anonymous in `resources/views/components/`). Use Bootstrap 5 for all styling.
 *   **JavaScript:** Use Alpine.js for lightweight declarative reactivity within Blade templates. Keep heavier client-side logic organized inside `resources/js/`.
 

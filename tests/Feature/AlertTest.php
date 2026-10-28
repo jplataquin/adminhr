@@ -20,6 +20,32 @@ test('authenticated user can access alerts dashboard', function () {
     $response->assertOk();
 });
 
+test('authenticated user can access alert creation page with searchable employees', function () {
+    $user = User::factory()->create();
+    $employee = new Employee();
+    $employee->firstname = 'Jane';
+    $employee->lastname = 'Doe';
+    $employee->birthdate = '1992-05-10';
+    $employee->religion = 'None';
+    $employee->gender = 'F';
+    $employee->marital_status = 'SING';
+    $employee->current_address = '456 Avenue';
+    $employee->permanent_address = '456 Avenue';
+    $employee->educational_attainment = 'BD';
+    $employee->employment_start_date = '2020-01-01';
+    $employee->created_by = $user->id;
+    $employee->save();
+
+    $response = $this
+        ->actingAs($user)
+        ->get('/alerts/create');
+
+    $response->assertOk();
+    $response->assertSee('employeeSearchSelect');
+    $response->assertSee('Doe, Jane');
+    $response->assertSee('name="employee_id"', false);
+});
+
 test('user can register an alert document', function () {
     $user = User::factory()->create();
 
@@ -42,6 +68,45 @@ test('user can register an alert document', function () {
         'document_type' => 'Visa',
         'status' => 'Warning', // Tomorrow is within 5 days threshold, so status should be Warning
         'reference' => 'REF-VISA-TEST',
+        'created_by' => $user->id,
+    ]);
+});
+
+test('user can register an alert linked to an employee', function () {
+    $user = User::factory()->create();
+    $employee = new Employee();
+    $employee->firstname = 'Carlos';
+    $employee->lastname = 'Mendoza';
+    $employee->birthdate = '1988-12-04';
+    $employee->religion = 'Catholic';
+    $employee->gender = 'M';
+    $employee->marital_status = 'MARD';
+    $employee->current_address = '789 Boulevard';
+    $employee->permanent_address = '789 Boulevard';
+    $employee->educational_attainment = 'BD';
+    $employee->employment_start_date = '2020-01-01';
+    $employee->created_by = $user->id;
+    $employee->save();
+
+    $response = $this
+        ->actingAs($user)
+        ->post('/alerts', [
+            'title' => 'Passport Renewal',
+            'document_type' => 'Passport',
+            'employee_id' => $employee->id,
+            'expiry_date' => Carbon::tomorrow()->toDateString(),
+            'alert_days_before' => 10,
+            'reference' => 'PASS-12345',
+        ]);
+
+    $response->assertRedirect('/alerts');
+    $response->assertSessionHas('success');
+
+    $this->assertDatabaseHas('alerts', [
+        'title' => 'Passport Renewal',
+        'document_type' => 'Passport',
+        'employee_id' => $employee->id,
+        'reference' => 'PASS-12345',
         'created_by' => $user->id,
     ]);
 });

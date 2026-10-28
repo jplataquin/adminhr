@@ -53,18 +53,114 @@
                                         <div class="form-text small text-muted">Select from the configured document/item types.</div>
                                     </div>
 
-                                    <!-- Employee Link (Optional) -->
-                                    <div class="col-md-6">
-                                        <label for="employee_id" class="form-label small font-weight-bold">Linked Employee <span class="text-muted">(Optional)</span></label>
-                                        <select class="form-select" id="employee_id" name="employee_id">
-                                            <option value="">-- None (General Alert) --</option>
-                                            @foreach ($employees as $emp)
-                                                <option value="{{ $emp->id }}" {{ old('employee_id') == $emp->id ? 'selected' : '' }}>
-                                                    {{ $emp->lastname }}, {{ $emp->firstname }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="form-text small text-muted">Link this alert to a specific employee record if applicable.</div>
+                                    <!-- Employee Link (Searchable) -->
+                                    @php
+                                        $employeeOptions = $employees->map(function ($emp) {
+                                            return [
+                                                'id' => (string) $emp->id,
+                                                'name' => $emp->lastname . ', ' . $emp->firstname,
+                                            ];
+                                        })->values();
+                                    @endphp
+                                    <div class="col-md-6" 
+                                         x-data="employeeSearchSelect({
+                                             selectedId: @js(old('employee_id', '')),
+                                             employees: @js($employeeOptions)
+                                         })"
+                                         @click.outside="closeDropdown()">
+                                        <label for="employee_search_input" class="form-label small font-weight-bold">
+                                            Linked Employee <span class="text-muted">(Optional)</span>
+                                        </label>
+
+                                        <!-- Hidden input for standard form submission -->
+                                        <input type="hidden" name="employee_id" id="employee_id" :value="selectedId">
+
+                                        <div class="position-relative">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-body-secondary text-muted">
+                                                    <i class="bi bi-search"></i>
+                                                </span>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="employee_search_input"
+                                                       placeholder="Type to search employee..."
+                                                       autocomplete="off"
+                                                       x-ref="searchInput"
+                                                       x-model="search"
+                                                       @focus="open = true"
+                                                       @input="onInput()"
+                                                       @keydown.arrow-down.prevent="onKeyDownDown()"
+                                                       @keydown.arrow-up.prevent="onKeyDownUp()"
+                                                       @keydown.enter.prevent="onKeyDownEnter()"
+                                                       @keydown.escape.prevent="closeDropdown()">
+
+                                                <button class="btn btn-outline-secondary" 
+                                                        type="button" 
+                                                        x-show="selectedId" 
+                                                        @click="clear()" 
+                                                        title="Clear selection">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" 
+                                                        type="button" 
+                                                        @click="toggleDropdown()" 
+                                                        tabindex="-1"
+                                                        title="Toggle dropdown">
+                                                    <i class="bi bi-chevron-down"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Dropdown menu -->
+                                            <div x-show="open"
+                                                 x-transition
+                                                 class="dropdown-menu show w-100 p-1 shadow-lg mt-1"
+                                                 style="max-height: 250px; overflow-y: auto; z-index: 1060; left: 0; top: 100%;"
+                                                 x-ref="dropdownList">
+
+                                                <!-- None / General Option -->
+                                                <button type="button" 
+                                                        class="dropdown-item rounded py-1 px-2 small text-muted d-flex justify-content-between align-items-center"
+                                                        :class="{ 'active': !selectedId, 'bg-body-secondary': highlightedIndex === -1 }"
+                                                        @click="select(null)">
+                                                    <span><em>-- None (General Alert) --</em></span>
+                                                    <i class="bi bi-check-lg" x-show="!selectedId"></i>
+                                                </button>
+
+                                                <div class="dropdown-divider my-1"></div>
+
+                                                <!-- Filtered Employee List -->
+                                                <template x-for="(emp, index) in filteredEmployees" :key="emp.id">
+                                                    <button type="button" 
+                                                            class="dropdown-item rounded py-1 px-2 small d-flex justify-content-between align-items-center"
+                                                            :class="{ 
+                                                                'active': selectedId === emp.id, 
+                                                                'bg-body-secondary active-highlight': highlightedIndex === index && selectedId !== emp.id 
+                                                            }"
+                                                            @mouseenter="highlightedIndex = index"
+                                                            @click="select(emp)">
+                                                        <span x-text="emp.name"></span>
+                                                        <i class="bi bi-check-lg" x-show="selectedId === emp.id"></i>
+                                                    </button>
+                                                </template>
+
+                                                <!-- Empty state -->
+                                                <div x-show="filteredEmployees.length === 0" class="p-2 text-center text-muted small">
+                                                    No employees matching "<span x-text="search"></span>"
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-text small text-muted">Type to filter and link a specific employee.</div>
+
+                                        <noscript>
+                                            <select class="form-select mt-2" name="employee_id">
+                                                <option value="">-- None (General Alert) --</option>
+                                                @foreach ($employees as $emp)
+                                                    <option value="{{ $emp->id }}" {{ old('employee_id') == $emp->id ? 'selected' : '' }}>
+                                                        {{ $emp->lastname }}, {{ $emp->firstname }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </noscript>
                                     </div>
                                 </div>
 
@@ -109,4 +205,139 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function employeeSearchSelect(config) {
+            return {
+                open: false,
+                search: '',
+                selectedId: config.selectedId ? String(config.selectedId) : '',
+                employees: config.employees || [],
+                highlightedIndex: -1,
+
+                init() {
+                    if (this.selectedId) {
+                        const match = this.employees.find(e => String(e.id) === String(this.selectedId));
+                        if (match) {
+                            this.search = match.name;
+                        }
+                    }
+                },
+
+                get filteredEmployees() {
+                    if (!this.search.trim() || this.isSelectedName(this.search)) {
+                        return this.employees;
+                    }
+                    const q = this.search.toLowerCase().trim();
+                    return this.employees.filter(e => e.name.toLowerCase().includes(q));
+                },
+
+                isSelectedName(text) {
+                    if (!this.selectedId) return false;
+                    const match = this.employees.find(e => String(e.id) === String(this.selectedId));
+                    return match && match.name.toLowerCase() === text.toLowerCase().trim();
+                },
+
+                select(emp) {
+                    if (emp) {
+                        this.selectedId = String(emp.id);
+                        this.search = emp.name;
+                    } else {
+                        this.selectedId = '';
+                        this.search = '';
+                    }
+                    this.open = false;
+                    this.highlightedIndex = -1;
+                },
+
+                clear() {
+                    this.selectedId = '';
+                    this.search = '';
+                    this.open = false;
+                    this.highlightedIndex = -1;
+                    this.$nextTick(() => {
+                        if (this.$refs.searchInput) {
+                            this.$refs.searchInput.focus();
+                        }
+                    });
+                },
+
+                toggleDropdown() {
+                    this.open = !this.open;
+                    if (this.open) {
+                        this.$nextTick(() => {
+                            if (this.$refs.searchInput) {
+                                this.$refs.searchInput.focus();
+                            }
+                        });
+                    }
+                },
+
+                closeDropdown() {
+                    this.open = false;
+                    this.highlightedIndex = -1;
+                    if (this.selectedId) {
+                        const match = this.employees.find(e => String(e.id) === String(this.selectedId));
+                        if (match) {
+                            this.search = match.name;
+                        }
+                    } else if (!this.isSelectedName(this.search)) {
+                        this.search = '';
+                    }
+                },
+
+                onInput() {
+                    this.open = true;
+                    this.highlightedIndex = 0;
+                    if (this.selectedId) {
+                        const match = this.employees.find(e => String(e.id) === String(this.selectedId));
+                        if (!match || match.name.toLowerCase() !== this.search.toLowerCase().trim()) {
+                            this.selectedId = '';
+                        }
+                    }
+                },
+
+                onKeyDownDown() {
+                    if (!this.open) {
+                        this.open = true;
+                        return;
+                    }
+                    const total = this.filteredEmployees.length;
+                    if (this.highlightedIndex < total - 1) {
+                        this.highlightedIndex++;
+                        this.scrollIntoView();
+                    }
+                },
+
+                onKeyDownUp() {
+                    if (this.highlightedIndex > -1) {
+                        this.highlightedIndex--;
+                        this.scrollIntoView();
+                    }
+                },
+
+                onKeyDownEnter() {
+                    if (this.open) {
+                        if (this.highlightedIndex === -1 && !this.search.trim()) {
+                            this.select(null);
+                        } else if (this.highlightedIndex >= 0 && this.highlightedIndex < this.filteredEmployees.length) {
+                            this.select(this.filteredEmployees[this.highlightedIndex]);
+                        } else if (this.filteredEmployees.length === 1) {
+                            this.select(this.filteredEmployees[0]);
+                        }
+                    }
+                },
+
+                scrollIntoView() {
+                    this.$nextTick(() => {
+                        if (!this.$refs.dropdownList) return;
+                        const el = this.$refs.dropdownList.querySelector('.active-highlight');
+                        if (el) {
+                            el.scrollIntoView({ block: 'nearest' });
+                        }
+                    });
+                }
+            };
+        }
+    </script>
 </x-app-layout>
