@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Mcp\Facades\Mcp;
+use App\Mcp\Servers\AdminHrServer;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -10,6 +12,9 @@ Route::get('/user', function (Request $request) {
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Model Context Protocol (MCP) Server
+    Mcp::web('/mcp', AdminHrServer::class);
 
     Route::post('/upload',[App\Http\Controllers\FileUploadController::class, 'upload']);
 
