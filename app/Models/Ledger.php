@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\LedgerEntry;
 use App\Models\LedgerAccount;
+use App\Models\LedgerType;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -26,6 +27,26 @@ class Ledger extends Model
     public function Account(): BelongsTo
     {
         return $this->belongsTo(LedgerAccount::class,'ledger_account_id');
+    }
+
+    public function LedgerType(): BelongsTo
+    {
+        return $this->belongsTo(LedgerType::class, 'ledger_type_id')->withTrashed();
+    }
+
+    public static function ledger_type_options($key = null)
+    {
+        try {
+            $opt = LedgerType::orderBy('id', 'asc')->pluck('text', 'id')->toArray();
+        } catch (\Exception $e) {
+            $opt = [];
+        }
+
+        if ($key !== null) {
+            return isset($opt[$key]) ? $opt[$key] : '';
+        }
+
+        return (object) $opt;
     }
 
     public function CreatedByUser(){   

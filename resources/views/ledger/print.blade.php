@@ -101,7 +101,9 @@
                 </tr>
                 <tr>
                     <th>Ledger</th>
-                    <td colspan="3">{{$ledger->name}}</td>
+                    <td>{{$ledger->name}}</td>
+                    <th>Type</th>
+                    <td>{{$ledger->LedgerType->text ?? ' - '}}</td>
                 </tr>
                 <tr>
                     <th width="25%">Status</th>

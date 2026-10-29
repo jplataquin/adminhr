@@ -241,7 +241,12 @@
 
                 let row = t.div({class:'card mb-3 cursor-pointer shadow-sm'},()=>{
                     t.div({class:'card-body d-flex justify-content-between align-items-center'},()=>{
-                        t.h5({class:"h6 mb-0"},item.name);
+                        t.div(()=>{
+                            t.h5({class:"h6 mb-0"},item.name);
+                            if(item.ledger_type && item.ledger_type.text){
+                                t.small({class:'text-muted'}, item.ledger_type.text);
+                            }
+                        });
                         t.span({class:'badge bg-info text-dark'},item.status);
                     });
                 });
@@ -315,28 +320,44 @@
         pageDoc.showData();
     </script>
 
+    @php
+        $type_options = ['' => ' -- Select Ledger Type -- '];
+        if (isset($ledger_types)) {
+            foreach ($ledger_types as $type) {
+                $type_options[$type->id] = $type->text;
+            }
+        }
+    @endphp
+
     <script type="module">
         import {Template} from '/adarna.js';
 
         const t = new Template();
 
         const ledger_name           = $t.text_input();
+        const ledger_type           = $t.select(@json($type_options));
         const ledger_description    = $t.textarea();
         const ledger_template       = $t.textarea();
         const ledger_unit           = $t.text_input();
         const create_ledger_btn     = $t.button('Create');
         
-        ledger_name.className = 'form-control';
+        ledger_name.className        = 'form-control';
+        ledger_type.className        = 'form-select';
         ledger_description.className = 'form-control';
-        ledger_template.className = 'form-control';
-        ledger_unit.className = 'form-control';
-        create_ledger_btn.className = 'btn btn-primary float-end';
+        ledger_template.className    = 'form-control';
+        ledger_unit.className        = 'form-control';
+        create_ledger_btn.className  = 'btn btn-primary float-end';
 
         const create_ledger_form = t.div({class: 'p-4 mb-4'}, ()=>{
 
             t.div({class:'mb-3'},(el)=>{
                 el.append($t.label('Name', 'form-label'));
                 el.append(ledger_name);
+            });
+
+            t.div({class:'mb-3'},(el)=>{
+                el.append($t.label('Ledger Type', 'form-label'));
+                el.append(ledger_type);
             });
 
             t.div({class:'mb-3'},(el)=>{
@@ -362,6 +383,7 @@
         createBtn.onclick = ()=>{
 
             ledger_name.value           = '';
+            ledger_type.value           = '';
             ledger_description.value    = '';
             $drawerModal.content('Create Ledger',create_ledger_form);
             $drawerModal.open();
@@ -372,6 +394,7 @@
 
             $_POST('/api/ledger/{{$ledger_account->id}}/create',{
                 name: ledger_name.value,
+                ledger_type_id: ledger_type.value,
                 description: ledger_description.value,
                 template: ledger_template.value,
                 unit: ledger_unit.value

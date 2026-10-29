@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
 use App\Models\LedgerEntry;
+use App\Models\LedgerType;
 
 
 class LedgerController extends Controller
@@ -108,7 +109,7 @@ class LedgerController extends Controller
 
         $id = (int) $id;
 
-        $ledger         = Ledger::findOrFail($id);
+        $ledger         = Ledger::with('LedgerType')->findOrFail($id);
 
         $ledger_account = $ledger->Account;
 
@@ -119,10 +120,19 @@ class LedgerController extends Controller
         $total_amount   = $total_credit - $total_debit;
         $total_quantity = $ledger->getTotalQuantity(['APRV']);
 
+        $ledger_types   = LedgerType::orderBy('id', 'asc')->get();
+        if ($ledger->ledger_type_id && !$ledger_types->contains('id', $ledger->ledger_type_id)) {
+            $deletedType = LedgerType::withTrashed()->find($ledger->ledger_type_id);
+            if ($deletedType) {
+                $ledger_types->push($deletedType);
+            }
+        }
+
         return view('review/ledger/display',[
             'ledger'            => $ledger,
             'ledger_entry'      => $ledger_entry,
             'ledger_account'    => $ledger_account,
+            'ledger_types'      => $ledger_types,
             'total_credit'      => $total_credit,
             'total_debit'       => $total_debit,
             'total_amount'      => $total_amount,
@@ -142,7 +152,9 @@ class LedgerController extends Controller
 
         $table = new Ledger();
 
-        $table = $table->where('status','PEND')->orWhere('status','RDEL')->with('Account');
+        $table = $table->where(function($q) {
+            $q->where('status','PEND')->orWhere('status','RDEL');
+        })->with(['Account', 'LedgerType']);
 
         if($query != ''){
             $table = $table->where('name','LIKE','%'.$query.'%');

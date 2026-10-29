@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
 use App\Models\LedgerEntry;
+use App\Models\LedgerType;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -55,6 +56,14 @@ class LedgerController extends Controller
                     $query->where('ledger_account_id', $id); 
                 })
             ],
+            'ledger_type_id' => [
+                'nullable',
+                'exists:ledger_types,id'
+            ],
+            'ledger_type' => [
+                'nullable',
+                'exists:ledger_types,id'
+            ],
             'description' => [
                 'required',
                 'max:800'
@@ -79,6 +88,7 @@ class LedgerController extends Controller
 
         
         $name           = $request->input('name');
+        $ledger_type_id = $request->input('ledger_type_id') ?? $request->input('ledger_type');
         $description    = $request->input('description');
         $template       = $request->input('template');
         $unit           = $request->input('unit');
@@ -88,6 +98,7 @@ class LedgerController extends Controller
         $ledger = new Ledger();
 
         $ledger->ledger_account_id = $id;
+        $ledger->ledger_type_id    = $ledger_type_id ? (int) $ledger_type_id : null;
         
         $ledger->name           = $name;
         $ledger->description    = $description;
@@ -112,16 +123,25 @@ class LedgerController extends Controller
 
         $id = (int) $id;
 
-        $ledger = Ledger::findOrFail($id);
+        $ledger = Ledger::with('LedgerType')->findOrFail($id);
 
         $ledger_account = $ledger->Account;
 
         $ledger_entry = new LedgerEntry();
 
+        $ledger_types = LedgerType::orderBy('id', 'asc')->get();
+        if ($ledger->ledger_type_id && !$ledger_types->contains('id', $ledger->ledger_type_id)) {
+            $deletedType = LedgerType::withTrashed()->find($ledger->ledger_type_id);
+            if ($deletedType) {
+                $ledger_types->push($deletedType);
+            }
+        }
+
         return view('ledger/display',[
             'ledger'            => $ledger,
             'ledger_entry'      => $ledger_entry,
-            'ledger_account'    => $ledger_account
+            'ledger_account'    => $ledger_account,
+            'ledger_types'      => $ledger_types
         ]);
     }
 
@@ -155,7 +175,15 @@ class LedgerController extends Controller
             'name' => [
                 'required',
                 'max:255',
-                Rule::unique('ledgers','name')->where(fn (Builder $query) => $query->where('ledger_account_id', $id)->where('id','!=',$id))
+                Rule::unique('ledgers','name')->where(fn (Builder $query) => $query->where('ledger_account_id', $ledger->ledger_account_id)->where('id','!=',$id))
+            ],
+            'ledger_type_id' => [
+                'nullable',
+                'exists:ledger_types,id'
+            ],
+            'ledger_type' => [
+                'nullable',
+                'exists:ledger_types,id'
             ],
             'description' => [
                 'required',
@@ -187,7 +215,11 @@ class LedgerController extends Controller
 
         $user_id = Auth::user()->id;
         
-        
+        if ($request->has('ledger_type_id') || $request->has('ledger_type')) {
+            $ledger_type_val = $request->input('ledger_type_id') ?? $request->input('ledger_type');
+            $ledger->ledger_type_id = $ledger_type_val ? (int) $ledger_type_val : null;
+        }
+
         $ledger->name           = $name;
         $ledger->description    = $description;
         $ledger->template       = $template;
@@ -368,7 +400,7 @@ class LedgerController extends Controller
 
         $table = new Ledger();
 
-        $table = $table->where('ledger_account_id',$ledger_account_id);
+        $table = $table->where('ledger_account_id',$ledger_account_id)->with('LedgerType');
 
         if($query != ''){
             $table = $table->where('name','LIKE','%'.$query.'%');
@@ -403,7 +435,7 @@ class LedgerController extends Controller
 
         $id = (int) $id;
 
-        $ledger = Ledger::findOrFail($id);
+        $ledger = Ledger::with('LedgerType')->findOrFail($id);
 
         $account = $ledger->Account;
 

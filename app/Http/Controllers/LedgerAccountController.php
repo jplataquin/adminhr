@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
+use App\Models\LedgerType;
 use Carbon\Carbon;
 
 
@@ -64,9 +65,11 @@ class LedgerAccountController extends Controller
         $id = (int) $id;
 
         $ledger_account = LedgerAccount::findOrFail($id);
+        $ledger_types   = LedgerType::orderBy('id', 'asc')->get();
 
         return view('ledger/account/display',[
-            'ledger_account' => $ledger_account
+            'ledger_account' => $ledger_account,
+            'ledger_types'   => $ledger_types
         ]);
     }
 
