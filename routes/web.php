@@ -244,6 +244,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('/master-data/departments', App\Http\Controllers\Admin\DepartmentController::class)->except(['show']);
     Route::resource('/master-data/positions', App\Http\Controllers\Admin\PositionController::class)->except(['show']);
     Route::resource('/master-data/ledger-types', App\Http\Controllers\Admin\LedgerTypeController::class)->except(['show']);
+    Route::resource('/tokens', App\Http\Controllers\Admin\TokenController::class)->only(['index', 'create', 'store', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

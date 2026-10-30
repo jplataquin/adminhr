@@ -37,6 +37,21 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3 text-success">
+                                <i class="bi bi-key-fill fs-1"></i>
+                            </div>
+                            <h5 class="card-title mb-3">MCP Access Tokens</h5>
+                            <p class="card-text text-muted small">Generate and manage bearer tokens for MCP HTTP authentication.</p>
+                            <a href="{{ route('admin.tokens.index') }}" class="btn btn-primary w-100 mt-3">
+                                Manage Tokens
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
