@@ -141,47 +141,47 @@
             });
         }
 
+        controls.onEditCancel = ()=>{
+            return $url('/ledger/{{$ledger->id}}');
+        }
+
+        controls.onEditClick = ()=>{
+            $q('.editable').items().map(item=>{
+                item.prevValue = item.value;
+                item.disabled = false;
+            });
+        }
+
+        controls.onUpdateCancel = ()=>{
+            
+            $q('.editable').items().map(item=>{
+                item.value      = item.prevValue;
+                item.prevValue  = '';
+                item.disabled   = true;
+            });
+
+            calculate();
+        }
+
+        controls.onUpdateClick = ()=>{
+
+            $ui.blockUI();
+
+            unit_amount.value = $pureDecimal(unit_amount.value,2);
+
+            $_POST('/api/ledger/entry/update/{{$ledger_entry->id}}',form).then(reply=>{
+
+                $ui.unblockUI();
+            
+                if(reply.status <= 0){
+                    return $ui.showError(reply);
+                }
+
+                $reload();
+            });
+        }
+
         @if($ledger_entry->status == 'PEND')
-
-            controls.onEditCancel = ()=>{
-                return $url('/ledger/{{$ledger->id}}');
-            }
-
-            controls.onEditClick = ()=>{
-                $q('.editable').items().map(item=>{
-                    item.prevValue = item.value;
-                    item.disabled = false;
-                });
-            }
-
-            controls.onUpdateCancel = ()=>{
-                
-                $q('.editable').items().map(item=>{
-                    item.value      = item.prevValue;
-                    item.prevValue  = '';
-                    item.disabled   = true;
-                });
-
-                calculate();
-            }
-
-            controls.onUpdateClick = ()=>{
-
-                $ui.blockUI();
-
-                unit_amount.value = $pureDecimal(unit_amount.value,2);
-
-                $_POST('/api/ledger/entry/update/{{$ledger_entry->id}}',form).then(reply=>{
-
-                    $ui.unblockUI();
-                
-                    if(reply.status <= 0){
-                        return $ui.showError(reply);
-                    }
-
-                    $reload();
-                });
-            }
 
             controls.onDeleteClick = ()=>{
                 

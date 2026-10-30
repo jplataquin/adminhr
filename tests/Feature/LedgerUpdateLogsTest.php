@@ -310,3 +310,149 @@ it('renders dedicated ledger account update logs page with log history', functio
     $response->assertSee('Logs Account Alpha');
     $response->assertSee('View JSON');
 });
+
+it('renders edit controls and attaches handlers on ledger entry display for APRV entries', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $account = new LedgerAccount();
+    $account->name = 'Entry UI Account';
+    $account->status = 'APRV';
+    $account->created_by = $admin->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Entry UI Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Tmpl';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $admin->id;
+    $ledger->save();
+
+    $entry = new \App\Models\LedgerEntry();
+    $entry->ledger_id = $ledger->id;
+    $entry->particular = 'Initial Particular';
+    $entry->tag = 'REGU';
+    $entry->type = 'CRED';
+    $entry->quantity = 10;
+    $entry->unit_amount = 100.00;
+    $entry->date = '2026-10-30';
+    $entry->status = 'APRV';
+    $entry->created_by = $admin->id;
+    $entry->save();
+
+    $response = $this->actingAs($admin)->get("/ledger/entry/{$entry->id}");
+    $response->assertOk();
+    $response->assertSee('id="editBtn"', false);
+    $response->assertSee('controls.onEditClick', false);
+    $response->assertSee('controls.onUpdateClick', false);
+});
+
+it('allows admin to edit a ledger entry when status is APRV and records logs', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $account = new LedgerAccount();
+    $account->name = 'Entry Edit Account';
+    $account->status = 'APRV';
+    $account->created_by = $admin->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Entry Edit Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Tmpl';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $admin->id;
+    $ledger->save();
+
+    $entry = new \App\Models\LedgerEntry();
+    $entry->ledger_id = $ledger->id;
+    $entry->particular = 'Old Particular';
+    $entry->tag = 'REGU';
+    $entry->type = 'CRED';
+    $entry->quantity = 5;
+    $entry->unit_amount = 50.00;
+    $entry->date = '2026-10-30';
+    $entry->status = 'APRV';
+    $entry->created_by = $admin->id;
+    $entry->save();
+
+    $response = $this->actingAs($admin, 'sanctum')->postJson("/api/ledger/entry/update/{$entry->id}", [
+        'particular' => 'Updated Particular by Admin',
+        'tag' => 'REGU',
+        'type' => 'DEBI',
+        'quantity' => 12,
+        'unit_amount' => '75.00',
+        'date' => '2026-10-30',
+    ]);
+
+    $response->assertOk();
+    $response->assertJsonPath('status', 1);
+
+    $entry->refresh();
+    expect($entry->particular)->toBe('Updated Particular by Admin');
+    expect($entry->type)->toBe('DEBI');
+    expect((float) $entry->quantity)->toEqual(12.0);
+    expect((float) $entry->unit_amount)->toEqual(75.00);
+
+    // Verify update log created
+    $logs = LedgerUpdateLog::where('loggable_type', \App\Models\LedgerEntry::class)
+        ->where('loggable_id', $entry->id)
+        ->get();
+
+    expect($logs)->toHaveCount(1);
+    $log = $logs->first();
+    expect($log->old_values['particular'])->toBe('Old Particular');
+    expect($log->new_values['particular'])->toBe('Updated Particular by Admin');
+});
+
+it('prevents non-admin from editing a ledger entry when status is APRV', function () {
+    $regularUser = User::factory()->create(['is_admin' => false]);
+
+    $account = new LedgerAccount();
+    $account->name = 'Entry Non-Admin Account';
+    $account->status = 'APRV';
+    $account->created_by = $regularUser->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Entry Non-Admin Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Tmpl';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $regularUser->id;
+    $ledger->save();
+
+    $entry = new \App\Models\LedgerEntry();
+    $entry->ledger_id = $ledger->id;
+    $entry->particular = 'Locked Entry Particular';
+    $entry->tag = 'REGU';
+    $entry->type = 'CRED';
+    $entry->quantity = 2;
+    $entry->unit_amount = 20.00;
+    $entry->date = '2026-10-30';
+    $entry->status = 'APRV';
+    $entry->created_by = $regularUser->id;
+    $entry->save();
+
+    $response = $this->actingAs($regularUser, 'sanctum')->postJson("/api/ledger/entry/update/{$entry->id}", [
+        'particular' => 'Hacked Particular',
+        'tag' => 'REGU',
+        'type' => 'CRED',
+        'quantity' => 2,
+        'unit_amount' => 20.00,
+        'date' => '2026-10-30',
+    ]);
+
+    $response->assertOk();
+    $response->assertJsonPath('status', 0);
+    $response->assertJsonPath('message', 'Entry cannot be updated (status: APRV)');
+
+    $entry->refresh();
+    expect($entry->particular)->toBe('Locked Entry Particular');
+});

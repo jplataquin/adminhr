@@ -206,7 +206,10 @@ class LedgerEntryController extends Controller
             ]);
         }
 
-        if($ledger_entry->status != 'PEND'){
+        $user = Auth::user();
+        $isAdmin = $user && $user->is_admin;
+
+        if ($ledger_entry->status != 'PEND' && !($isAdmin && $ledger_entry->status == 'APRV')) {
             return response()->json([
                 'status'    => 0,
                 'message'   => 'Entry cannot be updated (status: '.$ledger_entry->status.')',
