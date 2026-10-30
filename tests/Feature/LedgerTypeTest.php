@@ -50,18 +50,22 @@ it('prevents model-level deletion of protected ledger types', function () {
     expect(fn () => $protected2->delete())->toThrow(\Exception::class, 'Cannot delete protected ledger type: Accounts Receivable');
 });
 
-it('allows admin to view ledger types index and see protected badges and prototype column', function () {
+it('allows admin to view ledger types index and see protected badges and prototype pills in distinct colors', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     LedgerType::firstOrCreate(['text' => 'Cash Advance', 'prototype' => 'Accounts Receivable']);
     LedgerType::firstOrCreate(['text' => 'Accounts Receivable', 'prototype' => 'Accounts Receivable']);
+    LedgerType::create(['text' => 'Vendor Invoices', 'prototype' => 'Accounts Payable']);
 
     $response = $this->actingAs($admin)->get(route('admin.ledger-types.index'));
 
     $response->assertOk();
     $response->assertSee('Cash Advance');
     $response->assertSee('Accounts Receivable');
+    $response->assertSee('Vendor Invoices');
     $response->assertSee('Protected');
     $response->assertSee('Prototype');
+    $response->assertSee('<span class="badge rounded-pill bg-info text-dark">Accounts Receivable</span>', false);
+    $response->assertSee('<span class="badge rounded-pill bg-warning text-dark">Accounts Payable</span>', false);
 });
 
 it('renders create view with Accounts Receivable selected by default in prototype dropdown', function () {

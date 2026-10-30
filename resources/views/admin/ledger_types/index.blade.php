@@ -60,7 +60,11 @@
                                             <strong class="text-white">{{ $type->text }}</strong>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info text-dark">{{ $type->prototype ?? 'Accounts Receivable' }}</span>
+                                            @if ($type->prototype === \App\Models\LedgerType::PROTOTYPE_ACCOUNTS_PAYABLE)
+                                                <span class="badge rounded-pill bg-warning text-dark">{{ $type->prototype }}</span>
+                                            @else
+                                                <span class="badge rounded-pill bg-info text-dark">{{ $type->prototype ?? 'Accounts Receivable' }}</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if ($type->isProtected())
