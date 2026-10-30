@@ -1,5 +1,34 @@
 <x-app-layout>
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .ts-wrapper .ts-control,
+        .ts-wrapper .ts-control input,
+        .ts-wrapper .ts-control .item,
+        .ts-wrapper.disabled .ts-control,
+        .ts-wrapper.disabled .ts-control .item,
+        .ts-dropdown,
+        .ts-dropdown .option,
+        .ts-dropdown .option.active,
+        .ts-dropdown .no-results {
+            color: #ffffff !important;
+        }
+        .ts-wrapper .ts-control {
+            background-color: var(--bs-body-bg, #0f172a) !important;
+            border-color: var(--bs-border-color, rgba(255, 255, 255, 0.15)) !important;
+        }
+        .ts-wrapper .ts-control input::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        .ts-dropdown {
+            background-color: var(--bs-card-bg, #1a2234) !important;
+            border-color: var(--bs-border-color, rgba(255, 255, 255, 0.15)) !important;
+        }
+        .ts-dropdown .option.active,
+        .ts-dropdown .option:hover {
+            background-color: var(--bs-primary, #0d6efd) !important;
+            color: #ffffff !important;
+        }
+    </style>
 
     <div class="border border-1 rounded-lg shadow relative m-10">
 

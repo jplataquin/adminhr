@@ -175,3 +175,33 @@ it('allows unlinking employee by sending empty employee_id on update', function 
     $ledgerAccount->refresh();
     expect($ledgerAccount->employee_id)->toBeNull();
 });
+
+it('styles the Employee (Searchable) input field and suggestion text white', function () {
+    $user = User::factory()->create();
+
+    $ledgerAccount = new LedgerAccount();
+    $ledgerAccount->name = 'Styling Test Account';
+    $ledgerAccount->created_by = $user->id;
+    $ledgerAccount->save();
+
+    // Verify display view includes white text styles for tom-select input and dropdown
+    $response = $this->actingAs($user)->get("/ledger/account/{$ledgerAccount->id}");
+    $response->assertOk();
+    $response->assertSee('Employee (Searchable)');
+    $response->assertSee('.ts-wrapper .ts-control input', false);
+    $response->assertSee('.ts-dropdown .option', false);
+    $response->assertSee('color: #ffffff !important;', false);
+
+    // Verify create view includes white text styles
+    $responseCreate = $this->actingAs($user)->get('/ledger/account/create');
+    $responseCreate->assertOk();
+    $responseCreate->assertSee('Employee (Searchable)');
+    $responseCreate->assertSee('.ts-dropdown .option', false);
+    $responseCreate->assertSee('color: #ffffff !important;', false);
+
+    // Verify app.scss contains global TomSelect white text rules
+    $scss = file_get_contents(resource_path('css/app.scss'));
+    expect($scss)->toContain('.ts-wrapper .ts-control input');
+    expect($scss)->toContain('.ts-dropdown');
+    expect($scss)->toContain('color: #ffffff !important;');
+});

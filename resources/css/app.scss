@@ -362,3 +362,69 @@ a[href] {
     border-left: 4px solid var(--bs-secondary, #6c757d) !important;
 }
 
+/* TomSelect Searchable Select Styles (Dark Theme & White Text) */
+.ts-wrapper,
+.ts-wrapper .ts-control,
+.ts-wrapper .ts-control input,
+.ts-wrapper .ts-control .item,
+.ts-dropdown,
+.ts-dropdown .option,
+.ts-dropdown .option.active,
+.ts-dropdown .no-results {
+    color: #ffffff !important;
+}
+
+.ts-wrapper .ts-control {
+    background-color: var(--bs-body-bg, #0f172a) !important;
+    border-color: var(--bs-border-color, rgba(255, 255, 255, 0.15)) !important;
+    color: #ffffff !important;
+
+    input {
+        color: #ffffff !important;
+        caret-color: #ffffff !important;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+    }
+
+    .item {
+        color: #ffffff !important;
+    }
+}
+
+.ts-wrapper.disabled .ts-control,
+.ts-control.disabled,
+.ts-control.disabled .item {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    opacity: 0.9 !important;
+}
+
+.ts-dropdown {
+    background-color: var(--bs-card-bg, #1a2234) !important;
+    border-color: var(--bs-border-color, rgba(255, 255, 255, 0.15)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.35) !important;
+
+    .option {
+        color: #ffffff !important;
+
+        &.active,
+        &:hover {
+            background-color: var(--bs-primary, #0d6efd) !important;
+            color: #ffffff !important;
+        }
+
+        &.selected {
+            background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.35) !important;
+            color: #ffffff !important;
+        }
+    }
+
+    .no-results {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+}
+
+
