@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-ledger-layout>
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="h4 font-weight-bold mb-0">
@@ -10,9 +10,8 @@
         </div>
     </x-slot>
 
-    <div class="py-4">
-        <div class="container">
-            <!-- Record Summary Card -->
+    <div>
+        <!-- Record Summary Card -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body py-3">
                     <div class="row align-items-center">
@@ -140,6 +139,5 @@
                     @endif
                 </div>
             </div>
-        </div>
     </div>
-</x-app-layout>
+</x-ledger-layout>

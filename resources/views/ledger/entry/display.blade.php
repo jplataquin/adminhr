@@ -1,6 +1,6 @@
-<x-app-layout>
+<x-ledger-layout>
 
-    <div class="card shadow-sm border-0 m-4">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-body py-3">
             <h3 class="h5 mb-0">
                 Ledger Entry
@@ -211,4 +211,4 @@
 
         calculate();
     </script>
-</x-app-layout>
+</x-ledger-layout>

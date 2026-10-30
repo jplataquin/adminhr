@@ -1,5 +1,5 @@
-<x-app-layout>
-    <div id="pageDoc" class="card shadow-sm border-0 m-4">
+<x-ledger-layout>
+    <div id="pageDoc" class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-body py-3 d-flex align-items-center justify-content-between">
             <h3 class="h5 mb-0">
@@ -176,4 +176,4 @@
             
         }
     </script>
-</x-app-layout>
+</x-ledger-layout>

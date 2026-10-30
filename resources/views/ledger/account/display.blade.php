@@ -1,8 +1,8 @@
-<x-app-layout>
+<x-ledger-layout>
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 
 <div id="pageDoc">
-    <div class="card shadow-sm border-0 m-4">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
             <h3 class="h5 mb-0">
                 Ledger Account
@@ -47,7 +47,7 @@
     </div>
     
 
-    <div class="card shadow-sm border-0 m-4 mt-5">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
             <h3 class="h5 mb-0">
                 Ledgers
@@ -417,4 +417,4 @@
             });
         }
     </script>
-</x-app-layout>
+</x-ledger-layout>

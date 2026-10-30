@@ -35,7 +35,7 @@
 
             <!-- Page Content -->
             <main>
-                <div class="container">
+                <div class="{{ $containerClass ?? 'container' }}">
                     {{ $slot }}
                 </div>
             </main>
