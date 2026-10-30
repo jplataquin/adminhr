@@ -55,46 +55,47 @@ class EmployeeController extends Controller
         //todo check role
 
 
-        $page       = (int) $request->input('page')     ?? 1;
-        $limit      = (int) $request->input('limit')    ?? 10;
-        $orderBy    = $request->input('order_by')       ?? 'id';
-        $order      = $request->input('order')          ?? 'DESC';
-        $query      = $request->input('query')          ?? '';
-        $status     = $request->input('status')         ?? '';
-        $division_id   = $request->input('division_id')       ?? '';
-        $department_id = $request->input('department_id')     ?? '';
+        $page       = $request->has('page') ? max((int) $request->input('page'), 1) : 1;
+        $limit      = $request->has('limit') ? (int) $request->input('limit') : 10;
+        if ($limit < 1) {
+            $limit = 10;
+        }
+        $orderBy    = $request->input('order_by') ?: 'id';
+        $order      = $request->input('order') ?: 'DESC';
+        $query      = trim($request->input('query') ?? '');
+        $status     = $request->input('status') ?? '';
+        $division_id   = $request->input('division_id') ?? '';
+        $department_id = $request->input('department_id') ?? '';
 
-        $result = [];
+        $employee = Employee::query();
 
-        $employee = new Employee();
-
-        $employee = $employee->where('deleted_at',null);
-
-        if($query != ''){
-            $employee = $employee->where('firstname','LIKE','%'.$query.'%')->orWhere('middlename','LIKE','%'.$query.'%')->orWhere('lastname','LIKE','%'.$query.'%');
+        if ($query !== '') {
+            $terms = array_filter(explode(' ', $query));
+            $employee->where(function ($q) use ($terms) {
+                foreach ($terms as $term) {
+                    $q->where(function ($sub) use ($term) {
+                        $sub->where('firstname', 'LIKE', '%' . $term . '%')
+                            ->orWhere('middlename', 'LIKE', '%' . $term . '%')
+                            ->orWhere('lastname', 'LIKE', '%' . $term . '%');
+                    });
+                }
+            });
         }
 
-        if($status != ''){
-            $employee = $employee->where('status','=',$status);
+        if ($status !== '') {
+            $employee->where('status', '=', $status);
         }
 
-        if($division_id != ''){
-            $employee = $employee->where('division_id','=',$division_id);
-        } 
-
-        if($department_id != ''){
-            $employee = $employee->where('department_id','=',$department_id);
-        } 
-
-        if($limit > 0){
-            $page   = ($page-1) * $limit;
-            
-            $result = $employee->orderBy($orderBy,$order)->skip($page)->take($limit)->get();
-            
-        }else{
-
-            $result = $employee->orderBy($orderBy,$order)->take($limit)->get();
+        if ($division_id !== '') {
+            $employee->where('division_id', '=', $division_id);
         }
+
+        if ($department_id !== '') {
+            $employee->where('department_id', '=', $department_id);
+        }
+
+        $skip = ($page - 1) * $limit;
+        $result = $employee->orderBy($orderBy, $order)->skip($skip)->take($limit)->get();
 
         return response()->json([
             'status' => 1,

@@ -76,17 +76,27 @@
         const tomSelectInstance = new TomSelect("#employee_id", {
             valueField: 'id',
             labelField: 'name',
-            searchField: ['firstname', 'lastname'],
+            searchField: ['name', 'firstname', 'lastname'],
             placeholder: 'Search and select an employee...',
             allowEmptyOption: true,
+            preload: 'focus',
             load: function(query, callback) {
-                var url = '/api/employees?query=' + encodeURIComponent(query);
-                fetch(url)
+                var url = '/api/employees?query=' + encodeURIComponent(query || '') + '&limit=20';
+                fetch(url, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
                     .then(response => response.json())
                     .then(json => {
+                        if (!json.data || !json.data.rows) {
+                            return callback();
+                        }
                         var mapped = json.data.rows.map(e => ({
                             id: e.id,
-                            name: e.firstname + ' ' + (e.lastname || '')
+                            name: [e.firstname, e.middlename, e.lastname].filter(Boolean).join(' '),
+                            firstname: e.firstname || '',
+                            lastname: e.lastname || ''
                         }));
                         callback(mapped);
                     }).catch(()=>{

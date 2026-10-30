@@ -105,3 +105,73 @@ it('can update a ledger account employee link', function () {
     expect($ledgerAccount->name)->toBe('Updated Account Name');
     expect($ledgerAccount->employee_id)->toBe($employee2->id);
 });
+
+it('returns employees when searched via /api/employees without page/limit parameters', function () {
+    $user = User::factory()->create();
+
+    $employee = new Employee();
+    $employee->firstname = 'Alice';
+    $employee->lastname = 'Smith';
+    $employee->birthdate = '1990-01-01';
+    $employee->religion = 'None';
+    $employee->gender = 'F';
+    $employee->marital_status = 'SING';
+    $employee->current_address = '123 St';
+    $employee->permanent_address = '123 St';
+    $employee->educational_attainment = 'GR';
+    $employee->employment_start_date = '2020-01-01';
+    $employee->created_by = $user->id;
+    $employee->save();
+
+    // Query by first name
+    $response = $this->actingAs($user, 'sanctum')->getJson('/api/employees?query=Alice');
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+    expect($response->json('data.rows'))->toHaveCount(1);
+    expect($response->json('data.rows.0.id'))->toBe($employee->id);
+
+    // Query by full name
+    $responseFull = $this->actingAs($user, 'sanctum')->getJson('/api/employees?query=Alice+Smith');
+    $responseFull->assertStatus(200);
+    expect($responseFull->json('data.rows'))->toHaveCount(1);
+
+    // Query without query parameter (preloading list for dropdown)
+    $responseAll = $this->actingAs($user, 'sanctum')->getJson('/api/employees');
+    $responseAll->assertStatus(200);
+    expect(count($responseAll->json('data.rows')))->toBeGreaterThanOrEqual(1);
+});
+
+it('allows unlinking employee by sending empty employee_id on update', function () {
+    $user = User::factory()->create();
+
+    $employee = new Employee();
+    $employee->firstname = 'Bob';
+    $employee->lastname = 'Jones';
+    $employee->birthdate = '1990-01-01';
+    $employee->religion = 'None';
+    $employee->gender = 'M';
+    $employee->marital_status = 'SING';
+    $employee->current_address = '123 St';
+    $employee->permanent_address = '123 St';
+    $employee->educational_attainment = 'GR';
+    $employee->employment_start_date = '2020-01-01';
+    $employee->created_by = $user->id;
+    $employee->save();
+
+    $ledgerAccount = new LedgerAccount();
+    $ledgerAccount->name = 'Account With Employee';
+    $ledgerAccount->employee_id = $employee->id;
+    $ledgerAccount->created_by = $user->id;
+    $ledgerAccount->save();
+
+    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/account/update/{$ledgerAccount->id}", [
+        'name' => 'Account With Employee',
+        'employee_id' => '',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    $ledgerAccount->refresh();
+    expect($ledgerAccount->employee_id)->toBeNull();
+});
