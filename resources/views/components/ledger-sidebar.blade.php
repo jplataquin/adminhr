@@ -115,13 +115,14 @@
                     <!-- Account Header Row -->
                     <div class="d-flex align-items-center justify-content-between p-2 hover-bg"
                          :class="activeAccountId === {{ $account->id }} ? 'bg-primary-subtle text-primary border-start border-3 border-primary' : ''"
-                         style="transition: background-color 0.15s ease;">
+                         style="transition: background-color 0.15s ease;"
+                         @click="navigate('{{ url('/ledger/account/' . $account->id) }}', {{ $account->id }}, null)">
                         <button type="button" class="btn btn-sm p-0 me-1 text-white-50 border-0" @click.stop="toggleAccount({{ $account->id }})">
                             <i class="bi" :class="expandedAccounts[{{ $account->id }}] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
                         </button>
 
                         <a href="{{ url('/ledger/account/' . $account->id) }}"
-                           @click.prevent="navigate('{{ url('/ledger/account/' . $account->id) }}', {{ $account->id }}, null)"
+                           @click.prevent.stop="navigate('{{ url('/ledger/account/' . $account->id) }}', {{ $account->id }}, null)"
                            class="text-decoration-none flex-grow-1 text-truncate me-2"
                            :class="activeAccountId === {{ $account->id }} ? 'fw-bold text-primary' : 'text-body'"
                            title="{{ $account->name }}">
@@ -145,11 +146,12 @@
                             @php
                                 $isLedgerActive = $activeLedgerId === $ledger->id;
                             @endphp
-                            <div class="d-flex align-items-center justify-content-between py-1 pe-2 ps-2"
+                            <div class="d-flex align-items-center justify-content-between py-1 pe-2 ps-2 ledger-sidebar-item"
                                  :class="activeLedgerId === {{ $ledger->id }} ? 'bg-primary text-white rounded me-2' : ''"
-                                 x-show="ledgerMatches('{{ addslashes($ledger->name) }}')">
+                                 x-show="ledgerMatches('{{ addslashes($ledger->name) }}')"
+                                 @click="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})">
                                 <a href="{{ url('/ledger/' . $ledger->id) }}"
-                                   @click.prevent="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})"
+                                   @click.prevent.stop="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})"
                                    class="text-decoration-none text-truncate flex-grow-1 small"
                                    :class="activeLedgerId === {{ $ledger->id }} ? 'text-white fw-bold' : 'text-white-50'"
                                    title="{{ $ledger->name }}">

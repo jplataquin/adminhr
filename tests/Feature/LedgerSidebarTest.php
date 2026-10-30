@@ -204,7 +204,23 @@ it('configures sidebar links with dynamic client navigation to avoid full page r
     $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
 
     $response->assertOk();
-    $response->assertSee('@click.prevent="navigate(', false);
+    $response->assertSee('@click.prevent.stop="navigate(', false);
     $response->assertSee('ledgerAccountMap', false);
     $response->assertSee('handleExternalNavigate', false);
+    $response->assertSee('hover-bg', false);
+    $response->assertSee('ledger-sidebar-item', false);
+});
+
+it('applies pointer cursor to clickable elements in ledger UI', function () {
+    $scss = file_get_contents(resource_path('css/app.scss'));
+
+    // Check cursor-pointer global class
+    expect($scss)->toContain('.cursor-pointer');
+    expect($scss)->toContain('cursor: pointer !important;');
+
+    // Check ledger workspace button and link pointer
+    expect($scss)->toContain('#ledger-workspace');
+    expect($scss)->toContain('.hover-bg');
+    expect($scss)->toContain('.ledger-sidebar-item');
+    expect($scss)->toContain('tbody tr.cursor-pointer');
 });
