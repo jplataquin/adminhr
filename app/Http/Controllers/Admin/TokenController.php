@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\ServiceAccount;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -14,8 +14,13 @@ class TokenController extends Controller
      */
     public function index()
     {
-        // Get all tokens with their associated tokenable (user)
-        $tokens = PersonalAccessToken::with('tokenable')->orderBy('created_at', 'desc')->paginate(15);
+        // Get all tokens belonging to ServiceAccount instances
+        $tokens = PersonalAccessToken::where('tokenable_type', ServiceAccount::class)
+            ->with(['tokenable' => function ($query) {
+                $query->withTrashed()->with('creator');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return view('admin.tokens.index', compact('tokens'));
     }
@@ -25,8 +30,7 @@ class TokenController extends Controller
      */
     public function create()
     {
-        $users = User::orderBy('name')->get();
-        return view('admin.tokens.create', compact('users'));
+        return view('admin.tokens.create');
     }
 
     /**
@@ -36,16 +40,21 @@ class TokenController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
+            'description' => 'nullable|string|max:1000',
         ]);
 
-        $user = User::findOrFail($request->user_id);
-        
-        // Generate the token
-        $token = $user->createToken($request->name);
+        // Create independent service account
+        $serviceAccount = ServiceAccount::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'created_by' => auth()->id(),
+        ]);
+
+        // Generate Sanctum token bound to the service account
+        $token = $serviceAccount->createToken($request->name);
 
         return redirect()->route('admin.tokens.index')->with([
-            'success' => 'Token generated successfully!',
+            'success' => "Service account '{$serviceAccount->name}' created and token generated successfully!",
             'plainTextToken' => $token->plainTextToken,
             'tokenName' => $request->name,
         ]);
@@ -57,8 +66,13 @@ class TokenController extends Controller
     public function destroy($id)
     {
         $token = PersonalAccessToken::findOrFail($id);
+
+        if ($token->tokenable instanceof ServiceAccount) {
+            $token->tokenable->delete();
+        }
+
         $token->delete();
 
-        return redirect()->route('admin.tokens.index')->with('success', 'Token revoked successfully.');
+        return redirect()->route('admin.tokens.index')->with('success', 'Service account token revoked successfully.');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ServiceAccount;
 use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -9,8 +10,8 @@ it('allows admin to access tokens index page', function () {
     $response = $this->actingAs($admin)->get(route('admin.tokens.index'));
 
     $response->assertOk();
-    $response->assertSee('MCP Access Tokens');
-    $response->assertSee('Generate Token');
+    $response->assertSee('MCP Service Accounts');
+    $response->assertSee('Create Service Account');
 });
 
 it('prevents non-admin users from accessing tokens index page', function () {
@@ -21,33 +22,46 @@ it('prevents non-admin users from accessing tokens index page', function () {
     $response->assertRedirect('/dashboard');
 });
 
-it('allows admin to create a personal access token for a user and returns plain text token', function () {
+it('allows admin to create an independent service account token without binding to any user', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $targetUser = User::factory()->create();
 
     $response = $this->actingAs($admin)->post(route('admin.tokens.store'), [
-        'name' => 'Claude Desktop Integration',
-        'user_id' => $targetUser->id,
+        'name' => 'Claude Desktop MCP Integration',
+        'description' => 'Dedicated service account for local Claude desktop assistant',
     ]);
 
     $response->assertRedirect(route('admin.tokens.index'));
     $response->assertSessionHas('plainTextToken');
-    $response->assertSessionHas('tokenName', 'Claude Desktop Integration');
+    $response->assertSessionHas('tokenName', 'Claude Desktop MCP Integration');
 
-    $this->assertDatabaseHas('personal_access_tokens', [
-        'name' => 'Claude Desktop Integration',
-        'tokenable_id' => $targetUser->id,
-        'tokenable_type' => User::class,
-    ]);
+    // Assert a ServiceAccount was created
+    $serviceAccount = ServiceAccount::where('name', 'Claude Desktop MCP Integration')->first();
+    expect($serviceAccount)->not->toBeNull();
+    expect($serviceAccount->description)->toBe('Dedicated service account for local Claude desktop assistant');
+    expect($serviceAccount->created_by)->toBe($admin->id);
+
+    // Assert the token is bound to ServiceAccount and NOT a human User
+    $tokenRecord = PersonalAccessToken::where('name', 'Claude Desktop MCP Integration')->first();
+    expect($tokenRecord)->not->toBeNull();
+    expect($tokenRecord->tokenable_type)->toBe(ServiceAccount::class);
+    expect($tokenRecord->tokenable_id)->toBe($serviceAccount->id);
+    expect($tokenRecord->tokenable_type)->not->toBe(User::class);
 });
 
-it('allows admin to revoke a token', function () {
+it('allows admin to revoke a service account token', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $user = User::factory()->create();
-    $token = $user->createToken('Temporary Token');
+
+    $serviceAccount = ServiceAccount::create([
+        'name' => 'Temporary MCP Client',
+        'created_by' => $admin->id,
+    ]);
+
+    $token = $serviceAccount->createToken('Temporary MCP Client');
 
     $this->assertDatabaseHas('personal_access_tokens', [
         'id' => $token->accessToken->id,
+        'tokenable_type' => ServiceAccount::class,
+        'tokenable_id' => $serviceAccount->id,
     ]);
 
     $response = $this->actingAs($admin)->delete(route('admin.tokens.destroy', $token->accessToken->id));
@@ -58,26 +72,27 @@ it('allows admin to revoke a token', function () {
     $this->assertDatabaseMissing('personal_access_tokens', [
         'id' => $token->accessToken->id,
     ]);
+
+    // ServiceAccount itself is soft-deleted
+    expect(ServiceAccount::find($serviceAccount->id))->toBeNull();
+    expect(ServiceAccount::withTrashed()->find($serviceAccount->id))->not->toBeNull();
 });
 
-it('can authenticate to mcp endpoint via http using generated bearer token', function () {
-    $user = User::factory()->create();
-    $token = $user->createToken('MCP Agent Token')->plainTextToken;
+it('can authenticate to mcp endpoint via http using service account bearer token', function () {
+    $serviceAccount = ServiceAccount::create([
+        'name' => 'Automated Agent MCP',
+        'description' => 'Machine service account for agent tools',
+    ]);
 
-    // Test access to /api/user with the bearer token
-    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-        ->getJson('/api/user');
+    $token = $serviceAccount->createToken('Agent Token')->plainTextToken;
 
-    $response->assertOk();
-    $response->assertJsonPath('id', $user->id);
-
-    // Test access to /api/mcp endpoint with bearer token
+    // Test access to /api/mcp endpoint with service account bearer token
     $mcpResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
         ->postJson('/api/mcp', [
             'jsonrpc' => '2.0',
             'id' => 1,
             'method' => 'tools/list',
-            'params' => [],
+            'params' => new stdClass(),
         ]);
 
     $mcpResponse->assertOk();
@@ -93,7 +108,7 @@ it('rejects unauthenticated http requests to mcp endpoint', function () {
         'jsonrpc' => '2.0',
         'id' => 1,
         'method' => 'tools/list',
-        'params' => [],
+        'params' => new stdClass(),
     ]);
 
     $response->assertStatus(401);
