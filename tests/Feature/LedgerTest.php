@@ -195,3 +195,33 @@ it('displays the ledger_type dropdown options in display views', function () {
     $printResponse->assertSee('Custom Display Type');
 });
 
+it('renders Account Ledger Name and Ledger Name in the add entry drawer form setup on ledger display', function () {
+    $user = User::factory()->create();
+
+    $account = new LedgerAccount();
+    $account->name = 'Warehouse Operations Account';
+    $account->status = 'APRV';
+    $account->created_by = $user->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Forklift Fuel Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Fuel tracking for warehouse forklifts';
+    $ledger->template = 'Fuel refill';
+    $ledger->unit = 'Liters';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+
+    $response->assertOk();
+    $response->assertSee('Account Ledger Name');
+    $response->assertSee('Ledger Name');
+    $response->assertSee('Warehouse Operations Account');
+    $response->assertSee('Forklift Fuel Ledger');
+    $response->assertSee('entry_account_name');
+    $response->assertSee('entry_ledger_name');
+});
+

@@ -259,9 +259,19 @@
         const entry_unit_amount     = $t.text_input();
         const entry_amount          = $t.text_input();
         const entry_date            = $t.text_input();
+        const entry_account_name    = $t.text_input();
+        const entry_ledger_name     = $t.text_input();
         const entry_add_btn         = $t.button('Add');
         
         // Apply bootstrap classes to manually created elements
+        entry_account_name.className = 'form-control';
+        entry_account_name.disabled  = true;
+        entry_account_name.value     = @json($ledger_account->name);
+
+        entry_ledger_name.className  = 'form-control';
+        entry_ledger_name.disabled   = true;
+        entry_ledger_name.value      = @json($ledger->name);
+
         entry_particular.className  = 'form-control';
         entry_tag.className         = 'form-select';
         entry_type.className        = 'form-select';
@@ -309,6 +319,16 @@
 
             t.div({class:'row g-3'},()=>{
 
+                t.div({class:'col-md-6'},(el)=>{
+                    el.append($t.label('Account Ledger Name','form-label'));
+                    el.append(entry_account_name);
+                });
+
+                t.div({class:'col-md-6'},(el)=>{
+                    el.append($t.label('Ledger Name','form-label'));
+                    el.append(entry_ledger_name);
+                });
+
                 t.div({class:'col-12'},(el)=>{
                     el.append($t.label('Particular','form-label'));
                     el.append(entry_particular);
@@ -354,7 +374,10 @@
 
         addBtn.onclick = ()=>{
 
-            $drawerModal.content('Add Entry',add_entry_form);
+            entry_account_name.value = @json($ledger_account->name);
+            entry_ledger_name.value  = @json($ledger->name);
+
+            $drawerModal.content('Add Entry - ' + @json($ledger->name), add_entry_form);
             $drawerModal.open();
         }
 
