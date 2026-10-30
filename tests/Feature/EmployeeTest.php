@@ -149,3 +149,107 @@ it('can update an employee and move their new temporary photo to public disk', f
         'photo' => $newPhotoName
     ]);
 });
+
+it('includes Contractual in employee employment status options', function () {
+    $options = Employee::employment_status_options();
+    expect($options)->toHaveProperty('CONT');
+    expect($options->CONT)->toBe('Contractual');
+    expect(Employee::employment_status_options('CONT'))->toBe('Contractual');
+});
+
+it('displays summary cards for total, regular, probationary, and contractual employees on the employee list page', function () {
+    // Create 2 Regular employees
+    createTestEmployee($this->user, [
+        'firstname' => 'RegOne',
+        'employment_status' => 'REGU'
+    ]);
+    createTestEmployee($this->user, [
+        'firstname' => 'RegTwo',
+        'employment_status' => 'REGU'
+    ]);
+
+    // Create 1 Probationary employee
+    createTestEmployee($this->user, [
+        'firstname' => 'ProbOne',
+        'employment_status' => 'PROB'
+    ]);
+
+    // Create 1 Contractual employee
+    createTestEmployee($this->user, [
+        'firstname' => 'ContOne',
+        'employment_status' => 'CONT',
+        'employment_end_date' => '2026-12-31'
+    ]);
+
+    // Create a soft-deleted employee (should not be counted)
+    $deletedEmp = createTestEmployee($this->user, [
+        'firstname' => 'DeletedEmp',
+        'employment_status' => 'REGU'
+    ]);
+    $deletedEmp->delete();
+
+    $response = $this->actingAs($this->user)->get('/employees');
+
+    $response->assertOk();
+    $response->assertSee('Total Employees');
+    $response->assertSee('Regular Employees');
+    $response->assertSee('Probationary Employees');
+    $response->assertSee('Contractual Employees');
+
+    $response->assertSee('id="card-total-employees"', false);
+    $response->assertSee('id="card-regular-employees"', false);
+    $response->assertSee('id="card-probationary-employees"', false);
+    $response->assertSee('id="card-contractual-employees"', false);
+
+    // Verify rendered counts in response
+    $response->assertSee('id="stat-total-count">4<', false);
+    $response->assertSee('id="stat-regular-count">2<', false);
+    $response->assertSee('id="stat-probationary-count">1<', false);
+    $response->assertSee('id="stat-contractual-count">1<', false);
+});
+
+it('returns correct employee metrics and filters by employment status in /api/employees', function () {
+    createTestEmployee($this->user, [
+        'firstname' => 'RegUser',
+        'employment_status' => 'REGU'
+    ]);
+    createTestEmployee($this->user, [
+        'firstname' => 'ProbUser',
+        'employment_status' => 'PROB'
+    ]);
+    createTestEmployee($this->user, [
+        'firstname' => 'ContUser',
+        'employment_status' => 'CONT',
+        'employment_end_date' => '2026-12-31'
+    ]);
+
+    // Call API without filter
+    $response = $this->actingAs($this->user, 'sanctum')->getJson('/api/employees');
+    $response->assertOk();
+    $response->assertJson([
+        'status' => 1,
+        'data' => [
+            'stats' => [
+                'total' => 3,
+                'regular' => 1,
+                'probationary' => 1,
+                'contractual' => 1
+            ]
+        ]
+    ]);
+    expect(count($response->json('data.rows')))->toBe(3);
+
+    // Filter by Contractual
+    $responseCont = $this->actingAs($this->user, 'sanctum')->getJson('/api/employees?employment_status=CONT');
+    $responseCont->assertOk();
+    $rowsCont = $responseCont->json('data.rows');
+    expect(count($rowsCont))->toBe(1);
+    expect($rowsCont[0]['firstname'])->toBe('ContUser');
+
+    // Filter by Regular
+    $responseReg = $this->actingAs($this->user, 'sanctum')->getJson('/api/employees?employment_status=REGU');
+    $responseReg->assertOk();
+    $rowsReg = $responseReg->json('data.rows');
+    expect(count($rowsReg))->toBe(1);
+    expect($rowsReg[0]['firstname'])->toBe('RegUser');
+});

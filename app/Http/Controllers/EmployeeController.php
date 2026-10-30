@@ -44,9 +44,17 @@ class EmployeeController extends Controller
     public function list(){
 
         $employee = new Employee();
+
+        $stats = [
+            'total' => Employee::count(),
+            'regular' => Employee::where('employment_status', 'REGU')->count(),
+            'probationary' => Employee::where('employment_status', 'PROB')->count(),
+            'contractual' => Employee::whereIn('employment_status', ['CONT', 'CNTR'])->count(),
+        ];
         
         return view('employee/list',[
-            'employee' => $employee
+            'employee' => $employee,
+            'stats' => $stats,
         ]);
     }
 
@@ -63,7 +71,7 @@ class EmployeeController extends Controller
         $orderBy    = $request->input('order_by') ?: 'id';
         $order      = $request->input('order') ?: 'DESC';
         $query      = trim($request->input('query') ?? '');
-        $status     = $request->input('status') ?? '';
+        $status     = $request->input('employment_status') ?: ($request->input('status') ?? '');
         $division_id   = $request->input('division_id') ?? '';
         $department_id = $request->input('department_id') ?? '';
 
@@ -83,7 +91,7 @@ class EmployeeController extends Controller
         }
 
         if ($status !== '') {
-            $employee->where('status', '=', $status);
+            $employee->where('employment_status', '=', $status);
         }
 
         if ($division_id !== '') {
@@ -101,7 +109,13 @@ class EmployeeController extends Controller
             'status' => 1,
             'message'=>'',
             'data'=> [
-                'rows'=>$result
+                'rows'=>$result,
+                'stats' => [
+                    'total' => Employee::count(),
+                    'regular' => Employee::where('employment_status', 'REGU')->count(),
+                    'probationary' => Employee::where('employment_status', 'PROB')->count(),
+                    'contractual' => Employee::whereIn('employment_status', ['CONT', 'CNTR'])->count(),
+                ]
             ]
         ]);
     }

@@ -22,8 +22,8 @@ class ListEmployeesTool extends Tool
             'query' => $schema->string()
                 ->description('Search query matching employee first, middle, or last name.'),
             'employment_status' => $schema->string()
-                ->enum(['REGU', 'PROB', 'RSGN', 'LAOF', 'AWOL', 'TRMN', 'RETR', 'DECE'])
-                ->description('Filter by employment status: REGU (Regular), PROB (Probation), RSGN (Resigned), LAOF (Laid Off), AWOL (AWOL), TRMN (Terminated), RETR (Retired), DECE (Deceased).'),
+                ->enum(['REGU', 'PROB', 'CONT', 'RSGN', 'LAOF', 'AWOL', 'TRMN', 'RETR', 'DECE'])
+                ->description('Filter by employment status: REGU (Regular), PROB (Probation), CONT (Contractual), RSGN (Resigned), LAOF (Laid Off), AWOL (AWOL), TRMN (Terminated), RETR (Retired), DECE (Deceased).'),
             'division_id' => $schema->integer()
                 ->description('Filter by organizational division ID.'),
             'department_id' => $schema->integer()

@@ -16,8 +16,9 @@ class Employee extends Model
         //RSGN AWOL LAOF TRMN RETR DECE
         //PROB, REGU, RSGN, AWOL, TRMN, RETR
         $opt = [
-            'PROB' => 'Probation',
             'REGU' => 'Regular',
+            'PROB' => 'Probation',
+            'CONT' => 'Contractual',
             'RSGN' => 'Resigned',
             'LAOF' => 'Laid Off',
             'AWOL' => 'AWOL',
