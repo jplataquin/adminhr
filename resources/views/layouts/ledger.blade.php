@@ -44,6 +44,11 @@
         </div>
 
         <!-- Main Content Pane -->
+        @php
+            $sidebarHelper = app(\App\View\Components\LedgerSidebar::class);
+            $activeAccountId = $sidebarHelper->activeAccountId;
+            $activeLedgerId = $sidebarHelper->activeLedgerId;
+        @endphp
         <main id="ledger-main-pane" class="flex-grow-1 ps-md-3" style="min-width: 0;">
             <!-- Loading Indicator Bar -->
             <div id="ledger-pane-loader" class="progress mb-2 d-none" style="height: 3px;">
@@ -51,7 +56,9 @@
             </div>
 
             <!-- Dynamic Content Container -->
-            <div id="ledger-content-container">
+            <div id="ledger-content-container"
+                 data-account-id="{{ $activeAccountId ?? '' }}"
+                 data-ledger-id="{{ $activeLedgerId ?? '' }}">
                 {{ $slot }}
             </div>
         </main>
@@ -238,6 +245,18 @@
                         window.location.href = url;
                         return;
                     }
+
+                    // Extract server-resolved IDs from response (e.g. for entry, logs, or ledger)
+                    const resolvedAccountId = newContent.dataset.accountId ? parseInt(newContent.dataset.accountId, 10) : null;
+                    const resolvedLedgerId = newContent.dataset.ledgerId ? parseInt(newContent.dataset.ledgerId, 10) : null;
+
+                    window.dispatchEvent(new CustomEvent('ledger-sidebar-set-active', {
+                        detail: { 
+                            accountId: resolvedAccountId !== null ? resolvedAccountId : accountId, 
+                            ledgerId: resolvedLedgerId !== null ? resolvedLedgerId : ledgerId, 
+                            url: path 
+                        }
+                    }));
 
                     if (doc.title) {
                         document.title = doc.title;

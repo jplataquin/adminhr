@@ -224,3 +224,38 @@ it('applies pointer cursor to clickable elements in ledger UI', function () {
     expect($scss)->toContain('.ledger-sidebar-item');
     expect($scss)->toContain('tbody tr.cursor-pointer');
 });
+
+it('renders scrollable sidebar container and active node targeting identifiers', function () {
+    $user = User::factory()->create();
+
+    $account = new LedgerAccount();
+    $account->name = 'Scroll Test Account';
+    $account->status = 'APRV';
+    $account->created_by = $user->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Scroll Test Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Template';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+
+    $response->assertOk();
+    $response->assertSee('id="ledger-sidebar-scroll"', false);
+    $response->assertSee("id=\"sidebar-account-{$account->id}\"", false);
+    $response->assertSee("id=\"sidebar-ledger-{$ledger->id}\"", false);
+    $response->assertSee('scrollToActiveNode', false);
+    $response->assertSee('ledger-node-pulse', false);
+    $response->assertSee("data-account-id=\"{$account->id}\"", false);
+    $response->assertSee("data-ledger-id=\"{$ledger->id}\"", false);
+
+    $scss = file_get_contents(resource_path('css/app.scss'));
+    expect($scss)->toContain('@keyframes ledger-node-pulse');
+    expect($scss)->toContain('.ledger-node-pulse');
+});

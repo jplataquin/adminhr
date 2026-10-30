@@ -14,6 +14,14 @@
             {{ $account->id }}: {{ $activeAccountId === $account->id ? 'true' : 'false' }},
         @endforeach
     },
+    init() {
+        this.$nextTick(() => {
+            this.scrollToActiveNode();
+        });
+        setTimeout(() => {
+            this.scrollToActiveNode();
+        }, 200);
+    },
     toggleAccount(id) {
         this.expandedAccounts[id] = !this.expandedAccounts[id];
     },
@@ -43,6 +51,9 @@
         if (accountId) {
             this.expandedAccounts[accountId] = true;
         }
+        this.$nextTick(() => {
+            this.scrollToActiveNode();
+        });
         if (window.$ledgerNavigate) {
             window.$ledgerNavigate(url, accountId, ledgerId);
         } else {
@@ -63,6 +74,52 @@
         if (this.activeAccountId) {
             this.expandedAccounts[this.activeAccountId] = true;
         }
+        this.$nextTick(() => {
+            this.scrollToActiveNode();
+        });
+        setTimeout(() => {
+            this.scrollToActiveNode();
+        }, 150);
+    },
+    scrollToActiveNode() {
+        const container = document.getElementById('ledger-sidebar-scroll');
+        if (!container) return;
+
+        let targetEl = null;
+        if (this.activeLedgerId) {
+            targetEl = document.getElementById('sidebar-ledger-' + this.activeLedgerId);
+        } else if (this.activeAccountId) {
+            targetEl = document.getElementById('sidebar-account-' + this.activeAccountId);
+        }
+
+        if (!targetEl) {
+            if (!this.activeAccountId && !this.activeLedgerId) {
+                container.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            return;
+        }
+
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+
+        // Check if target is out of view
+        const isAbove = targetRect.top < containerRect.top + 10;
+        const isBelow = targetRect.bottom > containerRect.bottom - 10;
+
+        if (isAbove || isBelow) {
+            const offsetTop = targetEl.offsetTop - container.offsetTop;
+            const targetScrollTop = offsetTop - (container.clientHeight / 2) + (targetEl.clientHeight / 2);
+
+            container.scrollTo({
+                top: Math.max(0, targetScrollTop),
+                behavior: 'smooth'
+            });
+        }
+
+        // Apply subtle pulse animation to draw focus
+        targetEl.classList.remove('ledger-node-pulse');
+        void targetEl.offsetWidth;
+        targetEl.classList.add('ledger-node-pulse');
     }
 }" @ledger-sidebar-set-active.window="handleExternalNavigate($event.detail)">
     <!-- Header -->
@@ -104,14 +161,14 @@
     </div>
 
     <!-- Accounts & Ledgers Hierarchy -->
-    <div class="card-body p-0" style="overflow-y: auto; flex: 1;">
+    <div class="card-body p-0" id="ledger-sidebar-scroll" style="overflow-y: auto; flex: 1;">
         <div class="list-group list-group-flush">
             @forelse($accounts as $account)
                 @php
                     $isAccountActive = $activeAccountId === $account->id;
                     $ledgersJson = $account->Ledgers->map(fn($l) => ['id' => $l->id, 'name' => $l->name])->toJson();
                 @endphp
-                <div class="border-bottom" x-show="matchesSearch('{{ addslashes($account->name) }}', {{ $ledgersJson }})">
+                <div class="border-bottom" x-show="matchesSearch('{{ addslashes($account->name) }}', {{ $ledgersJson }})" id="sidebar-account-{{ $account->id }}">
                     <!-- Account Header Row -->
                     <div class="d-flex align-items-center justify-content-between p-2 hover-bg"
                          :class="activeAccountId === {{ $account->id }} ? 'bg-primary-subtle text-primary border-start border-3 border-primary' : ''"
@@ -149,6 +206,7 @@
                             <div class="d-flex align-items-center justify-content-between py-1 pe-2 ps-2 ledger-sidebar-item"
                                  :class="activeLedgerId === {{ $ledger->id }} ? 'bg-primary text-white rounded me-2' : ''"
                                  x-show="ledgerMatches('{{ addslashes($ledger->name) }}')"
+                                 id="sidebar-ledger-{{ $ledger->id }}"
                                  @click="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})">
                                 <a href="{{ url('/ledger/' . $ledger->id) }}"
                                    @click.prevent.stop="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})"

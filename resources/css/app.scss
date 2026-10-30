@@ -149,6 +149,22 @@ a[href] {
     }
 }
 
+@keyframes ledger-node-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb, 13, 110, 253), 0.8);
+    }
+    50% {
+        box-shadow: 0 0 0 5px rgba(var(--bs-primary-rgb, 13, 110, 253), 0.35);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb, 13, 110, 253), 0);
+    }
+}
+
+.ledger-node-pulse {
+    animation: ledger-node-pulse 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 #ledger-sidebar-container {
     position: relative;
     flex-shrink: 0;
