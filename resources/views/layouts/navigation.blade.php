@@ -34,6 +34,11 @@
                     </x-nav-link>
                 </li>
                 <li class="nav-item">
+                    <x-nav-link :href="route('org-chart')" :active="request()->routeIs('org-chart*')">
+                        {{ __('Org Chart') }}
+                    </x-nav-link>
+                </li>
+                <li class="nav-item">
                     <x-nav-link :href="route('alerts.index')" :active="request()->routeIs('alerts.*')">
                         Alerts
                     </x-nav-link>

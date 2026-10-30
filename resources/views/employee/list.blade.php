@@ -6,6 +6,7 @@
                 Employees
             </h3>
             <div>
+                <a href="{{ route('org-chart') }}" class="btn btn-outline-info btn-sm me-2" id="orgChartBtn"><i class="bi bi-diagram-3 me-1"></i> Org Chart</a>
                 <button class="btn btn-success btn-sm me-2" id="bulkUpdateBtn">Bulk Update</button>
                 <button class="btn btn-primary btn-sm me-2" id="exportCSVBtn">Export CSV</button>
                 <button class="btn btn-primary btn-sm" id="createRecordBtn">Create Record</button>

@@ -44,6 +44,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'list'])->name('employees');
     Route::get('/employees/print', [App\Http\Controllers\EmployeeController::class, 'print'])->name('employees');
     Route::get('/employees/export/csv', [App\Http\Controllers\EmployeeController::class, 'export_csv'])->name('employees');
+    
+    // Organization Chart
+    Route::get('/organization-chart', [App\Http\Controllers\OrgChartController::class, 'index'])->name('org-chart');
+    Route::get('/api/organization-chart/data', [App\Http\Controllers\OrgChartController::class, 'data'])->name('org-chart.data');
+    Route::get('/org-chart', fn () => redirect()->route('org-chart'));
         
 
     Route::get('/employee/id_template/{type}', function($type){

@@ -118,6 +118,29 @@ class Employee extends Model
         return $this->belongsTo(Position::class, 'position_id')->withTrashed();
     }
 
+    public function supervisor()
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_employee_id')->withTrashed();
+    }
+
+    public function subordinates()
+    {
+        return $this->hasMany(Employee::class, 'supervisor_employee_id');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        $parts = array_filter([
+            $this->prefix,
+            $this->firstname,
+            $this->middlename,
+            $this->lastname,
+            $this->suffix
+        ]);
+
+        return implode(' ', $parts);
+    }
+
     public static function division_options($key = null){
         try {
             $opt = Division::pluck('name', 'id')->toArray();
