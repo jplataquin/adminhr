@@ -71,7 +71,7 @@ class LedgerTypeController extends Controller
 
         $ledgerType->update([
             'text' => $request->text,
-            'prototype' => $request->prototype,
+            'prototype' => $ledgerType->isProtected() ? $ledgerType->prototype : $request->prototype,
         ]);
 
         return redirect()->route('admin.ledger-types.index')->with('success', 'Ledger Type updated successfully.');

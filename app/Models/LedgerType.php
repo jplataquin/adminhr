@@ -34,6 +34,7 @@ class LedgerType extends Model
     public const PROTECTED_TYPES = [
         'Cash Advance',
         'Accounts Receivable',
+        'Accounts Payable',
     ];
 
     /**

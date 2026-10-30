@@ -45,9 +45,20 @@ it('supports soft deletes for custom ledger types', function () {
 it('prevents model-level deletion of protected ledger types', function () {
     $protected1 = LedgerType::firstOrCreate(['text' => 'Cash Advance']);
     $protected2 = LedgerType::firstOrCreate(['text' => 'Accounts Receivable']);
+    $protected3 = LedgerType::firstOrCreate(['text' => 'Accounts Payable', 'prototype' => 'Accounts Payable']);
 
     expect(fn () => $protected1->delete())->toThrow(\Exception::class, 'Cannot delete protected ledger type: Cash Advance');
     expect(fn () => $protected2->delete())->toThrow(\Exception::class, 'Cannot delete protected ledger type: Accounts Receivable');
+    expect(fn () => $protected3->delete())->toThrow(\Exception::class, 'Cannot delete protected ledger type: Accounts Payable');
+});
+
+it('seeds Accounts Payable default ledger type with Accounts Payable prototype and protected status', function () {
+    $ap = LedgerType::where('text', 'Accounts Payable')->first();
+
+    expect($ap)->not->toBeNull();
+    expect($ap->text)->toBe('Accounts Payable');
+    expect($ap->prototype)->toBe('Accounts Payable');
+    expect($ap->isProtected())->toBeTrue();
 });
 
 it('allows admin to view ledger types index and see protected badges and prototype pills in distinct colors', function () {
