@@ -21,9 +21,9 @@ it('redirects /org-chart to /organization-chart', function () {
 });
 
 it('renders the organization chart page with summary statistics and tree containers', function () {
-    $division = Division::first() ?? Division::create(['name' => 'Executive Office', 'code' => 'EXECOF']);
-    $department = Department::first() ?? Department::create(['division_id' => $division->id, 'name' => 'General Admin', 'code' => 'GENADM']);
-    $position = Position::first() ?? Position::create(['department_id' => $department->id, 'name' => 'Director', 'code' => 'DIR001']);
+    $division = Division::create(['name' => 'Executive Office', 'code' => 'EXECOF_' . uniqid()]);
+    $department = Department::create(['division_id' => $division->id, 'name' => 'General Admin', 'code' => 'GENADM_' . uniqid()]);
+    $position = Position::create(['department_id' => $department->id, 'name' => 'Director', 'code' => 'DIR_' . uniqid()]);
 
     // Create CEO (root supervisor)
     $ceo = new Employee();
@@ -92,23 +92,29 @@ it('renders the organization chart page with summary statistics and tree contain
 
     $response->assertOk();
     $response->assertSee('Organization Chart');
-    $response->assertSee('Reporting Hierarchy');
-    $response->assertSee('Divisions & Departments', false);
+    $response->assertSee('Divisions &amp; Departments', false);
     $response->assertSee('Elena Reyes');
+    $response->assertSee('Regular');
+    $response->assertSee('Director');
     $response->assertSee('Marcus Vance');
     $response->assertSee('Chloe Diaz');
+    $response->assertSee('Probationary');
     $response->assertSee('id="stat-total-employees"', false);
     $response->assertSee('id="reporting-root-tree"', false);
     $response->assertSee('id="department-root-tree"', false);
     $response->assertSee('id="expandAllBtn"', false);
     $response->assertSee('id="collapseAllBtn"', false);
     $response->assertSee('id="orgChartSearch"', false);
+    $response->assertSee('bi-caret-right-fill');
+    $response->assertSee('bi-caret-down-fill');
+    $response->assertDontSee('org-leaf-bullet');
+    $response->assertSee('openNodes: {}', false);
 });
 
-it('provides organization chart data through the API endpoint', function () {
-    $division = Division::first() ?? Division::create(['name' => 'Technology', 'code' => 'TECH01']);
-    $department = Department::first() ?? Department::create(['division_id' => $division->id, 'name' => 'Engineering', 'code' => 'ENG001']);
-    $position = Position::first() ?? Position::create(['department_id' => $department->id, 'name' => 'Lead Engineer', 'code' => 'LEAD01']);
+it('provides organization chart data through the API endpoint with Division -> Department -> Employee structure', function () {
+    $division = Division::create(['name' => 'Technology Dev', 'code' => 'TECH_' . uniqid()]);
+    $department = Department::create(['division_id' => $division->id, 'name' => 'Engineering Unit', 'code' => 'ENG_' . uniqid()]);
+    $position = Position::create(['department_id' => $department->id, 'name' => 'Lead Engineer', 'code' => 'LEAD_' . uniqid()]);
 
     $lead = new Employee();
     $lead->firstname = 'David';
@@ -166,7 +172,22 @@ it('provides organization chart data through the API endpoint', function () {
     expect($data)->toHaveKey('reporting_tree');
     expect($data)->toHaveKey('department_tree');
 
-    // Root should be David Kim with Sarah Connor as subordinate
+    // Test Division -> Department -> Employee hierarchy
+    $deptTree = $data['department_tree'];
+    $techDiv = collect($deptTree)->firstWhere('name', 'Technology Dev');
+    expect($techDiv)->not->toBeNull();
+    $engDept = collect($techDiv['departments'])->firstWhere('name', 'Engineering Unit');
+    expect($engDept)->not->toBeNull();
+    expect($engDept['employees'])->toBeArray();
+    expect(count($engDept['employees']))->toBe(2);
+
+    $sarah = collect($engDept['employees'])->firstWhere('firstname', 'Sarah');
+    expect($sarah)->not->toBeNull();
+    expect($sarah['name'])->toContain('Sarah Connor');
+    expect($sarah['employment_status_label'])->toBe('Contractual');
+    expect($sarah['position'])->toBe('Lead Engineer');
+
+    // Root in reporting tree should be David Kim with Sarah Connor as subordinate
     $reportingTree = $data['reporting_tree'];
     expect(count($reportingTree))->toBe(1);
     expect($reportingTree[0]['name'])->toContain('David Kim');

@@ -164,12 +164,12 @@ class OrgChartController extends Controller
     }
 
     /**
-     * Build the organizational hierarchy tree: Division -> Department -> Position -> Employees.
+     * Build the organizational hierarchy tree: Division -> Department -> Employee.
      */
     public function buildDepartmentTree(): array
     {
         $divisions = Division::with([
-            'departments.positions.employees' => function ($q) {
+            'departments.employees.position' => function ($q) {
                 $q->orderBy('firstname')->orderBy('lastname');
             },
         ])->orderBy('name')->get();
@@ -181,56 +181,58 @@ class OrgChartController extends Controller
             $deptList = [];
 
             foreach ($division->departments as $department) {
-                $deptTotalEmployees = 0;
-                $posList = [];
+                $empList = [];
+                foreach ($department->employees as $emp) {
+                    $statusKey = $emp->employment_status;
+                    $statusLabel = match($statusKey) {
+                        'REGU' => 'Regular',
+                        'PROB' => 'Probationary',
+                        'CONT' => 'Contractual',
+                        'RSGN' => 'Resigned',
+                        'LAOF' => 'Laid Off',
+                        'AWOL' => 'AWOL',
+                        'TRMN' => 'Terminated',
+                        'RETR' => 'Retired',
+                        'DECE' => 'Deceased',
+                        default => $statusKey,
+                    };
 
-                foreach ($department->positions as $position) {
-                    $empList = [];
-                    foreach ($position->employees as $emp) {
-                        $fullName = trim(implode(' ', array_filter([
-                            $emp->prefix,
-                            $emp->firstname,
-                            $emp->middlename,
-                            $emp->lastname,
-                            $emp->suffix,
-                        ])));
+                    $fullName = trim(implode(' ', array_filter([
+                        $emp->prefix,
+                        $emp->firstname,
+                        $emp->middlename,
+                        $emp->lastname,
+                        $emp->suffix,
+                    ])));
 
-                        $empList[] = [
-                            'id'                => $emp->id,
-                            'formatted_id'      => str_pad((string) $emp->id, 6, '0', STR_PAD_LEFT),
-                            'name'              => $fullName ?: 'Unnamed Employee',
-                            'photo'             => $emp->photo,
-                            'photo_url'         => $emp->photo ? url('/employee/photo/' . $emp->photo) : null,
-                            'position'          => $position->name,
-                            'department'        => $department->name,
-                            'division'          => $division->name,
-                            'employment_status' => $emp->employment_status,
-                            'duty_status'       => $emp->duty_status,
-                            'email'             => $emp->email,
-                            'mobile_no'         => $emp->mobile_no,
-                        ];
-                    }
-
-                    $posCount = count($empList);
-                    $deptTotalEmployees += $posCount;
-
-                    $posList[] = [
-                        'id'              => $position->id,
-                        'name'            => $position->name,
-                        'code'            => $position->code,
-                        'employees'       => $empList,
-                        'employees_count' => $posCount,
+                    $empList[] = [
+                        'id'                      => $emp->id,
+                        'formatted_id'            => str_pad((string) $emp->id, 6, '0', STR_PAD_LEFT),
+                        'name'                    => $fullName ?: 'Unnamed Employee',
+                        'firstname'               => $emp->firstname,
+                        'lastname'                => $emp->lastname,
+                        'employment_status'       => $emp->employment_status,
+                        'employment_status_label' => $statusLabel,
+                        'position'                => $emp->position?->name ?? 'Unassigned Position',
+                        'department'              => $department->name,
+                        'division'                => $division->name,
+                        'photo'                   => $emp->photo,
+                        'photo_url'               => $emp->photo ? url('/employee/photo/' . $emp->photo) : null,
+                        'duty_status'             => $emp->duty_status,
+                        'email'                   => $emp->email,
+                        'mobile_no'               => $emp->mobile_no,
                     ];
                 }
 
-                $divTotalEmployees += $deptTotalEmployees;
+                $posCount = count($empList);
+                $divTotalEmployees += $posCount;
 
                 $deptList[] = [
                     'id'              => $department->id,
                     'name'            => $department->name,
                     'code'            => $department->code,
-                    'positions'       => $posList,
-                    'employees_count' => $deptTotalEmployees,
+                    'employees'       => $empList,
+                    'employees_count' => $posCount,
                 ];
             }
 
@@ -243,15 +245,28 @@ class OrgChartController extends Controller
             ];
         }
 
-        // Also check if there are unassigned employees (division_id is null or not found)
-        $unassigned = Employee::whereNull('division_id')
-            ->orWhereNull('department_id')
-            ->orderBy('firstname')
-            ->get();
+        // Also check if there are unassigned employees (division_id is null or department_id is null)
+        $unassigned = Employee::where(function ($q) {
+            $q->whereNull('division_id')->orWhereNull('department_id');
+        })->with(['position', 'division', 'department'])->orderBy('firstname')->get();
 
         if ($unassigned->isNotEmpty()) {
             $unassignedList = [];
             foreach ($unassigned as $emp) {
+                $statusKey = $emp->employment_status;
+                $statusLabel = match($statusKey) {
+                    'REGU' => 'Regular',
+                    'PROB' => 'Probationary',
+                    'CONT' => 'Contractual',
+                    'RSGN' => 'Resigned',
+                    'LAOF' => 'Laid Off',
+                    'AWOL' => 'AWOL',
+                    'TRMN' => 'Terminated',
+                    'RETR' => 'Retired',
+                    'DECE' => 'Deceased',
+                    default => $statusKey,
+                };
+
                 $fullName = trim(implode(' ', array_filter([
                     $emp->prefix,
                     $emp->firstname,
@@ -261,18 +276,21 @@ class OrgChartController extends Controller
                 ])));
 
                 $unassignedList[] = [
-                    'id'                => $emp->id,
-                    'formatted_id'      => str_pad((string) $emp->id, 6, '0', STR_PAD_LEFT),
-                    'name'              => $fullName ?: 'Unnamed Employee',
-                    'photo'             => $emp->photo,
-                    'photo_url'         => $emp->photo ? url('/employee/photo/' . $emp->photo) : null,
-                    'position'          => $emp->position?->name ?? 'Unassigned',
-                    'department'        => $emp->department?->name ?? 'Unassigned',
-                    'division'          => 'Unassigned',
-                    'employment_status' => $emp->employment_status,
-                    'duty_status'       => $emp->duty_status,
-                    'email'             => $emp->email,
-                    'mobile_no'         => $emp->mobile_no,
+                    'id'                      => $emp->id,
+                    'formatted_id'            => str_pad((string) $emp->id, 6, '0', STR_PAD_LEFT),
+                    'name'                    => $fullName ?: 'Unnamed Employee',
+                    'firstname'               => $emp->firstname,
+                    'lastname'                => $emp->lastname,
+                    'employment_status'       => $emp->employment_status,
+                    'employment_status_label' => $statusLabel,
+                    'position'                => $emp->position?->name ?? 'Unassigned Position',
+                    'department'              => 'Unassigned',
+                    'division'                => 'Unassigned',
+                    'photo'                   => $emp->photo,
+                    'photo_url'               => $emp->photo ? url('/employee/photo/' . $emp->photo) : null,
+                    'duty_status'             => $emp->duty_status,
+                    'email'                   => $emp->email,
+                    'mobile_no'               => $emp->mobile_no,
                 ];
             }
 
@@ -283,17 +301,9 @@ class OrgChartController extends Controller
                 'departments'     => [
                     [
                         'id'              => 0,
-                        'name'            => 'Unassigned',
+                        'name'            => 'General / Unassigned',
                         'code'            => 'UNASSIGNED',
-                        'positions'       => [
-                            [
-                                'id'              => 0,
-                                'name'            => 'Various Roles',
-                                'code'            => 'UNASSIGNED',
-                                'employees'       => $unassignedList,
-                                'employees_count' => count($unassignedList),
-                            ],
-                        ],
+                        'employees'       => $unassignedList,
                         'employees_count' => count($unassignedList),
                     ],
                 ],

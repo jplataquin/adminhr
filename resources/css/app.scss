@@ -322,22 +322,8 @@ a[href] {
     }
 }
 
-.org-leaf-bullet {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    &::after {
-        content: '';
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background-color: var(--bs-border-color, rgba(255, 255, 255, 0.25));
-    }
+.org-leaf-spacer {
+    display: none;
 }
 
 .org-card {
@@ -370,6 +356,10 @@ a[href] {
 
 .org-card-dept {
     border-left: 3px solid var(--bs-info, #0dcaf0) !important;
+}
+
+.org-card-employee {
+    border-left: 3px solid var(--bs-teal, #20c997) !important;
 }
 
 .org-card-position {

@@ -20,10 +20,10 @@
                     @click="toggleNode('{{ $nodeKey }}')"
                     :title="isNodeOpen('{{ $nodeKey }}') ? 'Collapse subordinates' : 'Expand subordinates'"
                     aria-label="Toggle node">
-                <i class="bi" :class="isNodeOpen('{{ $nodeKey }}') ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                <i class="bi" :class="isNodeOpen('{{ $nodeKey }}') ? 'bi-caret-down-fill' : 'bi-caret-right-fill'"></i>
             </button>
         @else
-            <span class="org-leaf-bullet me-2"></span>
+            <span class="org-leaf-spacer me-2"></span>
         @endif
 
         <div class="card org-card border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['formatted_id']) }}') }">
