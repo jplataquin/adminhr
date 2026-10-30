@@ -11,8 +11,21 @@ class LedgerType extends Model
 
     protected $table = 'ledger_types';
 
+    public const PROTOTYPE_ACCOUNTS_RECEIVABLE = 'Accounts Receivable';
+    public const PROTOTYPE_ACCOUNTS_PAYABLE = 'Accounts Payable';
+
+    public const PROTOTYPES = [
+        self::PROTOTYPE_ACCOUNTS_RECEIVABLE,
+        self::PROTOTYPE_ACCOUNTS_PAYABLE,
+    ];
+
     protected $fillable = [
         'text',
+        'prototype',
+    ];
+
+    protected $attributes = [
+        'prototype' => self::PROTOTYPE_ACCOUNTS_RECEIVABLE,
     ];
 
     /**

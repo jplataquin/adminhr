@@ -46,6 +46,7 @@
                                 <tr>
                                     <th class="px-4" style="width: 80px;">ID</th>
                                     <th>Ledger Type Name</th>
+                                    <th>Prototype</th>
                                     <th>Status</th>
                                     <th>Created At</th>
                                     <th class="text-end px-4" style="width: 200px;">Actions</th>
@@ -57,6 +58,9 @@
                                         <td class="px-4 text-white-50">{{ $type->id }}</td>
                                         <td>
                                             <strong class="text-white">{{ $type->text }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">{{ $type->prototype ?? 'Accounts Receivable' }}</span>
                                         </td>
                                         <td>
                                             @if ($type->isProtected())
@@ -93,7 +97,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-5 text-white-50">
+                                        <td colspan="6" class="text-center py-5 text-white-50">
                                             <div class="fs-4 mb-2"><i class="bi bi-info-circle"></i></div>
                                             No ledger types are configured yet.
                                         </td>

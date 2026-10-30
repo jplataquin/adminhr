@@ -43,6 +43,18 @@
                                     <div class="form-text small text-muted">Enter a unique descriptive name for this ledger type.</div>
                                 </div>
 
+                                <div class="mb-4">
+                                    <label for="prototype" class="form-label small font-weight-bold">Prototype <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('prototype') is-invalid @enderror" id="prototype" name="prototype" required>
+                                        <option value="Accounts Receivable" {{ old('prototype', 'Accounts Receivable') === 'Accounts Receivable' ? 'selected' : '' }}>Accounts Receivable</option>
+                                        <option value="Accounts Payable" {{ old('prototype') === 'Accounts Payable' ? 'selected' : '' }}>Accounts Payable</option>
+                                    </select>
+                                    @error('prototype')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text small text-muted">Select whether this ledger type defines an Accounts Receivable or Accounts Payable prototype.</div>
+                                </div>
+
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="{{ route('admin.ledger-types.index') }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
                                     <button type="submit" class="btn btn-primary btn-sm">Create Type</button>

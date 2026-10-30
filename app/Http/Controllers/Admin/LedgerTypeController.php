@@ -29,10 +29,16 @@ class LedgerTypeController extends Controller
                 'max:255',
                 Rule::unique('ledger_types')->whereNull('deleted_at'),
             ],
+            'prototype' => [
+                'required',
+                'string',
+                Rule::in(LedgerType::PROTOTYPES),
+            ],
         ]);
 
         LedgerType::create([
             'text' => $request->text,
+            'prototype' => $request->prototype,
         ]);
 
         return redirect()->route('admin.ledger-types.index')->with('success', 'Ledger Type created successfully.');
@@ -52,6 +58,11 @@ class LedgerTypeController extends Controller
                 'max:255',
                 Rule::unique('ledger_types')->ignore($ledgerType->id)->whereNull('deleted_at'),
             ],
+            'prototype' => [
+                'required',
+                'string',
+                Rule::in(LedgerType::PROTOTYPES),
+            ],
         ]);
 
         if ($ledgerType->isProtected() && $request->text !== $ledgerType->text) {
@@ -60,6 +71,7 @@ class LedgerTypeController extends Controller
 
         $ledgerType->update([
             'text' => $request->text,
+            'prototype' => $request->prototype,
         ]);
 
         return redirect()->route('admin.ledger-types.index')->with('success', 'Ledger Type updated successfully.');

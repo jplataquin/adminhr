@@ -50,6 +50,27 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-4">
+                                    <label for="prototype" class="form-label small font-weight-bold">Prototype <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('prototype') is-invalid @enderror" id="prototype" name="prototype" required @if($ledgerType->isProtected()) disabled @endif>
+                                        <option value="Accounts Receivable" {{ old('prototype', $ledgerType->prototype ?? 'Accounts Receivable') === 'Accounts Receivable' ? 'selected' : '' }}>Accounts Receivable</option>
+                                        <option value="Accounts Payable" {{ old('prototype', $ledgerType->prototype) === 'Accounts Payable' ? 'selected' : '' }}>Accounts Payable</option>
+                                    </select>
+                                    @if($ledgerType->isProtected())
+                                        <input type="hidden" name="prototype" value="{{ $ledgerType->prototype ?? 'Accounts Receivable' }}">
+                                    @endif
+                                    @error('prototype')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text small text-muted">
+                                        @if($ledgerType->isProtected())
+                                            <span class="text-warning"><i class="bi bi-lock-fill"></i> This default ledger type is protected and its prototype cannot be altered.</span>
+                                        @else
+                                            Select whether this ledger type defines an Accounts Receivable or Accounts Payable prototype.
+                                        @endif
+                                    </div>
+                                </div>
+
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="{{ route('admin.ledger-types.index') }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
                                     @if(!$ledgerType->isProtected())

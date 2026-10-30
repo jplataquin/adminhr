@@ -3,7 +3,7 @@
 use App\Models\LedgerType;
 use App\Models\User;
 
-it('can create and persist a ledger type with id and text', function () {
+it('can create and persist a ledger type with id and text and defaults prototype to Accounts Receivable', function () {
     $ledgerType = LedgerType::create([
         'text' => 'Custom Expense Type',
     ]);
@@ -11,10 +11,24 @@ it('can create and persist a ledger type with id and text', function () {
     expect($ledgerType)->not->toBeNull();
     expect($ledgerType->id)->toBeNumeric();
     expect($ledgerType->text)->toBe('Custom Expense Type');
+    expect($ledgerType->prototype)->toBe('Accounts Receivable');
 
     $retrieved = LedgerType::find($ledgerType->id);
     expect($retrieved)->not->toBeNull();
     expect($retrieved->text)->toBe('Custom Expense Type');
+    expect($retrieved->prototype)->toBe('Accounts Receivable');
+});
+
+it('can create a ledger type with Accounts Payable prototype', function () {
+    $ledgerType = LedgerType::create([
+        'text' => 'Vendor Invoices',
+        'prototype' => 'Accounts Payable',
+    ]);
+
+    expect($ledgerType->prototype)->toBe('Accounts Payable');
+
+    $retrieved = LedgerType::find($ledgerType->id);
+    expect($retrieved->prototype)->toBe('Accounts Payable');
 });
 
 it('supports soft deletes for custom ledger types', function () {
@@ -36,10 +50,10 @@ it('prevents model-level deletion of protected ledger types', function () {
     expect(fn () => $protected2->delete())->toThrow(\Exception::class, 'Cannot delete protected ledger type: Accounts Receivable');
 });
 
-it('allows admin to view ledger types index and see protected badges', function () {
+it('allows admin to view ledger types index and see protected badges and prototype column', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    LedgerType::firstOrCreate(['text' => 'Cash Advance']);
-    LedgerType::firstOrCreate(['text' => 'Accounts Receivable']);
+    LedgerType::firstOrCreate(['text' => 'Cash Advance', 'prototype' => 'Accounts Receivable']);
+    LedgerType::firstOrCreate(['text' => 'Accounts Receivable', 'prototype' => 'Accounts Receivable']);
 
     $response = $this->actingAs($admin)->get(route('admin.ledger-types.index'));
 
@@ -47,13 +61,27 @@ it('allows admin to view ledger types index and see protected badges', function 
     $response->assertSee('Cash Advance');
     $response->assertSee('Accounts Receivable');
     $response->assertSee('Protected');
+    $response->assertSee('Prototype');
 });
 
-it('allows admin to create a new ledger type', function () {
+it('renders create view with Accounts Receivable selected by default in prototype dropdown', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $response = $this->actingAs($admin)->get(route('admin.ledger-types.create'));
+
+    $response->assertOk();
+    $response->assertSee('Prototype');
+    $response->assertSee('Accounts Receivable');
+    $response->assertSee('Accounts Payable');
+    $response->assertSee('<option value="Accounts Receivable" selected>Accounts Receivable</option>', false);
+});
+
+it('allows admin to create a new ledger type with prototype', function () {
     $admin = User::factory()->create(['is_admin' => true]);
 
     $response = $this->actingAs($admin)->post(route('admin.ledger-types.store'), [
         'text' => 'Petty Cash',
+        'prototype' => 'Accounts Receivable',
     ]);
 
     $response->assertRedirect(route('admin.ledger-types.index'));
@@ -61,16 +89,42 @@ it('allows admin to create a new ledger type', function () {
 
     $this->assertDatabaseHas('ledger_types', [
         'text' => 'Petty Cash',
+        'prototype' => 'Accounts Receivable',
         'deleted_at' => null,
     ]);
 });
 
-it('allows admin to edit and update a custom ledger type', function () {
+it('requires prototype field when creating a ledger type', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $custom = LedgerType::create(['text' => 'Old Title']);
+
+    $response = $this->actingAs($admin)->post(route('admin.ledger-types.store'), [
+        'text' => 'Without Prototype',
+    ]);
+
+    $response->assertSessionHasErrors(['prototype']);
+});
+
+it('validates prototype is either Accounts Receivable or Accounts Payable', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $response = $this->actingAs($admin)->post(route('admin.ledger-types.store'), [
+        'text' => 'Invalid Prototype',
+        'prototype' => 'Other Option',
+    ]);
+
+    $response->assertSessionHasErrors(['prototype']);
+});
+
+it('allows admin to edit and update a custom ledger type with new prototype', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    $custom = LedgerType::create([
+        'text' => 'Old Title',
+        'prototype' => 'Accounts Receivable',
+    ]);
 
     $response = $this->actingAs($admin)->put(route('admin.ledger-types.update', $custom->id), [
         'text' => 'Updated Title',
+        'prototype' => 'Accounts Payable',
     ]);
 
     $response->assertRedirect(route('admin.ledger-types.index'));
@@ -79,15 +133,31 @@ it('allows admin to edit and update a custom ledger type', function () {
     $this->assertDatabaseHas('ledger_types', [
         'id' => $custom->id,
         'text' => 'Updated Title',
+        'prototype' => 'Accounts Payable',
     ]);
+});
+
+it('renders edit view with current prototype selected', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    $payable = LedgerType::create([
+        'text' => 'Supplier Credit',
+        'prototype' => 'Accounts Payable',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.ledger-types.edit', $payable->id));
+
+    $response->assertOk();
+    $response->assertSee('Prototype');
+    $response->assertSee('<option value="Accounts Payable" selected>Accounts Payable</option>', false);
 });
 
 it('prevents renaming protected ledger types via admin update', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $protected = LedgerType::firstOrCreate(['text' => 'Cash Advance']);
+    $protected = LedgerType::firstOrCreate(['text' => 'Cash Advance', 'prototype' => 'Accounts Receivable']);
 
     $response = $this->actingAs($admin)->put(route('admin.ledger-types.update', $protected->id), [
         'text' => 'Renamed Advance',
+        'prototype' => 'Accounts Receivable',
     ]);
 
     $response->assertRedirect(route('admin.ledger-types.index'));
