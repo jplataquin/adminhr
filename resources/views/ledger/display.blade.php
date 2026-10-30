@@ -1,10 +1,13 @@
 <x-app-layout>
 
     <div class="card shadow-sm border-0 m-4">
-        <div class="card-header bg-body py-3">
+        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
             <h3 class="h5 mb-0">
                 Ledger
             </h3>
+            <a href="{{ route('ledger.logs', $ledger->id) }}" class="btn btn-outline-info btn-sm" id="showUpdateLogsBtn">
+                <i class="bi bi-clock-history me-1"></i> Show Update Logs
+            </a>
         </div>
 
         <div class="card-body p-4">

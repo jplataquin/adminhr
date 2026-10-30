@@ -6,6 +6,9 @@
             <h3 class="text-xl font-semibold dark:text-white">
                 Review Ledger Account
             </h3>
+            <a href="{{ route('ledger.account.logs', $ledger_account->id) }}" class="btn btn-outline-info btn-sm" id="showUpdateLogsBtn">
+                <i class="bi bi-clock-history me-1"></i> Show Update Logs
+            </a>
         </div>
 
         <div class="p-6 space-y-6">

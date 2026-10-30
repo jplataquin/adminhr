@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\HasUpdateLogs;
 use App\Models\User;
 use App\Models\LedgerEntry;
 use App\Models\LedgerAccount;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Ledger extends Model
 {
     
-    use SoftDeletes;
+    use SoftDeletes, HasUpdateLogs;
 
     protected $table = 'ledgers';
 

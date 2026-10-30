@@ -163,7 +163,10 @@ class LedgerController extends Controller
             ]);
         }
 
-        if($ledger->status != 'PEND'){
+        $user = Auth::user();
+        $isAdmin = $user && $user->is_admin;
+
+        if ($ledger->status != 'PEND' && !($isAdmin && $ledger->status == 'APRV')) {
             return response()->json([
                 'status'    => 0,
                 'message'   => 'Ledger cannot be updated (status: '.$ledger->status.')',
@@ -445,6 +448,18 @@ class LedgerController extends Controller
             'ledger'     => $ledger,
             'account'    => $account,
             'entries'    => $entries
+        ]);
+    }
+
+    public function logs($id){
+        $id = (int) $id;
+        $ledger = Ledger::with('Account')->findOrFail($id);
+        $logs = $ledger->updateLogs()->with('user')->paginate(15);
+
+        return view('ledger/logs', [
+            'ledger'  => $ledger,
+            'account' => $ledger->Account,
+            'logs'    => $logs
         ]);
     }
 }

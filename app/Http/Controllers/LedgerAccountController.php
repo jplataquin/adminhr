@@ -138,6 +138,17 @@ class LedgerAccountController extends Controller
             ]);
         }
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->is_admin;
+
+        if ($ledger_account->status != 'PEND' && !($isAdmin && $ledger_account->status == 'APRV')) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Ledger Account cannot be updated (status: '.$ledger_account->status.')',
+                'data'      => []
+            ]);
+        }
+
 
         $validator = Validator::make($request->all(),[
             'name' => [
@@ -340,6 +351,17 @@ class LedgerAccountController extends Controller
             'status'    => 1,
             'message'   => '',
             'data'      => []
+        ]);
+    }
+
+    public function logs($id){
+        $id = (int) $id;
+        $ledger_account = LedgerAccount::with('Employee')->findOrFail($id);
+        $logs = $ledger_account->updateLogs()->with('user')->paginate(15);
+
+        return view('ledger/account/logs', [
+            'ledger_account' => $ledger_account,
+            'logs'           => $logs
         ]);
     }
 

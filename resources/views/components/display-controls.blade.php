@@ -26,7 +26,7 @@
             {{$right}}
         @endif
 
-        @if($status == 'PEND')
+        @if($status == 'PEND' || (auth()->check() && auth()->user()->is_admin && $status == 'APRV'))
             <x-primary-button class="me-2" id="{{$namespace}}editBtn">Edit</x-primary-button>
             <x-primary-button class="d-none me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
         @endif
