@@ -306,6 +306,14 @@
                 }
             };
 
+            window.$ledgerReload = function() {
+                if (window.$ledgerNavigate) {
+                    window.$ledgerNavigate(window.location.href, null, null, false);
+                } else {
+                    window.location.reload();
+                }
+            };
+
             // Browser Back / Forward navigation support
             window.addEventListener('popstate', (e) => {
                 if (location.pathname.startsWith('/ledger')) {

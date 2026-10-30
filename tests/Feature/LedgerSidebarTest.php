@@ -259,3 +259,34 @@ it('renders scrollable sidebar container and active node targeting identifiers',
     expect($scss)->toContain('@keyframes ledger-node-pulse');
     expect($scss)->toContain('.ledger-node-pulse');
 });
+
+it('defines window.$ledgerReload and uses it in ledger forms instead of full page $reload', function () {
+    $user = User::factory()->create();
+
+    $account = new LedgerAccount();
+    $account->name = 'Reload Test Account';
+    $account->status = 'APRV';
+    $account->created_by = $user->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Reload Test Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Template';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    // Verify layout defines window.$ledgerReload
+    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+    $response->assertOk();
+    $response->assertSee('window.$ledgerReload = function()', false);
+    $response->assertSee('(window.$ledgerReload || $reload)()', false);
+
+    // Verify account view uses $ledgerReload
+    $accountResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
+    $accountResponse->assertOk();
+    $accountResponse->assertSee('(window.$ledgerReload || $reload)()', false);
+});

@@ -136,7 +136,7 @@
                         return $ui.showError(reply);
                     }
 
-                    $reload();
+                    (window.$ledgerReload || $reload)();
                 });
             });
         }
@@ -177,7 +177,7 @@
                     return $ui.showError(reply);
                 }
 
-                $reload();
+                (window.$ledgerReload || $reload)();
             });
         }
 
