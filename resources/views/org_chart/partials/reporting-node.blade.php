@@ -13,31 +13,31 @@
 @endphp
 
 <li class="org-tree-item" data-employee-id="{{ $node['id'] }}" data-search-text="{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['division'] . ' ' . $node['formatted_id']) }}">
-    <div class="org-node-container d-inline-flex align-items-center mb-2">
+    <div class="org-node-container d-inline-flex align-items-center">
         @if($hasChildren)
             <button type="button"
                     class="btn btn-sm btn-outline-secondary org-toggle-btn me-2 p-0 d-inline-flex align-items-center justify-content-center"
                     @click="toggleNode('{{ $nodeKey }}')"
                     :title="isNodeOpen('{{ $nodeKey }}') ? 'Collapse subordinates' : 'Expand subordinates'"
                     aria-label="Toggle node">
-                <i class="bi fs-6" :class="isNodeOpen('{{ $nodeKey }}') ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                <i class="bi" :class="isNodeOpen('{{ $nodeKey }}') ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
             </button>
         @else
             <span class="org-leaf-bullet me-2"></span>
         @endif
 
         <div class="card org-card border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['formatted_id']) }}') }">
-            <div class="card-body p-2 d-flex align-items-center gap-3">
+            <div class="card-body d-flex align-items-center gap-2.5">
                 <!-- Avatar / Photo -->
                 <div class="flex-shrink-0">
                     @if($node['photo_url'])
                         <img src="{{ $node['photo_url'] }}"
                              alt="{{ $node['name'] }}"
                              class="rounded-circle object-fit-cover border"
-                             style="width: 44px; height: 44px;">
+                             style="width: 32px; height: 32px;">
                     @else
                         <div class="avatar-circle rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center border border-primary-subtle"
-                             style="width: 44px; height: 44px; font-size: 0.95rem;">
+                             style="width: 32px; height: 32px; font-size: 0.75rem;">
                             {{ $initials }}
                         </div>
                     @endif
@@ -45,16 +45,16 @@
 
                 <!-- Info -->
                 <div class="min-w-0 flex-grow-1">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <a href="{{ url('/employee/' . $node['id']) }}" class="fw-bold text-decoration-none text-body text-truncate employee-name-link" title="View employee details">
+                    <div class="d-flex align-items-center gap-1.5 lh-1 mb-1">
+                        <a href="{{ url('/employee/' . $node['id']) }}" class="fw-bold text-decoration-none text-body text-truncate employee-name-link small" title="View employee details">
                             {{ $node['name'] }}
                         </a>
-                        <span class="badge bg-secondary-subtle text-secondary font-monospace small px-1.5 py-0.5">#{{ $node['formatted_id'] }}</span>
-                        <span class="badge {{ $statusClass }} small px-1.5 py-0.5">{{ $node['employment_status'] }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary font-monospace px-1 py-0" style="font-size: 0.65rem;">#{{ $node['formatted_id'] }}</span>
+                        <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status'] }}</span>
                     </div>
 
-                    <div class="d-flex flex-wrap align-items-center gap-2 small text-secondary">
-                        <span class="fw-semibold text-body-secondary"><i class="bi bi-briefcase me-1 text-primary"></i>{{ $node['position'] }}</span>
+                    <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem;">
+                        <span class="fw-medium text-body-secondary"><i class="bi bi-briefcase me-1 text-primary"></i>{{ $node['position'] }}</span>
                         <span class="text-white-50">•</span>
                         <span><i class="bi bi-diagram-3 me-1 text-info"></i>{{ $node['department'] }}</span>
                     </div>
@@ -62,14 +62,15 @@
 
                 <!-- Children / Subordinate Count Badge -->
                 @if($hasChildren)
-                    <div class="flex-shrink-0 ms-2">
+                    <div class="flex-shrink-0 ms-1.5">
                         <button type="button"
-                                class="btn btn-sm btn-outline-info py-0 px-2 d-flex align-items-center gap-1 rounded-pill"
+                                class="btn btn-sm btn-outline-info py-0 px-1.5 d-flex align-items-center gap-1 rounded-pill"
+                                style="font-size: 0.68rem;"
                                 @click="toggleNode('{{ $nodeKey }}')"
                                 title="{{ $node['direct_reports'] }} direct, {{ $node['total_subordinates'] }} total reports">
-                            <i class="bi bi-people-fill small"></i>
-                            <span class="fw-bold small">{{ $node['direct_reports'] }}</span>
-                            <span class="small text-muted d-none d-sm-inline">({{ $node['total_subordinates'] }})</span>
+                            <i class="bi bi-people-fill"></i>
+                            <span class="fw-bold">{{ $node['direct_reports'] }}</span>
+                            <span class="text-muted d-none d-sm-inline">({{ $node['total_subordinates'] }})</span>
                         </button>
                     </div>
                 @endif
