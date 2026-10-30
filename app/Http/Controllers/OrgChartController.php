@@ -169,9 +169,10 @@ class OrgChartController extends Controller
     public function buildDepartmentTree(): array
     {
         $divisions = Division::with([
-            'departments.employees.position' => function ($q) {
+            'departments.employees' => function ($q) {
                 $q->orderBy('firstname')->orderBy('lastname');
             },
+            'departments.employees.position',
         ])->orderBy('name')->get();
 
         $tree = [];

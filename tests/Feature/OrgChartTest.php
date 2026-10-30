@@ -263,3 +263,62 @@ it('gracefully handles supervisor cycles without infinite recursion', function (
     expect($allIds)->toContain($empA->id);
     expect($allIds)->toContain($empB->id);
 });
+
+it('successfully executes buildDepartmentTree without ordering on positions table', function () {
+    $division = Division::create(['name' => 'Div Test', 'code' => 'DIV_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Dept Test', 'code' => 'DEPT_' . uniqid()]);
+    $pos1 = Position::create(['department_id' => $dept->id, 'name' => 'Pos A', 'code' => 'P1_' . uniqid()]);
+    $pos2 = Position::create(['department_id' => $dept->id, 'name' => 'Pos B', 'code' => 'P2_' . uniqid()]);
+
+    $emp1 = new Employee();
+    $emp1->firstname = 'Zack';
+    $emp1->lastname = 'Taylor';
+    $emp1->birthdate = '1990-01-01';
+    $emp1->gender = 'M';
+    $emp1->religion = 'None';
+    $emp1->marital_status = 'SING';
+    $emp1->current_address = 'Address';
+    $emp1->permanent_address = 'Address';
+    $emp1->educational_attainment = 'BD';
+    $emp1->division_id = $division->id;
+    $emp1->department_id = $dept->id;
+    $emp1->position_id = $pos1->id;
+    $emp1->employment_status = 'REGU';
+    $emp1->duty_status = 'ONDU';
+    $emp1->employment_start_date = '2020-01-01';
+    $emp1->created_by = $this->user->id;
+    $emp1->save();
+
+    $emp2 = new Employee();
+    $emp2->firstname = 'Adam';
+    $emp2->lastname = 'Park';
+    $emp2->birthdate = '1992-02-02';
+    $emp2->gender = 'M';
+    $emp2->religion = 'None';
+    $emp2->marital_status = 'SING';
+    $emp2->current_address = 'Address';
+    $emp2->permanent_address = 'Address';
+    $emp2->educational_attainment = 'BD';
+    $emp2->division_id = $division->id;
+    $emp2->department_id = $dept->id;
+    $emp2->position_id = $pos2->id;
+    $emp2->employment_status = 'PROB';
+    $emp2->duty_status = 'ONDU';
+    $emp2->employment_start_date = '2021-01-01';
+    $emp2->created_by = $this->user->id;
+    $emp2->save();
+
+    $controller = new \App\Http\Controllers\OrgChartController();
+    $tree = $controller->buildDepartmentTree();
+
+    $divNode = collect($tree)->firstWhere('name', 'Div Test');
+    expect($divNode)->not->toBeNull();
+    $deptNode = collect($divNode['departments'])->firstWhere('name', 'Dept Test');
+    expect($deptNode)->not->toBeNull();
+    expect(count($deptNode['employees']))->toBe(2);
+    // Verified employees are ordered by firstname (Adam, then Zack)
+    expect($deptNode['employees'][0]['name'])->toContain('Adam Park');
+    expect($deptNode['employees'][0]['position'])->toBe('Pos B');
+    expect($deptNode['employees'][1]['name'])->toContain('Zack Taylor');
+    expect($deptNode['employees'][1]['position'])->toBe('Pos A');
+});
