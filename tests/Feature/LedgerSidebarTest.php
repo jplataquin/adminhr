@@ -122,3 +122,42 @@ it('resolves active account and ledger in the sidebar on ledger entry display pa
     $response->assertSee('HR Branch Account');
     $response->assertSee('Stationery Ledger');
 });
+
+it('renders ledger sidebar alongside drawer modal and add entry button on ledger display page', function () {
+    $user = User::factory()->create();
+
+    $account = new LedgerAccount();
+    $account->name = 'General Account';
+    $account->status = 'APRV';
+    $account->created_by = $user->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Maintenance Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Maintenance';
+    $ledger->template = 'Maintenance';
+    $ledger->unit = 'Units';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+
+    $response->assertOk();
+    $response->assertSee('Ledger Explorer');
+    $response->assertSee('drawer_modal');
+    $response->assertSee('drawer_modal_background');
+    $response->assertSee('id="addBtn"', false);
+});
+
+it('configures drawer modal z-index higher than sticky-top sidebar', function () {
+    $scss = file_get_contents(resource_path('css/app.scss'));
+
+    // Ensure drawer_modal has z-index of 1055 (above Bootstrap sticky-top: 1020)
+    expect($scss)->toMatch('/\.drawer_modal\s*\{[^}]*z-index:\s*1055;/');
+    // Ensure drawer_modal_background has z-index of 1050
+    expect($scss)->toMatch('/\.drawer_modal_background\s*\{[^}]*z-index:\s*1050;/');
+    // Ensure drawer_modal_background is position fixed
+    expect($scss)->toMatch('/\.drawer_modal_background\s*\{[^}]*position:\s*fixed;/');
+});
