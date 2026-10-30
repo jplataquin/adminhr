@@ -161,3 +161,50 @@ it('configures drawer modal z-index higher than sticky-top sidebar', function ()
     // Ensure drawer_modal_background is position fixed
     expect($scss)->toMatch('/\.drawer_modal_background\s*\{[^}]*position:\s*fixed;/');
 });
+
+it('renders resizable sidebar container and draggable resizer splitter', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+
+    $response->assertOk();
+    $response->assertSee('id="ledger-workspace"', false);
+    $response->assertSee('id="ledger-sidebar-container"', false);
+    $response->assertSee('id="ledger-sidebar-resizer"', false);
+    $response->assertSee('id="ledger-main-pane"', false);
+    $response->assertSee('id="ledger-pane-loader"', false);
+    $response->assertSee('id="ledger-content-container"', false);
+    $response->assertSee('$ledgerNavigate', false);
+
+    // Verify SCSS has resizer styles
+    $scss = file_get_contents(resource_path('css/app.scss'));
+    expect($scss)->toContain('#ledger-sidebar-resizer');
+    expect($scss)->toContain('cursor: col-resize;');
+});
+
+it('configures sidebar links with dynamic client navigation to avoid full page refresh', function () {
+    $user = User::factory()->create();
+
+    $account = new LedgerAccount();
+    $account->name = 'Test Dynamic Account';
+    $account->status = 'APRV';
+    $account->created_by = $user->id;
+    $account->save();
+
+    $ledger = new Ledger();
+    $ledger->name = 'Test Dynamic Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Desc';
+    $ledger->template = 'Template';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+
+    $response->assertOk();
+    $response->assertSee('@click.prevent="navigate(', false);
+    $response->assertSee('ledgerAccountMap', false);
+    $response->assertSee('handleExternalNavigate', false);
+});

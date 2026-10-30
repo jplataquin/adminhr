@@ -1,5 +1,14 @@
 <div class="card border-0 shadow-sm sticky-top" style="top: 1rem; max-height: calc(100vh - 2rem); overflow: hidden; display: flex; flex-direction: column;" x-data="{
     search: '',
+    activeAccountId: {{ $activeAccountId !== null ? $activeAccountId : 'null' }},
+    activeLedgerId: {{ $activeLedgerId !== null ? $activeLedgerId : 'null' }},
+    ledgerAccountMap: {
+        @foreach($accounts as $account)
+            @foreach($account->Ledgers as $ledger)
+                {{ $ledger->id }}: {{ $account->id }},
+            @endforeach
+        @endforeach
+    },
     expandedAccounts: {
         @foreach($accounts as $account)
             {{ $account->id }}: {{ $activeAccountId === $account->id ? 'true' : 'false' }},
@@ -27,8 +36,35 @@
     ledgerMatches(ledgerName) {
         if (!this.search.trim()) return true;
         return ledgerName.toLowerCase().includes(this.search.toLowerCase());
+    },
+    navigate(url, accountId, ledgerId) {
+        this.activeAccountId = accountId;
+        this.activeLedgerId = ledgerId;
+        if (accountId) {
+            this.expandedAccounts[accountId] = true;
+        }
+        if (window.$ledgerNavigate) {
+            window.$ledgerNavigate(url, accountId, ledgerId);
+        } else {
+            window.location.href = url;
+        }
+    },
+    handleExternalNavigate(detail) {
+        if (detail.accountId !== undefined && detail.accountId !== null) {
+            this.activeAccountId = detail.accountId;
+        } else if (detail.ledgerId && this.ledgerAccountMap[detail.ledgerId]) {
+            this.activeAccountId = this.ledgerAccountMap[detail.ledgerId];
+        } else if (detail.url === '/ledger/accounts') {
+            this.activeAccountId = null;
+        }
+        if (detail.ledgerId !== undefined) {
+            this.activeLedgerId = detail.ledgerId;
+        }
+        if (this.activeAccountId) {
+            this.expandedAccounts[this.activeAccountId] = true;
+        }
     }
-}">
+}" @ledger-sidebar-set-active.window="handleExternalNavigate($event.detail)">
     <!-- Header -->
     <div class="card-header bg-body py-3 border-bottom d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
@@ -38,7 +74,10 @@
                 <small class="text-white-50">{{ $accounts->count() }} Accounts</small>
             </div>
         </div>
-        <a href="{{ url('/ledger/accounts') }}" class="btn btn-sm btn-outline-primary py-1 px-2" title="View all accounts">
+        <a href="{{ url('/ledger/accounts') }}" 
+           @click.prevent="navigate('{{ url('/ledger/accounts') }}', null, null)"
+           class="btn btn-sm btn-outline-primary py-1 px-2" 
+           title="View all accounts">
             <i class="bi bi-grid-fill"></i> All
         </a>
     </div>
@@ -74,16 +113,19 @@
                 @endphp
                 <div class="border-bottom" x-show="matchesSearch('{{ addslashes($account->name) }}', {{ $ledgersJson }})">
                     <!-- Account Header Row -->
-                    <div class="d-flex align-items-center justify-content-between p-2 {{ $isAccountActive ? 'bg-primary-subtle text-primary border-start border-3 border-primary' : 'hover-bg' }}"
+                    <div class="d-flex align-items-center justify-content-between p-2 hover-bg"
+                         :class="activeAccountId === {{ $account->id }} ? 'bg-primary-subtle text-primary border-start border-3 border-primary' : ''"
                          style="transition: background-color 0.15s ease;">
-                        <button type="button" class="btn btn-sm p-0 me-1 text-white-50 border-0" @click="toggleAccount({{ $account->id }})">
+                        <button type="button" class="btn btn-sm p-0 me-1 text-white-50 border-0" @click.stop="toggleAccount({{ $account->id }})">
                             <i class="bi" :class="expandedAccounts[{{ $account->id }}] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
                         </button>
 
                         <a href="{{ url('/ledger/account/' . $account->id) }}"
-                           class="text-decoration-none flex-grow-1 text-truncate me-2 {{ $isAccountActive ? 'fw-bold text-primary' : 'text-body' }}"
+                           @click.prevent="navigate('{{ url('/ledger/account/' . $account->id) }}', {{ $account->id }}, null)"
+                           class="text-decoration-none flex-grow-1 text-truncate me-2"
+                           :class="activeAccountId === {{ $account->id }} ? 'fw-bold text-primary' : 'text-body'"
                            title="{{ $account->name }}">
-                            <i class="bi bi-folder2{{ $isAccountActive ? '-open' : '' }} me-1 text-warning"></i>
+                            <i class="bi me-1 text-warning" :class="activeAccountId === {{ $account->id }} ? 'bi-folder2-open' : 'bi-folder2'"></i>
                             <span>{{ $account->name }}</span>
                         </a>
 
@@ -103,16 +145,21 @@
                             @php
                                 $isLedgerActive = $activeLedgerId === $ledger->id;
                             @endphp
-                            <div class="d-flex align-items-center justify-content-between py-1 pe-2 ps-2 {{ $isLedgerActive ? 'bg-primary text-white rounded me-2' : '' }}"
+                            <div class="d-flex align-items-center justify-content-between py-1 pe-2 ps-2"
+                                 :class="activeLedgerId === {{ $ledger->id }} ? 'bg-primary text-white rounded me-2' : ''"
                                  x-show="ledgerMatches('{{ addslashes($ledger->name) }}')">
                                 <a href="{{ url('/ledger/' . $ledger->id) }}"
-                                   class="text-decoration-none text-truncate flex-grow-1 small {{ $isLedgerActive ? 'text-white fw-bold' : 'text-white-50' }}"
+                                   @click.prevent="navigate('{{ url('/ledger/' . $ledger->id) }}', {{ $account->id }}, {{ $ledger->id }})"
+                                   class="text-decoration-none text-truncate flex-grow-1 small"
+                                   :class="activeLedgerId === {{ $ledger->id }} ? 'text-white fw-bold' : 'text-white-50'"
                                    title="{{ $ledger->name }}">
-                                    <i class="bi bi-journal-text me-1 {{ $isLedgerActive ? 'text-white' : 'text-info' }}"></i>
+                                    <i class="bi bi-journal-text me-1" :class="activeLedgerId === {{ $ledger->id }} ? 'text-white' : 'text-info'"></i>
                                     <span>{{ $ledger->name }}</span>
                                 </a>
 
-                                <span class="badge rounded-pill {{ $ledger->status == 'APRV' ? ($isLedgerActive ? 'bg-white text-dark' : 'bg-success') : ($isLedgerActive ? 'bg-white text-dark' : 'bg-warning text-dark') }}" style="font-size: 0.6rem;">
+                                <span class="badge rounded-pill"
+                                      :class="activeLedgerId === {{ $ledger->id }} ? 'bg-white text-dark' : '{{ $ledger->status == 'APRV' ? 'bg-success' : 'bg-warning text-dark' }}'"
+                                      style="font-size: 0.6rem;">
                                     {{ $ledger->status }}
                                 </span>
                             </div>

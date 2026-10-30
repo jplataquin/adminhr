@@ -136,7 +136,15 @@ window.$ui.confirm = (msg) =>{
 }
 
 window.$url = (url)=>{
-
+    if (window.$ledgerNavigate && typeof url === 'string') {
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (parsed.origin === window.location.origin && parsed.pathname.startsWith('/ledger') && !parsed.pathname.includes('/print')) {
+                window.$ledgerNavigate(url);
+                return;
+            }
+        } catch(e) {}
+    }
     window.location.href = url;
 }
 
