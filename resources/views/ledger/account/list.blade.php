@@ -193,6 +193,10 @@
                 pageDoc.reinitalize();
                 pageDoc.showData();
                 $drawerModal.close();
+
+                if (window.$ledgerReloadSidebar) {
+                    window.$ledgerReloadSidebar(reply.data ? reply.data.id : null);
+                }
             });
             
         }

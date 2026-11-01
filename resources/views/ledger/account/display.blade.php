@@ -463,6 +463,10 @@
                 pageDoc.reinitalize();
                 pageDoc.showData();
 
+                if (window.$ledgerReloadSidebar) {
+                    window.$ledgerReloadSidebar({{ $ledger_account->id }});
+                }
+
             });
         }
     </script>

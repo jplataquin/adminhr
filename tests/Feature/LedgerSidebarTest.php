@@ -281,16 +281,24 @@ it('defines window.$ledgerReload and uses it in ledger forms instead of full pag
     $ledger->created_by = $user->id;
     $ledger->save();
 
-    // Verify layout defines window.$ledgerReload
+    // Verify layout defines window.$ledgerReload and window.$ledgerReloadSidebar
     $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
     $response->assertOk();
     $response->assertSee('window.$ledgerReload = function()', false);
+    $response->assertSee('window.$ledgerReloadSidebar = async function', false);
+    $response->assertSee('updateSidebarFromDoc(doc', false);
     $response->assertSee('(window.$ledgerReload || $reload)()', false);
 
-    // Verify account view uses $ledgerReload
+    // Verify account view uses $ledgerReload and calls $ledgerReloadSidebar
     $accountResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
     $accountResponse->assertOk();
     $accountResponse->assertSee('(window.$ledgerReload || $reload)()', false);
+    $accountResponse->assertSee('window.$ledgerReloadSidebar', false);
+
+    // Verify account list view calls $ledgerReloadSidebar
+    $listResponse = $this->actingAs($user)->get('/ledger/accounts');
+    $listResponse->assertOk();
+    $listResponse->assertSee('window.$ledgerReloadSidebar', false);
 });
 
 it('renders mobile sidebar toggle button, backdrop overlay, and header close button', function () {

@@ -350,6 +350,99 @@
                 }, { passive: true });
             }
 
+            // Dynamic Sidebar Hierarchy Updates
+            function updateSidebarFromDoc(doc, targetAccountId = null, targetLedgerId = null) {
+                if (!doc) return;
+                const newSidebarCard = doc.querySelector('#ledger-sidebar-container > .card');
+                const curSidebar = document.getElementById('ledger-sidebar-container');
+                if (!newSidebarCard || !curSidebar) return;
+
+                const curSidebarCard = curSidebar.querySelector('.card');
+                if (!curSidebarCard) return;
+
+                // Capture current Alpine state and scroll position
+                let currentSearch = '';
+                let currentExpanded = {};
+                let currentScrollTop = 0;
+
+                if (window.Alpine) {
+                    try {
+                        const curData = Alpine.$data(curSidebarCard);
+                        if (curData) {
+                            currentSearch = curData.search || '';
+                            currentExpanded = { ...(curData.expandedAccounts || {}) };
+                        }
+                    } catch(e) {}
+                }
+
+                const curScroll = document.getElementById('ledger-sidebar-scroll');
+                if (curScroll) {
+                    currentScrollTop = curScroll.scrollTop;
+                }
+
+                // Destroy existing Alpine instance on old card
+                if (window.Alpine) {
+                    try { Alpine.destroyTree(curSidebarCard); } catch(e) {}
+                }
+
+                // Replace the card DOM
+                curSidebarCard.replaceWith(newSidebarCard);
+
+                // Initialize Alpine on new card and restore preserved state
+                if (window.Alpine) {
+                    try {
+                        Alpine.initTree(newSidebarCard);
+                        const newData = Alpine.$data(newSidebarCard);
+                        if (newData) {
+                            if (currentSearch) {
+                                newData.search = currentSearch;
+                            }
+                            if (currentExpanded && Object.keys(currentExpanded).length > 0) {
+                                newData.expandedAccounts = {
+                                    ...newData.expandedAccounts,
+                                    ...currentExpanded
+                                };
+                            }
+                            if (targetAccountId !== null && targetAccountId !== undefined) {
+                                newData.activeAccountId = targetAccountId;
+                                newData.expandedAccounts[targetAccountId] = true;
+                            }
+                            if (targetLedgerId !== null && targetLedgerId !== undefined) {
+                                newData.activeLedgerId = targetLedgerId;
+                            }
+                            if (newData.scrollToActiveNode) {
+                                setTimeout(() => {
+                                    newData.scrollToActiveNode();
+                                }, 50);
+                            }
+                        }
+                    } catch(e) {}
+                }
+
+                // Restore previous scroll position if not focusing a new node
+                const newScroll = document.getElementById('ledger-sidebar-scroll');
+                if (newScroll && currentScrollTop > 0 && targetAccountId === null && targetLedgerId === null) {
+                    newScroll.scrollTop = currentScrollTop;
+                }
+            }
+
+            window.$ledgerReloadSidebar = async function(targetAccountId = null, targetLedgerId = null) {
+                try {
+                    const response = await fetch(window.location.href, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (!response.ok) return;
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    updateSidebarFromDoc(doc, targetAccountId, targetLedgerId);
+                } catch(err) {
+                    console.error('Failed to reload ledger sidebar:', err);
+                }
+            };
+
             // 3. SPA Navigation without Page Refresh
             window.$ledgerNavigate = async function(url, accountId = null, ledgerId = null, pushHistory = true) {
                 if (!url) return;
@@ -415,11 +508,16 @@
                     // Extract server-resolved IDs from response (e.g. for entry, logs, or ledger)
                     const resolvedAccountId = newContent.dataset.accountId ? parseInt(newContent.dataset.accountId, 10) : null;
                     const resolvedLedgerId = newContent.dataset.ledgerId ? parseInt(newContent.dataset.ledgerId, 10) : null;
+                    const finalAccountId = resolvedAccountId !== null ? resolvedAccountId : accountId;
+                    const finalLedgerId = resolvedLedgerId !== null ? resolvedLedgerId : ledgerId;
+
+                    // Update navigation sidebar hierarchy dynamically without page refresh
+                    updateSidebarFromDoc(doc, finalAccountId, finalLedgerId);
 
                     window.dispatchEvent(new CustomEvent('ledger-sidebar-set-active', {
                         detail: { 
-                            accountId: resolvedAccountId !== null ? resolvedAccountId : accountId, 
-                            ledgerId: resolvedLedgerId !== null ? resolvedLedgerId : ledgerId, 
+                            accountId: finalAccountId, 
+                            ledgerId: finalLedgerId, 
                             url: path 
                         }
                     }));
