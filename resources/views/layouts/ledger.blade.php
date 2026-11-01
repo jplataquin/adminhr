@@ -363,6 +363,7 @@
                 // Capture current Alpine state and scroll position
                 let currentSearch = '';
                 let currentExpanded = {};
+                let currentExpandedCategories = {};
                 let currentScrollTop = 0;
 
                 if (window.Alpine) {
@@ -371,6 +372,7 @@
                         if (curData) {
                             currentSearch = curData.search || '';
                             currentExpanded = { ...(curData.expandedAccounts || {}) };
+                            currentExpandedCategories = { ...(curData.expandedCategories || {}) };
                         }
                     } catch(e) {}
                 }
@@ -397,6 +399,12 @@
                             if (currentSearch) {
                                 newData.search = currentSearch;
                             }
+                            if (currentExpandedCategories && Object.keys(currentExpandedCategories).length > 0) {
+                                newData.expandedCategories = {
+                                    ...newData.expandedCategories,
+                                    ...currentExpandedCategories
+                                };
+                            }
                             if (currentExpanded && Object.keys(currentExpanded).length > 0) {
                                 newData.expandedAccounts = {
                                     ...newData.expandedAccounts,
@@ -406,6 +414,9 @@
                             if (targetAccountId !== null && targetAccountId !== undefined) {
                                 newData.activeAccountId = targetAccountId;
                                 newData.expandedAccounts[targetAccountId] = true;
+                                if (newData.accountCategoryMap && newData.accountCategoryMap[targetAccountId]) {
+                                    newData.expandedCategories[newData.accountCategoryMap[targetAccountId]] = true;
+                                }
                             }
                             if (targetLedgerId !== null && targetLedgerId !== undefined) {
                                 newData.activeLedgerId = targetLedgerId;

@@ -12,8 +12,10 @@ use Illuminate\View\View;
 class LedgerSidebar extends Component
 {
     public Collection $accounts;
+    public Collection $groupedAccounts;
     public ?int $activeAccountId = null;
     public ?int $activeLedgerId = null;
+    public ?string $activeCategoryName = null;
 
     public function __construct(?int $activeAccountId = null, ?int $activeLedgerId = null)
     {
@@ -27,6 +29,26 @@ class LedgerSidebar extends Component
         }])
         ->orderBy('name', 'asc')
         ->get();
+
+        // Group accounts by category type
+        $grouped = $this->accounts->groupBy(function ($account) {
+            $cat = trim((string) $account->type_category);
+            return $cat !== '' ? $cat : 'Uncategorized';
+        });
+
+        // Sort categories alphabetically with Uncategorized at the end
+        $this->groupedAccounts = $grouped->sortBy(function ($items, $key) {
+            return $key === 'Uncategorized' ? 'zzzzzz' : strtolower($key);
+        });
+
+        // Determine active category name if an account is active
+        if ($this->activeAccountId !== null) {
+            $activeAccount = $this->accounts->firstWhere('id', $this->activeAccountId);
+            if ($activeAccount) {
+                $cat = trim((string) $activeAccount->type_category);
+                $this->activeCategoryName = $cat !== '' ? $cat : 'Uncategorized';
+            }
+        }
     }
 
     protected function resolveActiveItems(): void

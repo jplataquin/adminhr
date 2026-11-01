@@ -91,8 +91,43 @@ class LedgerAccountController extends Controller
     public function list(){
         $type_categories = AccountTypeCategory::orderBy('name', 'asc')->get();
 
+        $totalAccountsCount = LedgerAccount::count();
+
+        // Compute count per category
+        $categoryCounts = LedgerAccount::selectRaw('type_category, count(*) as count')
+            ->groupBy('type_category')
+            ->pluck('count', 'type_category')
+            ->all();
+
+        $categoriesWithCounts = [];
+        foreach ($type_categories as $cat) {
+            $categoriesWithCounts[] = [
+                'name' => $cat->name,
+                'value' => $cat->name,
+                'count' => $categoryCounts[$cat->name] ?? 0,
+            ];
+        }
+
+        // Count uncategorized accounts
+        $uncategorizedCount = 0;
+        foreach ($categoryCounts as $catName => $cnt) {
+            if ($catName === '' || $catName === null || ! $type_categories->contains('name', $catName)) {
+                $uncategorizedCount += $cnt;
+            }
+        }
+
+        if ($uncategorizedCount > 0) {
+            $categoriesWithCounts[] = [
+                'name' => 'Uncategorized',
+                'value' => '__uncategorized__',
+                'count' => $uncategorizedCount,
+            ];
+        }
+
         return view('ledger/account/list', [
-            'type_categories' => $type_categories
+            'type_categories' => $type_categories,
+            'categoriesWithCounts' => $categoriesWithCounts,
+            'totalAccountsCount' => $totalAccountsCount,
         ]);
     }
 
@@ -119,7 +154,13 @@ class LedgerAccountController extends Controller
         }
 
         if($typeCategory != ''){
-            $table = $table->where('type_category','=',$typeCategory);
+            if ($typeCategory === '__uncategorized__') {
+                $table = $table->where(function($q) {
+                    $q->whereNull('type_category')->orWhere('type_category', '');
+                });
+            } else {
+                $table = $table->where('type_category','=',$typeCategory);
+            }
         }
 
         if($limit > 0){

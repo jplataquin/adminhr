@@ -352,3 +352,54 @@ it('renders responsive buttons that fit mobile view on ledger account display pa
     expect($scss)->toMatch('/@media\s*\(max-width:\s*575\.98px\)\s*\{[^}]*width:\s*100%/s');
     expect($scss)->toMatch('/\.btn\s*\{[^}]*flex:\s*1\s+1\s+auto/s');
 });
+
+it('shows category type cards with count in account ledger list and filters accounts by category type', function () {
+    $user = User::factory()->create();
+
+    $category = \App\Models\AccountTypeCategory::create(['name' => 'Supplier']);
+
+    LedgerAccount::create([
+        'name' => 'Supplier Alpha',
+        'type_category' => 'Supplier',
+        'created_by' => $user->id,
+    ]);
+
+    LedgerAccount::create([
+        'name' => 'Supplier Beta',
+        'type_category' => 'Supplier',
+        'created_by' => $user->id,
+    ]);
+
+    LedgerAccount::create([
+        'name' => 'Uncategorized Gamma',
+        'type_category' => null,
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+    $response->assertOk();
+
+    // Verify filter cards container and cards exist
+    $response->assertSee('id="category-filter-cards"', false);
+    $response->assertSee('All Categories');
+    $response->assertSee('Supplier');
+    $response->assertSee('Uncategorized');
+    $response->assertSee('data-category="Supplier"', false);
+    $response->assertSee('data-category="__uncategorized__"', false);
+    $response->assertSee('category-card', false);
+    $response->assertSee('stat-card', false);
+
+    // Verify API filtering by category
+    $filterSupplier = $this->actingAs($user, 'sanctum')->getJson('/api/ledger/accounts?type_category=Supplier');
+    $filterSupplier->assertOk();
+    $supplierRows = $filterSupplier->json('data.rows');
+    expect(count($supplierRows))->toBe(2);
+    expect($supplierRows[0]['type_category'])->toBe('Supplier');
+
+    // Verify API filtering by __uncategorized__
+    $filterUncat = $this->actingAs($user, 'sanctum')->getJson('/api/ledger/accounts?type_category=__uncategorized__');
+    $filterUncat->assertOk();
+    $uncatRows = $filterUncat->json('data.rows');
+    expect(count($uncatRows))->toBe(1);
+    expect($uncatRows[0]['name'])->toBe('Uncategorized Gamma');
+});

@@ -336,3 +336,55 @@ it('configures responsive mobile show and hide styles for ledger sidebar in SCSS
     expect($scss)->toMatch('/&.is-hiding\s*\{[^}]*animation:\s*ledgerSidebarSwipeOutRight/s');
 });
 
+it('groups accounts by type_category into parent nodes in the navigation sidebar', function () {
+    $user = User::factory()->create();
+
+    $vendorAcc1 = LedgerAccount::create([
+        'name' => 'Acme Supplies',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+
+    $vendorAcc2 = LedgerAccount::create([
+        'name' => 'Fast Logistics',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+
+    $clientAcc = LedgerAccount::create([
+        'name' => 'Global Retailers',
+        'type_category' => 'Client',
+        'created_by' => $user->id,
+    ]);
+
+    $uncategorizedAcc = LedgerAccount::create([
+        'name' => 'General Holding',
+        'type_category' => null,
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+    $response->assertOk();
+
+    // Verify parent category nodes exist
+    $response->assertSee('id="sidebar-category-vendor"', false);
+    $response->assertSee('id="sidebar-category-client"', false);
+    $response->assertSee('id="sidebar-category-uncategorized"', false);
+
+    // Verify category names rendered
+    $response->assertSee('Vendor');
+    $response->assertSee('Client');
+    $response->assertSee('Uncategorized');
+
+    // Verify account items are inside the view
+    $response->assertSee('id="sidebar-account-' . $vendorAcc1->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $vendorAcc2->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $clientAcc->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $uncategorizedAcc->id . '"', false);
+
+    // When navigating to an account, verify parent category is expanded
+    $displayResponse = $this->actingAs($user)->get("/ledger/account/{$vendorAcc1->id}");
+    $displayResponse->assertOk();
+    $displayResponse->assertSee("'Vendor': true", false);
+});
+
