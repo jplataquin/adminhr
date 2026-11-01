@@ -290,3 +290,32 @@ it('defines window.$ledgerReload and uses it in ledger forms instead of full pag
     $accountResponse->assertOk();
     $accountResponse->assertSee('(window.$ledgerReload || $reload)()', false);
 });
+
+it('renders mobile sidebar toggle button and header close button', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+
+    $response->assertOk();
+    $response->assertSee('id="ledger-sidebar-mobile-toggle-wrapper"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-toggle"', false);
+    $response->assertSee('aria-controls="ledger-sidebar-container"', false);
+    $response->assertSee('aria-expanded="false"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-status"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-chevron"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-close"', false);
+    $response->assertSee('d-md-none', false);
+    $response->assertSee('window.$toggleLedgerMobileSidebar', false);
+    $response->assertSee('window.$closeLedgerMobileSidebar', false);
+    $response->assertSee('window.$openLedgerMobileSidebar', false);
+});
+
+it('configures responsive mobile show and hide styles for ledger sidebar in SCSS', function () {
+    $scss = file_get_contents(resource_path('css/app.scss'));
+
+    expect($scss)->toContain('#ledger-sidebar-mobile-toggle');
+    expect($scss)->toContain('@keyframes ledgerSidebarSlideDown');
+    expect($scss)->toMatch('/@media\s*\(max-width:\s*767\.98px\)\s*\{[^}]*#ledger-sidebar-container\s*\{[^}]*display:\s*none;/');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*&.show\s*\{[^}]*display:\s*block\s*!important;/');
+});
+

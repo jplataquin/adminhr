@@ -13,6 +13,24 @@
     <!-- Ledger Workspace with Resizable Sidebar -->
     <div class="d-flex flex-column flex-md-row gap-0 py-3 position-relative" id="ledger-workspace">
         
+        <!-- Mobile Sidebar Navigation Toggle -->
+        <div class="d-md-none w-100 mb-2" id="ledger-sidebar-mobile-toggle-wrapper">
+            <button type="button" 
+                    id="ledger-sidebar-mobile-toggle"
+                    class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-between py-2 px-3 shadow-sm"
+                    aria-expanded="false" 
+                    aria-controls="ledger-sidebar-container">
+                <span class="d-flex align-items-center gap-2 fw-semibold">
+                    <i class="bi bi-layout-sidebar-inset text-primary"></i>
+                    <span>Ledger Navigation</span>
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis border rounded-pill px-2 py-1 small d-flex align-items-center gap-1">
+                    <span id="ledger-sidebar-mobile-status">Show</span>
+                    <i class="bi bi-chevron-down ms-1" id="ledger-sidebar-mobile-chevron"></i>
+                </span>
+            </button>
+        </div>
+
         <!-- Persistent Resizable Sidebar Container -->
         <aside id="ledger-sidebar-container" class="position-relative flex-shrink-0" style="width: 320px; min-width: 240px; max-width: 650px;">
             <script>
@@ -102,6 +120,9 @@
                         sidebar.style.width = '100%';
                     } else {
                         applySavedWidth();
+                        if (sidebar.classList.contains('show')) {
+                            setMobileSidebarState(false);
+                        }
                     }
                 });
 
@@ -188,9 +209,65 @@
                 });
             }
 
-            // 2. SPA Navigation without Page Refresh
+            // 2. Mobile Sidebar Navigation Toggle Handling
+            const mobileToggleBtn = document.getElementById('ledger-sidebar-mobile-toggle');
+            const mobileStatus = document.getElementById('ledger-sidebar-mobile-status');
+            const mobileChevron = document.getElementById('ledger-sidebar-mobile-chevron');
+
+            function setMobileSidebarState(isOpen) {
+                if (!sidebar) return;
+                if (isOpen) {
+                    sidebar.classList.add('show');
+                    if (mobileToggleBtn) {
+                        mobileToggleBtn.setAttribute('aria-expanded', 'true');
+                        mobileToggleBtn.classList.add('active');
+                    }
+                    if (mobileStatus) mobileStatus.textContent = 'Hide';
+                    if (mobileChevron) {
+                        mobileChevron.classList.remove('bi-chevron-down');
+                        mobileChevron.classList.add('bi-chevron-up');
+                    }
+                } else {
+                    sidebar.classList.remove('show');
+                    if (mobileToggleBtn) {
+                        mobileToggleBtn.setAttribute('aria-expanded', 'false');
+                        mobileToggleBtn.classList.remove('active');
+                    }
+                    if (mobileStatus) mobileStatus.textContent = 'Show';
+                    if (mobileChevron) {
+                        mobileChevron.classList.remove('bi-chevron-up');
+                        mobileChevron.classList.add('bi-chevron-down');
+                    }
+                }
+            }
+
+            window.$toggleLedgerMobileSidebar = function() {
+                if (!sidebar) return;
+                const isCurrentlyOpen = sidebar.classList.contains('show');
+                setMobileSidebarState(!isCurrentlyOpen);
+            };
+
+            window.$closeLedgerMobileSidebar = function() {
+                setMobileSidebarState(false);
+            };
+
+            window.$openLedgerMobileSidebar = function() {
+                setMobileSidebarState(true);
+            };
+
+            if (mobileToggleBtn) {
+                mobileToggleBtn.addEventListener('click', () => {
+                    window.$toggleLedgerMobileSidebar();
+                });
+            }
+
+            // 3. SPA Navigation without Page Refresh
             window.$ledgerNavigate = async function(url, accountId = null, ledgerId = null, pushHistory = true) {
                 if (!url) return;
+
+                if (window.innerWidth < 768 && window.$closeLedgerMobileSidebar) {
+                    window.$closeLedgerMobileSidebar();
+                }
 
                 const urlObj = new URL(url, window.location.origin);
                 const path = urlObj.pathname;
