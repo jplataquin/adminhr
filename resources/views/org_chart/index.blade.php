@@ -5,7 +5,7 @@
             <div class="card-body p-3 p-md-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
+                        <div class="d-flex align-items-center mb-1" style="gap: 20px;">
                             <div class="rounded-3 p-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
                                 <i class="bi bi-diagram-3-fill fs-5"></i>
                             </div>
@@ -162,7 +162,7 @@
                             <p class="mb-0">No divisions or departments found.</p>
                         </div>
                     @else
-                        <ul class="org-tree" id="department-root-tree">
+                        <ul class="org-tree list-unstyled" id="department-root-tree" style="list-style-type: none;">
                             @foreach($departmentTree as $division)
                                 @include('org_chart.partials.department-node', ['division' => $division])
                             @endforeach
@@ -178,7 +178,7 @@
                             <p class="mb-0">No active employees found to display in the reporting tree.</p>
                         </div>
                     @else
-                        <ul class="org-tree" id="reporting-root-tree">
+                        <ul class="org-tree list-unstyled" id="reporting-root-tree" style="list-style-type: none;">
                             @foreach($reportingTree as $rootNode)
                                 @include('org_chart.partials.reporting-node', ['node' => $rootNode, 'level' => 0])
                             @endforeach

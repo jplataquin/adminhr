@@ -5,7 +5,7 @@
     $hasDepts = !empty($division['departments']);
 @endphp
 
-<li class="org-tree-item" data-division-id="{{ $division['id'] }}" data-search-text="{{ strtolower($division['name'] . ' ' . $division['code']) }}">
+<li class="org-tree-item" data-division-id="{{ $division['id'] }}" data-search-text="{{ strtolower($division['name'] . ' ' . $division['code']) }}" style="list-style-type: none;">
     <!-- Level 1: Division -->
     <div class="org-node-container d-inline-flex align-items-center">
         @if($hasDepts)
@@ -21,7 +21,7 @@
         @endif
 
         <div class="card org-card org-card-division border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($division['name'] . ' ' . $division['code']) }}') }">
-            <div class="card-body d-flex align-items-center gap-2.5">
+            <div class="card-body d-flex align-items-center" style="gap: 20px;">
                 <div class="rounded-2 p-1 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                     <i class="bi bi-buildings small"></i>
                 </div>
@@ -42,13 +42,13 @@
 
     <!-- Level 2: Departments List -->
     @if($hasDepts)
-        <ul class="org-tree-children ps-4" x-show="isNodeOpen('{{ $divKey }}')" x-collapse.duration.200ms>
+        <ul class="org-tree-children ps-4 list-unstyled" x-show="isNodeOpen('{{ $divKey }}')" x-collapse.duration.200ms style="list-style-type: none;">
             @foreach($division['departments'] as $dept)
                 @php
                     $deptKey = 'dept-' . $division['id'] . '-' . $dept['id'];
                     $hasEmployees = !empty($dept['employees']);
                 @endphp
-                <li class="org-tree-item" data-department-id="{{ $dept['id'] }}" data-search-text="{{ strtolower($dept['name'] . ' ' . $dept['code']) }}">
+                <li class="org-tree-item" data-department-id="{{ $dept['id'] }}" data-search-text="{{ strtolower($dept['name'] . ' ' . $dept['code']) }}" style="list-style-type: none;">
                     <div class="org-node-container d-inline-flex align-items-center">
                         @if($hasEmployees)
                             <button type="button"
@@ -63,7 +63,7 @@
                         @endif
 
                         <div class="card org-card org-card-dept border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($dept['name'] . ' ' . $dept['code']) }}') }">
-                            <div class="card-body d-flex align-items-center gap-2">
+                            <div class="card-body d-flex align-items-center" style="gap: 20px;">
                                 <div class="rounded-2 p-1 bg-info-subtle text-info d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;">
                                     <i class="bi bi-diagram-3 small"></i>
                                 </div>
@@ -82,7 +82,7 @@
 
                     <!-- Level 3: Employees List {Employee Name - Employment Status - Position} -->
                     @if($hasEmployees)
-                        <ul class="org-tree-children ps-4" x-show="isNodeOpen('{{ $deptKey }}')" x-collapse.duration.200ms>
+                        <ul class="org-tree-children ps-4 list-unstyled" x-show="isNodeOpen('{{ $deptKey }}')" x-collapse.duration.200ms style="list-style-type: none;">
                             @foreach($dept['employees'] as $emp)
                                 @php
                                     $initials = strtoupper(substr($emp['firstname'] ?? 'E', 0, 1) . substr($emp['lastname'] ?? '', 0, 1));
@@ -93,7 +93,7 @@
                                         default => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
                                     };
                                 @endphp
-                                <li class="org-tree-item" data-employee-id="{{ $emp['id'] }}" data-search-text="{{ strtolower($emp['name'] . ' ' . $emp['employment_status_label'] . ' ' . $emp['position'] . ' ' . $emp['formatted_id']) }}">
+                                <li class="org-tree-item" data-employee-id="{{ $emp['id'] }}" data-search-text="{{ strtolower($emp['name'] . ' ' . $emp['employment_status_label'] . ' ' . $emp['position'] . ' ' . $emp['formatted_id']) }}" style="list-style-type: none;">
                                     <!-- Leaf Node: No Circle Bullet -->
                                     <div class="org-node-container d-inline-flex align-items-center">
                                         <div class="card org-card org-card-employee border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($emp['name'] . ' ' . $emp['employment_status_label'] . ' ' . $emp['position'] . ' ' . $emp['formatted_id']) }}') }">

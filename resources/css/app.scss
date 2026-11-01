@@ -258,8 +258,11 @@ a[href] {
 }
 
 .org-tree,
-.org-tree ul {
-    list-style: none;
+.org-tree ul,
+ul.org-tree-children,
+li.org-tree-item {
+    list-style-type: none !important;
+    list-style: none !important;
     padding-left: 0;
     margin: 0;
 }
@@ -352,10 +355,18 @@ a[href] {
 
 .org-card-division {
     border-left: 3px solid var(--bs-primary, #0d6efd) !important;
+
+    .card-body {
+        gap: 20px !important;
+    }
 }
 
 .org-card-dept {
     border-left: 3px solid var(--bs-info, #0dcaf0) !important;
+
+    .card-body {
+        gap: 20px !important;
+    }
 }
 
 .org-card-employee {
