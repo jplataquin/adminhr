@@ -215,14 +215,46 @@ a[href] {
     min-width: 0;
 }
 
-@keyframes ledgerSidebarSlideDown {
+@keyframes ledgerSidebarSwipeInLeft {
     from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateX(-100%);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes ledgerSidebarSwipeOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+#ledger-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+
+    &.show {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
     }
 }
 
@@ -243,16 +275,37 @@ a[href] {
 }
 
 @media (max-width: 767.98px) {
+    #ledger-workspace {
+        position: relative;
+        overflow-x: clip;
+    }
+
     #ledger-sidebar-container {
-        width: 100% !important;
-        max-width: 100% !important;
+        position: absolute !important;
+        top: 3.75rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        width: auto !important;
+        max-width: min(420px, calc(100% - 1rem)) !important;
         min-width: 0 !important;
         margin-bottom: 1rem;
-        display: none;
+        z-index: 1045;
+        display: none !important;
 
         &.show {
             display: block !important;
-            animation: ledgerSidebarSlideDown 0.2s ease-out;
+            animation: ledgerSidebarSwipeInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        &.is-hiding {
+            display: block !important;
+            animation: ledgerSidebarSwipeOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        > .card {
+            max-height: calc(100vh - 5.5rem);
+            box-shadow: 0 0.5rem 1.75rem rgba(0, 0, 0, 0.45) !important;
+            border: 1px solid var(--bs-border-color, rgba(255, 255, 255, 0.15)) !important;
         }
     }
 

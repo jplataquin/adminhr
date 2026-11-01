@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\Ledger;
 use App\Models\LedgerAccount;
@@ -291,7 +293,7 @@ it('defines window.$ledgerReload and uses it in ledger forms instead of full pag
     $accountResponse->assertSee('(window.$ledgerReload || $reload)()', false);
 });
 
-it('renders mobile sidebar toggle button and header close button', function () {
+it('renders mobile sidebar toggle button, backdrop overlay, and header close button', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get('/ledger/accounts');
@@ -303,8 +305,9 @@ it('renders mobile sidebar toggle button and header close button', function () {
     $response->assertSee('aria-expanded="false"', false);
     $response->assertSee('id="ledger-sidebar-mobile-status"', false);
     $response->assertSee('id="ledger-sidebar-mobile-chevron"', false);
+    $response->assertSee('id="ledger-sidebar-backdrop"', false);
     $response->assertSee('id="ledger-sidebar-mobile-close"', false);
-    $response->assertSee('d-md-none', false);
+    $response->assertSee('d-none d-md-block position-relative', false);
     $response->assertSee('window.$toggleLedgerMobileSidebar', false);
     $response->assertSee('window.$closeLedgerMobileSidebar', false);
     $response->assertSee('window.$openLedgerMobileSidebar', false);
@@ -314,8 +317,12 @@ it('configures responsive mobile show and hide styles for ledger sidebar in SCSS
     $scss = file_get_contents(resource_path('css/app.scss'));
 
     expect($scss)->toContain('#ledger-sidebar-mobile-toggle');
-    expect($scss)->toContain('@keyframes ledgerSidebarSlideDown');
-    expect($scss)->toMatch('/@media\s*\(max-width:\s*767\.98px\)\s*\{[^}]*#ledger-sidebar-container\s*\{[^}]*display:\s*none;/');
-    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*&.show\s*\{[^}]*display:\s*block\s*!important;/');
+    expect($scss)->toContain('#ledger-sidebar-backdrop');
+    expect($scss)->toContain('@keyframes ledgerSidebarSwipeInLeft');
+    expect($scss)->toContain('@keyframes ledgerSidebarSwipeOutRight');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*position:\s*absolute/s');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*display:\s*none/s');
+    expect($scss)->toMatch('/&.show\s*\{[^}]*animation:\s*ledgerSidebarSwipeInLeft/s');
+    expect($scss)->toMatch('/&.is-hiding\s*\{[^}]*animation:\s*ledgerSidebarSwipeOutRight/s');
 });
 

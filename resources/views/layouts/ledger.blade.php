@@ -31,8 +31,11 @@
             </button>
         </div>
 
+        <!-- Mobile Sidebar Backdrop Overlay -->
+        <div id="ledger-sidebar-backdrop" class="d-md-none" aria-hidden="true"></div>
+
         <!-- Persistent Resizable Sidebar Container -->
-        <aside id="ledger-sidebar-container" class="position-relative flex-shrink-0" style="width: 320px; min-width: 240px; max-width: 650px;">
+        <aside id="ledger-sidebar-container" class="d-none d-md-block position-relative flex-shrink-0" style="width: 320px; min-width: 240px; max-width: 650px;">
             <script>
                 (function() {
                     if (window.innerWidth >= 768) {
@@ -96,7 +99,7 @@
             function applySavedWidth() {
                 if (!sidebar) return;
                 if (window.innerWidth < 768) {
-                    sidebar.style.width = '100%';
+                    sidebar.style.width = '';
                     return;
                 }
                 try {
@@ -117,12 +120,16 @@
                 applySavedWidth();
                 window.addEventListener('resize', () => {
                     if (window.innerWidth < 768) {
-                        sidebar.style.width = '100%';
+                        sidebar.style.width = '';
                     } else {
-                        applySavedWidth();
-                        if (sidebar.classList.contains('show')) {
-                            setMobileSidebarState(false);
+                        if (typeof hideTimeout !== 'undefined' && hideTimeout) {
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
                         }
+                        sidebar.classList.remove('show', 'is-hiding');
+                        const bd = document.getElementById('ledger-sidebar-backdrop');
+                        if (bd) bd.classList.remove('show');
+                        applySavedWidth();
                     }
                 });
 
@@ -209,15 +216,27 @@
                 });
             }
 
-            // 2. Mobile Sidebar Navigation Toggle Handling
+            // 2. Mobile Sidebar Navigation Toggle & Swipe Handling
             const mobileToggleBtn = document.getElementById('ledger-sidebar-mobile-toggle');
             const mobileStatus = document.getElementById('ledger-sidebar-mobile-status');
             const mobileChevron = document.getElementById('ledger-sidebar-mobile-chevron');
+            const backdrop = document.getElementById('ledger-sidebar-backdrop');
+            let hideTimeout = null;
 
             function setMobileSidebarState(isOpen) {
                 if (!sidebar) return;
+
+                if (hideTimeout) {
+                    clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                }
+
                 if (isOpen) {
+                    sidebar.classList.remove('is-hiding');
                     sidebar.classList.add('show');
+                    if (backdrop) {
+                        backdrop.classList.add('show');
+                    }
                     if (mobileToggleBtn) {
                         mobileToggleBtn.setAttribute('aria-expanded', 'true');
                         mobileToggleBtn.classList.add('active');
@@ -228,7 +247,6 @@
                         mobileChevron.classList.add('bi-chevron-up');
                     }
                 } else {
-                    sidebar.classList.remove('show');
                     if (mobileToggleBtn) {
                         mobileToggleBtn.setAttribute('aria-expanded', 'false');
                         mobileToggleBtn.classList.remove('active');
@@ -237,6 +255,20 @@
                     if (mobileChevron) {
                         mobileChevron.classList.remove('bi-chevron-up');
                         mobileChevron.classList.add('bi-chevron-down');
+                    }
+                    if (backdrop) {
+                        backdrop.classList.remove('show');
+                    }
+
+                    if (sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        sidebar.classList.add('is-hiding');
+                        hideTimeout = setTimeout(() => {
+                            sidebar.classList.remove('is-hiding');
+                            hideTimeout = null;
+                        }, 240);
+                    } else {
+                        sidebar.classList.remove('is-hiding');
                     }
                 }
             }
@@ -259,6 +291,63 @@
                 mobileToggleBtn.addEventListener('click', () => {
                     window.$toggleLedgerMobileSidebar();
                 });
+            }
+
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    window.$closeLedgerMobileSidebar();
+                });
+            }
+
+            // Touch swipe gesture support for mobile view
+            let sidebarTouchStartX = 0;
+            let sidebarTouchStartY = 0;
+            let sidebarTouchStartTime = 0;
+
+            if (sidebar) {
+                sidebar.addEventListener('touchstart', (e) => {
+                    if (window.innerWidth >= 768 || e.touches.length !== 1) return;
+                    sidebarTouchStartX = e.touches[0].clientX;
+                    sidebarTouchStartY = e.touches[0].clientY;
+                    sidebarTouchStartTime = Date.now();
+                }, { passive: true });
+
+                sidebar.addEventListener('touchend', (e) => {
+                    if (window.innerWidth >= 768 || !sidebar.classList.contains('show')) return;
+                    const deltaX = e.changedTouches[0].clientX - sidebarTouchStartX;
+                    const deltaY = e.changedTouches[0].clientY - sidebarTouchStartY;
+                    const duration = Date.now() - sidebarTouchStartTime;
+
+                    // Swiping to the right dismisses / hides sidebar
+                    if (deltaX > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 600) {
+                        window.$closeLedgerMobileSidebar();
+                    }
+                }, { passive: true });
+            }
+
+            if (workspace) {
+                let workspaceTouchStartX = 0;
+                let workspaceTouchStartY = 0;
+                let workspaceTouchStartTime = 0;
+
+                workspace.addEventListener('touchstart', (e) => {
+                    if (window.innerWidth >= 768 || e.touches.length !== 1) return;
+                    workspaceTouchStartX = e.touches[0].clientX;
+                    workspaceTouchStartY = e.touches[0].clientY;
+                    workspaceTouchStartTime = Date.now();
+                }, { passive: true });
+
+                workspace.addEventListener('touchend', (e) => {
+                    if (window.innerWidth >= 768 || sidebar.classList.contains('show')) return;
+                    const deltaX = e.changedTouches[0].clientX - workspaceTouchStartX;
+                    const deltaY = e.changedTouches[0].clientY - workspaceTouchStartY;
+                    const duration = Date.now() - workspaceTouchStartTime;
+
+                    // Swiping from the left edge towards the right opens sidebar
+                    if (workspaceTouchStartX <= 40 && deltaX > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 600) {
+                        window.$openLedgerMobileSidebar();
+                    }
+                }, { passive: true });
             }
 
             // 3. SPA Navigation without Page Refresh
