@@ -17,6 +17,16 @@
                     <x-text-input class="editable" label="Name" name="name" id="name" disabled="true" value="{{$ledger_account->name}}"></x-text-input>
                 </div>
                 <div class="col-span-12 sm:col-span-12 mb-3">
+                    <x-select-input label="Type Category" name="type_category" id="type_category" disabled="true">
+                        <option value="">-- None --</option>
+                        @if(isset($type_categories))
+                            @foreach($type_categories as $category)
+                                <option value="{{ $category->name }}" @if($ledger_account->type_category == $category->name) selected @endif>{{ $category->name }}</option>
+                            @endforeach
+                        @endif
+                    </x-select-input>
+                </div>
+                <div class="col-span-12 sm:col-span-12 mb-3">
                     <x-text-input label="Status" name="status" id="status" disabled="true" value="{{$ledger_account->status}}"></x-text-input>
                 </div>
 

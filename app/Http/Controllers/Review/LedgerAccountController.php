@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
 use App\Models\LedgerEntry;
+use App\Models\AccountTypeCategory;
 
 
 class LedgerAccountController extends Controller
@@ -147,20 +148,30 @@ class LedgerAccountController extends Controller
         $id = (int) $id;
 
         $ledger_account = LedgerAccount::findOrFail($id);
+        $type_categories = AccountTypeCategory::orderBy('name', 'asc')->get();
+
+        if ($ledger_account->type_category && !$type_categories->contains('name', $ledger_account->type_category)) {
+            $deletedCat = AccountTypeCategory::withTrashed()->where('name', $ledger_account->type_category)->first();
+            if ($deletedCat) {
+                $type_categories->push($deletedCat);
+            }
+        }
 
         return view('review/ledger/account/display',[
-            'ledger_account'    => $ledger_account 
+            'ledger_account'    => $ledger_account,
+            'type_categories'   => $type_categories
         ]);
     }
 
     public function _list(Request $request){
         
-        $page               = (int) $request->input('page')     ?? 1;
-        $limit              = (int) $request->input('limit')    ?? 10;
-        $orderBy            = $request->input('order_by')       ?? 'id';
-        $order              = $request->input('order')          ?? 'DESC';
+        $page               = (int) ($request->input('page') ?: 1);
+        $limit              = (int) ($request->input('limit') ?: 10);
+        $orderBy            = $request->input('order_by')       ?: 'id';
+        $order              = $request->input('order')          ?: 'DESC';
         $query              = $request->input('query')          ?? '';
         $status             = $request->input('status')         ?? '';
+        $typeCategory       = $request->input('type_category')  ?? '';
         $result             = [];
 
         $table = new LedgerAccount();
@@ -169,6 +180,10 @@ class LedgerAccountController extends Controller
 
         if($query != ''){
             $table = $table->where('name','LIKE','%'.$query.'%');
+        }
+
+        if($typeCategory != ''){
+            $table = $table->where('type_category','=',$typeCategory);
         }
 
         if($limit > 0){

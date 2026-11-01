@@ -17,6 +17,8 @@ class LedgerAccount extends Model
 
     protected $table = 'ledger_accounts';
 
+    protected $guarded = [];
+
     public function Ledgers(): HasMany
     {
         return $this->hasMany(Ledger::class);
@@ -25,6 +27,26 @@ class LedgerAccount extends Model
     public function Employee(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Employee::class, 'employee_id');
+    }
+
+    public function typeCategory(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\AccountTypeCategory::class, 'type_category', 'name')->withTrashed();
+    }
+
+    public static function type_category_options($key = null)
+    {
+        try {
+            $opt = \App\Models\AccountTypeCategory::orderBy('name', 'asc')->pluck('name', 'name')->toArray();
+        } catch (\Exception $e) {
+            $opt = [];
+        }
+
+        if ($key !== null) {
+            return isset($opt[$key]) ? $opt[$key] : '';
+        }
+
+        return (object) $opt;
     }
 
 
