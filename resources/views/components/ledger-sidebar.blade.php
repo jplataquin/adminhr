@@ -54,6 +54,9 @@
         this.$nextTick(() => {
             this.scrollToActiveNode();
         });
+        if (window.innerWidth < 768 && window.$closeLedgerMobileSidebar) {
+            window.$closeLedgerMobileSidebar();
+        }
         if (window.$ledgerNavigate) {
             window.$ledgerNavigate(url, accountId, ledgerId);
         } else {
@@ -131,12 +134,21 @@
                 <small class="text-white-50">{{ $accounts->count() }} Accounts</small>
             </div>
         </div>
-        <a href="{{ url('/ledger/accounts') }}" 
-           @click.prevent="navigate('{{ url('/ledger/accounts') }}', null, null)"
-           class="btn btn-sm btn-outline-primary py-1 px-2" 
-           title="View all accounts">
-            <i class="bi bi-grid-fill"></i> All
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url('/ledger/accounts') }}" 
+               @click.prevent="navigate('{{ url('/ledger/accounts') }}', null, null)"
+               class="btn btn-sm btn-outline-primary py-1 px-2" 
+               title="View all accounts">
+                <i class="bi bi-grid-fill"></i> All
+            </a>
+            <button type="button" 
+                    class="btn btn-sm btn-outline-secondary py-1 px-2 d-md-none" 
+                    id="ledger-sidebar-mobile-close"
+                    title="Hide sidebar"
+                    @click="if (window.$closeLedgerMobileSidebar) window.$closeLedgerMobileSidebar()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Search & Quick Filter -->
