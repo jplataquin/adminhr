@@ -13,11 +13,11 @@
     <!-- Ledger Workspace with Resizable Sidebar -->
     <div class="d-flex flex-column flex-md-row gap-0 py-3 position-relative" id="ledger-workspace">
         
-        <!-- Mobile Sidebar Navigation Toggle -->
-        <div class="d-md-none w-100 mb-2" id="ledger-sidebar-mobile-toggle-wrapper">
+        <!-- Mobile Sidebar Navigation Toggle (Sticky on mobile scroll) -->
+        <div class="d-md-none w-100 mb-2 sticky-top" id="ledger-sidebar-mobile-toggle-wrapper">
             <button type="button" 
                     id="ledger-sidebar-mobile-toggle"
-                    class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-between py-2 px-3 shadow-sm"
+                    class="btn btn-outline-primary bg-body w-100 d-flex align-items-center justify-content-between py-2 px-3 shadow-sm"
                     aria-expanded="false" 
                     aria-controls="ledger-sidebar-container">
                 <span class="d-flex align-items-center gap-2 fw-semibold">

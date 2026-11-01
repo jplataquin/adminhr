@@ -300,6 +300,7 @@ it('renders mobile sidebar toggle button, backdrop overlay, and header close but
 
     $response->assertOk();
     $response->assertSee('id="ledger-sidebar-mobile-toggle-wrapper"', false);
+    $response->assertSee('sticky-top', false);
     $response->assertSee('id="ledger-sidebar-mobile-toggle"', false);
     $response->assertSee('aria-controls="ledger-sidebar-container"', false);
     $response->assertSee('aria-expanded="false"', false);
@@ -320,7 +321,8 @@ it('configures responsive mobile show and hide styles for ledger sidebar in SCSS
     expect($scss)->toContain('#ledger-sidebar-backdrop');
     expect($scss)->toContain('@keyframes ledgerSidebarSwipeInLeft');
     expect($scss)->toContain('@keyframes ledgerSidebarSwipeOutRight');
-    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*position:\s*absolute/s');
+    expect($scss)->toMatch('/#ledger-sidebar-mobile-toggle-wrapper\s*\{[^}]*position:\s*sticky/s');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*position:\s*(?:fixed|absolute)/s');
     expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*display:\s*none/s');
     expect($scss)->toMatch('/&.show\s*\{[^}]*animation:\s*ledgerSidebarSwipeInLeft/s');
     expect($scss)->toMatch('/&.is-hiding\s*\{[^}]*animation:\s*ledgerSidebarSwipeOutRight/s');
