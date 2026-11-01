@@ -32,7 +32,7 @@
 
 <div id="pageDoc">
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h3 class="h5 mb-0">
                 Ledger Account
             </h3>
@@ -78,7 +78,7 @@
             <x-display-controls status="{{$ledger_account->status}}">
                    @if($ledger_account->status == 'PEND')
                         <x-slot:right>
-                            <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
+                            <x-primary-button class="" id="reviewLinkBtn" >Review Link</x-primary-button>
                         </x-slot>
                     @endif
             </x-display-controls>
@@ -87,7 +87,7 @@
     
 
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h3 class="h5 mb-0">
                 Ledgers
             </h3>
@@ -102,7 +102,7 @@
             <div id="list" class="mt-4"></div>
 
             <div class="text-center mt-4 pt-3 border-top">
-                <button class="btn btn-secondary" id="showMoreBtn">Show More</button>
+                <button class="btn btn-secondary w-100 w-sm-auto" id="showMoreBtn">Show More</button>
             </div>
         </div>
     </div>

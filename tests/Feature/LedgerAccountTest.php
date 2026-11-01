@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\LedgerAccount;
@@ -314,4 +316,39 @@ it('renders type_category in review ledger account display view', function () {
     $response->assertOk();
     $response->assertSee('Type Category');
     $response->assertSee('Employee');
+});
+
+it('renders responsive buttons that fit mobile view on ledger account display page', function () {
+    $user = User::factory()->create();
+
+    $ledgerAccount = LedgerAccount::create([
+        'name' => 'Mobile Responsive Account',
+        'status' => 'PEND',
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get("/ledger/account/{$ledgerAccount->id}");
+    $response->assertOk();
+
+    // Verify card header responsive wrapping
+    $response->assertSee('card-header bg-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2', false);
+    $response->assertSee('id="showUpdateLogsBtn"', false);
+    $response->assertSee('id="createBtn"', false);
+
+    // Verify display controls responsive layout replacing rigid floats
+    $response->assertSee('d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2', false);
+    $response->assertSee('id="controlsLeft"', false);
+    $response->assertSee('id="controlsRight"', false);
+    $response->assertSee('id="reviewLinkBtn"', false);
+    $response->assertSee('id="editBtn"', false);
+    $response->assertSee('id="cancelBtn"', false);
+    $response->assertDontSee('class="float-start"', false);
+    $response->assertDontSee('class="float-end"', false);
+
+    // Verify SCSS contains mobile responsive rules for display controls
+    $scss = file_get_contents(resource_path('css/app.scss'));
+    expect($scss)->toContain('#controls');
+    expect($scss)->toContain('[id$="controls"]');
+    expect($scss)->toMatch('/@media\s*\(max-width:\s*575\.98px\)\s*\{[^}]*width:\s*100%/s');
+    expect($scss)->toMatch('/\.btn\s*\{[^}]*flex:\s*1\s+1\s+auto/s');
 });
