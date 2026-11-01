@@ -142,8 +142,13 @@
                     });
                 });
 
-                row.onclick = ()=>{
-                    $url('/ledger/account/'+item.id);
+                row.onclick = (e)=>{
+                    const url = '/ledger/account/'+item.id;
+                    if (e && (e.ctrlKey || e.metaKey)) {
+                        window.open(url, '_blank');
+                    } else {
+                        $url(url);
+                    }
                 }
 
                 $el.append(row).to(list);

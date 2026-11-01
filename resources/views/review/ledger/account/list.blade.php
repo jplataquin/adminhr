@@ -50,8 +50,13 @@
                     t.span({class:'text-xs dark:text-white'},item.status);
                 });
 
-                row.onclick = ()=>{
-                    $url('/review/ledger/account/'+item.id);
+                row.onclick = (e)=>{
+                    const url = '/review/ledger/account/'+item.id;
+                    if (e && (e.ctrlKey || e.metaKey)) {
+                        window.open(url, '_blank');
+                    } else {
+                        $url(url);
+                    }
                 }
 
                 $el.append(row).to(list);

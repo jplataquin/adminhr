@@ -388,3 +388,48 @@ it('groups accounts by type_category into parent nodes in the navigation sidebar
     $displayResponse->assertSee("'Vendor': true", false);
 });
 
+it('allows opening records in a new tab when holding the ctrl key on clicks', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Tabs Testing Account',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $ledger = new Ledger();
+    $ledger->name = 'Tabs Testing Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Tab testing';
+    $ledger->template = 'Template';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    // 1. Verify layout workspace click handler supports ctrlKey and metaKey
+    $layoutResponse = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+    $layoutResponse->assertOk();
+    $layoutResponse->assertSee('if (e.ctrlKey || e.metaKey) return;', false);
+    $layoutResponse->assertSee('navigate(url, accountId, ledgerId, event = null)', false);
+    $layoutResponse->assertSee('window.open(url, \'_blank\');', false);
+
+    // 2. Verify account list view supports ctrlKey and metaKey on record click
+    $listResponse = $this->actingAs($user)->get('/ledger/accounts');
+    $listResponse->assertOk();
+    $listResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $listResponse->assertSee('window.open(url, \'_blank\')', false);
+
+    // 3. Verify account display view supports ctrlKey and metaKey on ledger row click
+    $accountResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
+    $accountResponse->assertOk();
+    $accountResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $accountResponse->assertSee('window.open(url, \'_blank\')', false);
+
+    // 4. Verify ledger display view supports ctrlKey and metaKey on entry row click
+    $ledgerResponse = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+    $ledgerResponse->assertOk();
+    $ledgerResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $ledgerResponse->assertSee('window.open(url, \'_blank\')', false);
+});
+

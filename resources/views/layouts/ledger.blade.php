@@ -606,6 +606,9 @@
                     const href = link.getAttribute('href');
                     if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
 
+                    // Allow user holding Ctrl (or Meta) to open links in a new tab naturally
+                    if (e.ctrlKey || e.metaKey) return;
+
                     try {
                         const targetUrl = new URL(link.href, window.location.origin);
                         if (targetUrl.origin === window.location.origin && 

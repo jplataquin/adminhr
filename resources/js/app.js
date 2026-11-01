@@ -135,7 +135,11 @@ window.$ui.confirm = (msg) =>{
     });
 }
 
-window.$url = (url)=>{
+window.$url = (url, eventOrTarget = null)=>{
+    if (eventOrTarget && (eventOrTarget.ctrlKey || eventOrTarget.metaKey || eventOrTarget === '_blank')) {
+        window.open(url, '_blank');
+        return;
+    }
     if (window.$ledgerNavigate && typeof url === 'string') {
         try {
             const parsed = new URL(url, window.location.origin);

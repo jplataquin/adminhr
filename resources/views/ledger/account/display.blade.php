@@ -310,8 +310,13 @@
                     });
                 });
 
-                row.onclick = ()=>{
-                    $url('/ledger/'+item.id);
+                row.onclick = (e)=>{
+                    const url = '/ledger/'+item.id;
+                    if (e && (e.ctrlKey || e.metaKey)) {
+                        window.open(url, '_blank');
+                    } else {
+                        $url(url);
+                    }
                 }
 
                 $el.append(row).to(list);

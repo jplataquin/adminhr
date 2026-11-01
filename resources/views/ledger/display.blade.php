@@ -460,8 +460,13 @@
 
                 });
 
-                row.onclick = ()=>{
-                    $url('/ledger/entry/'+item.id);
+                row.onclick = (e)=>{
+                    const url = '/ledger/entry/'+item.id;
+                    if (e && (e.ctrlKey || e.metaKey)) {
+                        window.open(url, '_blank');
+                    } else {
+                        $url(url);
+                    }
                 }
 
                 $el.append(row).to(list);
