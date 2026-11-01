@@ -169,6 +169,19 @@ class Ledger extends Model
         return $entries->sum(\DB::raw('quantity * unit_amount'));
     }
 
+    public function getTotalAmount(array $status = ['APRV'], array $tag = []): float
+    {
+        $credit = (float) $this->getTotalCredit($status, $tag);
+        $debit = (float) $this->getTotalDebit($status, $tag);
+
+        return $credit - $debit;
+    }
+
+    public function getTotalAmountFormatted(array $status = ['APRV'], array $tag = []): string
+    {
+        return number_format($this->getTotalAmount($status, $tag), 2);
+    }
+
 
     public function getTotalQuantity(Array $status = [],Array $tag = []){
         

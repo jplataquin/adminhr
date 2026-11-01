@@ -295,8 +295,15 @@
                     t.div({class:'card-body d-flex justify-content-between align-items-center'},()=>{
                         t.div(()=>{
                             t.h5({class:"h6 mb-0"},item.name);
+                            const formattedAmount = item.total_amount_formatted !== undefined 
+                                ? item.total_amount_formatted 
+                                : (window.$numberFormat ? window.$numberFormat(item.total_amount || 0, 2) : Number(item.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                            t.div({class:'small mt-1'}, ()=>{
+                                t.span({class:'text-white-50 me-1'}, 'Total Amount:');
+                                t.span({class:'fw-bold text-primary ledger-total-amount'}, formattedAmount);
+                            });
                             if(item.ledger_type && item.ledger_type.text){
-                                t.small({class:'text-muted'}, item.ledger_type.text);
+                                t.small({class:'text-muted d-block mt-1'}, item.ledger_type.text);
                             }
                         });
                         t.span({class:'badge bg-info text-dark'},item.status);

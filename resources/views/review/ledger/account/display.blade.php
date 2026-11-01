@@ -217,6 +217,13 @@
 
                 let row = t.div({class:'border rounded-t p-5 mb-3 cursor-pointer'},()=>{
                     t.h3({class:"text-sm font-semibold dark:text-white"},item.name);
+                    const formattedAmount = item.total_amount_formatted !== undefined 
+                        ? item.total_amount_formatted 
+                        : (window.$numberFormat ? window.$numberFormat(item.total_amount || 0, 2) : Number(item.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    t.div({class:'text-xs mt-1 text-gray-400'}, ()=>{
+                        t.span({class:'mr-1'}, 'Total Amount:');
+                        t.span({class:'font-semibold text-primary-400'}, formattedAmount);
+                    });
                     t.span({class:'text-xs dark:text-white'},item.status);
                 });
 

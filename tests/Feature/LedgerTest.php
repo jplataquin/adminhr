@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
@@ -223,5 +225,67 @@ it('renders Account Ledger Name and Ledger Name in the add entry drawer form set
     $response->assertSee('Forklift Fuel Ledger');
     $response->assertSee('entry_account_name');
     $response->assertSee('entry_ledger_name');
+});
+
+it('shows total amount in number format below the ledger name in ledger list', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Construction Account',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $ledger = new Ledger();
+    $ledger->name = 'Heavy Equipment Fuel';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Diesel fuel';
+    $ledger->template = 'Fuel';
+    $ledger->unit = 'Liters';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    // Add Credit Entry: 100 liters @ 50.00 = 5,000.00
+    $entry1 = new \App\Models\LedgerEntry();
+    $entry1->ledger_id = $ledger->id;
+    $entry1->tag = 'Diesel';
+    $entry1->particular = 'Batch 1 Refill';
+    $entry1->date = '2026-11-01';
+    $entry1->type = 'CRED';
+    $entry1->quantity = 100;
+    $entry1->unit_amount = 50;
+    $entry1->status = 'APRV';
+    $entry1->created_by = $user->id;
+    $entry1->save();
+
+    // Add Debit Entry: 20 liters @ 50.00 = 1,000.00
+    $entry2 = new \App\Models\LedgerEntry();
+    $entry2->ledger_id = $ledger->id;
+    $entry2->tag = 'Diesel';
+    $entry2->particular = 'Generator draw';
+    $entry2->date = '2026-11-02';
+    $entry2->type = 'DEBI';
+    $entry2->quantity = 20;
+    $entry2->unit_amount = 50;
+    $entry2->status = 'APRV';
+    $entry2->created_by = $user->id;
+    $entry2->save();
+
+    // Net total amount = 5000 - 1000 = 4,000.00
+
+    // 1. Verify API returns total_amount and total_amount_formatted
+    $apiResponse = $this->actingAs($user, 'sanctum')->getJson("/api/ledgers?ledger_account_id={$account->id}");
+    $apiResponse->assertOk();
+    $rows = $apiResponse->json('data.rows');
+    expect(count($rows))->toBe(1);
+    expect((float)$rows[0]['total_amount'])->toBe(4000.0);
+    expect($rows[0]['total_amount_formatted'])->toBe('4,000.00');
+
+    // 2. Verify account display view renders template logic for Total Amount below ledger name
+    $viewResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
+    $viewResponse->assertOk();
+    $viewResponse->assertSee('Total Amount:');
+    $viewResponse->assertSee('ledger-total-amount');
 });
 
