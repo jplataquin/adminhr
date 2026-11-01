@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 use App\Models\LedgerAccount;
 use App\Models\LedgerType;
+use App\Models\AccountTypeCategory;
 use Carbon\Carbon;
 
 
@@ -16,8 +17,11 @@ class LedgerAccountController extends Controller
 {
 
     public function create(){
+        $type_categories = AccountTypeCategory::orderBy('name', 'asc')->get();
 
-        return view('ledger/account/create');
+        return view('ledger/account/create', [
+            'type_categories' => $type_categories
+        ]);
     }
 
     public function _create(Request $request){
@@ -28,7 +32,8 @@ class LedgerAccountController extends Controller
                 'max:255',
                 Rule::unique('ledger_accounts','name')
             ],
-            'employee_id' => 'nullable|exists:employees,id'
+            'employee_id' => 'nullable|exists:employees,id',
+            'type_category' => 'nullable|string|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -44,9 +49,10 @@ class LedgerAccountController extends Controller
 
         $ledger_account = new LedgerAccount();
 
-        $ledger_account->name        = $name;
-        $ledger_account->employee_id = $request->input('employee_id');
-        $ledger_account->created_by  = $user_id;
+        $ledger_account->name          = $name;
+        $ledger_account->type_category = $request->input('type_category');
+        $ledger_account->employee_id   = $request->input('employee_id');
+        $ledger_account->created_by    = $user_id;
 
         $ledger_account->save();
 
@@ -66,26 +72,39 @@ class LedgerAccountController extends Controller
 
         $ledger_account = LedgerAccount::findOrFail($id);
         $ledger_types   = LedgerType::orderBy('id', 'asc')->get();
+        $type_categories = AccountTypeCategory::orderBy('name', 'asc')->get();
+
+        if ($ledger_account->type_category && !$type_categories->contains('name', $ledger_account->type_category)) {
+            $deletedCat = AccountTypeCategory::withTrashed()->where('name', $ledger_account->type_category)->first();
+            if ($deletedCat) {
+                $type_categories->push($deletedCat);
+            }
+        }
 
         return view('ledger/account/display',[
-            'ledger_account' => $ledger_account,
-            'ledger_types'   => $ledger_types
+            'ledger_account'  => $ledger_account,
+            'ledger_types'    => $ledger_types,
+            'type_categories' => $type_categories
         ]);
     }
 
     public function list(){
+        $type_categories = AccountTypeCategory::orderBy('name', 'asc')->get();
 
-        return view('ledger/account/list');
+        return view('ledger/account/list', [
+            'type_categories' => $type_categories
+        ]);
     }
 
     public function _list(Request $request){
         
-        $page       = (int) $request->input('page')     ?? 1;
-        $limit      = (int) $request->input('limit')    ?? 10;
-        $orderBy    = $request->input('order_by')       ?? 'id';
-        $order      = $request->input('order')          ?? 'DESC';
+        $page       = (int) ($request->input('page') ?: 1);
+        $limit      = (int) ($request->input('limit') ?: 10);
+        $orderBy    = $request->input('order_by')       ?: 'id';
+        $order      = $request->input('order')          ?: 'DESC';
         $query      = $request->input('query')          ?? '';
         $status     = $request->input('status')         ?? '';
+        $typeCategory = $request->input('type_category') ?? '';
         $result     = [];
 
         $table = new LedgerAccount();
@@ -97,6 +116,10 @@ class LedgerAccountController extends Controller
 
         if($status != ''){
             $table = $table->where('status','=',$status);
+        }
+
+        if($typeCategory != ''){
+            $table = $table->where('type_category','=',$typeCategory);
         }
 
         if($limit > 0){
@@ -156,7 +179,8 @@ class LedgerAccountController extends Controller
                 'max:255',
                 Rule::unique('ledger_accounts','name')->where(fn (Builder $query) => $query->where('id','!=',$id))
             ],
-            'employee_id' => 'nullable|exists:employees,id'
+            'employee_id' => 'nullable|exists:employees,id',
+            'type_category' => 'nullable|string|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -172,6 +196,9 @@ class LedgerAccountController extends Controller
         $user_id = Auth::user()->id;
         
         $ledger_account->name           = $name;
+        if ($request->has('type_category')) {
+            $ledger_account->type_category = $request->input('type_category');
+        }
         $ledger_account->employee_id    = $request->input('employee_id');
         $ledger_account->updated_by     = $user_id;
 

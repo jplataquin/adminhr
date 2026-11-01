@@ -8,8 +8,10 @@ abstract class TestCase extends BaseTestCase
 {
     public function createApplication()
     {
-        $_ENV['APP_BASE_PATH'] = dirname(__DIR__);
-        $_SERVER['APP_BASE_PATH'] = dirname(__DIR__);
+        $basePath = dirname(__DIR__);
+        putenv("APP_BASE_PATH={$basePath}");
+        $_ENV['APP_BASE_PATH'] = $basePath;
+        $_SERVER['APP_BASE_PATH'] = $basePath;
 
         return parent::createApplication();
     }

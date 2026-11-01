@@ -26,6 +26,8 @@ class ListLedgerAccountsTool extends Tool
             'status' => $schema->string()
                 ->enum(['PEND', 'APRV', 'REJC', 'RDEL'])
                 ->description('Filter by ledger account status: PEND (Pending), APRV (Approved), REJC (Rejected), RDEL (Request Delete).'),
+            'type_category' => $schema->string()
+                ->description('Filter by ledger account type category (e.g., Vendor, Client, Employee, General).'),
             'limit' => $schema->integer()
                 ->min(1)
                 ->max(100)
@@ -45,6 +47,7 @@ class ListLedgerAccountsTool extends Tool
         $employeeId = $request->get('employee_id');
         $query = $request->get('query');
         $status = $request->get('status');
+        $typeCategory = $request->get('type_category');
 
         $builder = LedgerAccount::with('Employee');
 
@@ -54,6 +57,10 @@ class ListLedgerAccountsTool extends Tool
 
         if (!empty($status)) {
             $builder->where('status', $status);
+        }
+
+        if (!empty($typeCategory)) {
+            $builder->where('type_category', $typeCategory);
         }
 
         if (!empty($query)) {

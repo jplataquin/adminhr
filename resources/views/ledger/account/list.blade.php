@@ -46,7 +46,12 @@
 
                 let row = t.div({class:'card mb-3 cursor-pointer shadow-sm'},()=>{
                     t.div({class:'card-body d-flex justify-content-between align-items-center'},()=>{
-                        t.h5({class:"h6 mb-0"},item.name);
+                        t.div({class:'d-flex align-items-center gap-2'},()=>{
+                            t.h5({class:"h6 mb-0"},item.name);
+                            if(item.type_category){
+                                t.span({class:'badge bg-secondary'},item.type_category);
+                            }
+                        });
                         t.span({class:'badge bg-info text-dark'},item.status);
                     });
                 });
@@ -123,10 +128,20 @@
 
         const t             = new Template();
         const name          = $t.text_input();
+        @php
+        $category_options = ['' => '-- Select Type Category (Optional) --'];
+        if (isset($type_categories)) {
+            foreach ($type_categories as $cat) {
+                $category_options[$cat->name] = $cat->name;
+            }
+        }
+        @endphp
+        const type_category = $t.select(@json($category_options));
         const description   = $t.textarea();
         const create_btn    = $t.button('Create');
 
         name.className = 'form-control';
+        type_category.className = 'form-select';
         description.className = 'form-control';
         create_btn.className = 'btn btn-primary float-end';
 
@@ -138,6 +153,11 @@
                     el.append($t.label('Name','form-label'));
                     el.append(name);
                 });             
+
+                t.div({class:'col-12'},(el)=>{
+                    el.append($t.label('Type Category','form-label'));
+                    el.append(type_category);
+                });
 
             });//div
 
@@ -160,7 +180,8 @@
             $ui.blockUI();
 
             $_POST('/api/ledger/account/create',{
-                name: name.value
+                name: name.value,
+                type_category: type_category.value
             }).then(reply=>{
 
                 $ui.unblockUI();

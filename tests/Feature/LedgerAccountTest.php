@@ -205,3 +205,113 @@ it('styles the Employee (Searchable) input field and suggestion text white', fun
     expect($scss)->toContain('.ts-dropdown');
     expect($scss)->toContain('color: #ffffff !important;');
 });
+
+it('can create a ledger account with a type_category', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user, 'sanctum')->postJson('/api/ledger/account/create', [
+        'name' => 'Vendor Supplies Account',
+        'type_category' => 'Vendor',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    $this->assertDatabaseHas('ledger_accounts', [
+        'name' => 'Vendor Supplies Account',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+});
+
+it('can update a ledger account type_category and records update logs', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $ledgerAccount = new LedgerAccount();
+    $ledgerAccount->name = 'General Account';
+    $ledgerAccount->type_category = 'General';
+    $ledgerAccount->created_by = $admin->id;
+    $ledgerAccount->save();
+
+    $response = $this->actingAs($admin, 'sanctum')->postJson("/api/ledger/account/update/{$ledgerAccount->id}", [
+        'name' => 'General Account',
+        'type_category' => 'Client',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    $ledgerAccount->refresh();
+    expect($ledgerAccount->type_category)->toBe('Client');
+
+    $this->assertDatabaseHas('ledger_update_logs', [
+        'loggable_type' => LedgerAccount::class,
+        'loggable_id' => $ledgerAccount->id,
+    ]);
+});
+
+it('filters ledger accounts by type_category in list API', function () {
+    $user = User::factory()->create();
+
+    LedgerAccount::create([
+        'name' => 'Account Vendor 1',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+    LedgerAccount::create([
+        'name' => 'Account Vendor 2',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+    LedgerAccount::create([
+        'name' => 'Account Employee 1',
+        'type_category' => 'Employee',
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user, 'sanctum')->getJson('/api/ledger/accounts?type_category=Vendor');
+
+    $response->assertStatus(200);
+    $rows = $response->json('data.rows');
+    expect(count($rows))->toBe(2);
+    expect($rows[0]['type_category'])->toBe('Vendor');
+    expect($rows[1]['type_category'])->toBe('Vendor');
+});
+
+it('renders type_category options in ledger account create and display views', function () {
+    $user = User::factory()->create();
+
+    $ledgerAccount = LedgerAccount::create([
+        'name' => 'Category Display Account',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+
+    $createResponse = $this->actingAs($user)->get('/ledger/account/create');
+    $createResponse->assertOk();
+    $createResponse->assertSee('Type Category');
+    $createResponse->assertSee('Vendor');
+    $createResponse->assertSee('Client');
+
+    $displayResponse = $this->actingAs($user)->get("/ledger/account/{$ledgerAccount->id}");
+    $displayResponse->assertOk();
+    $displayResponse->assertSee('Type Category');
+    $displayResponse->assertSee('Vendor');
+    $displayResponse->assertSee('name="type_category"', false);
+});
+
+it('renders type_category in review ledger account display view', function () {
+    $user = User::factory()->create();
+
+    $ledgerAccount = LedgerAccount::create([
+        'name' => 'Review Category Account',
+        'type_category' => 'Employee',
+        'status' => 'PEND',
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get("/review/ledger/account/{$ledgerAccount->id}");
+    $response->assertOk();
+    $response->assertSee('Type Category');
+    $response->assertSee('Employee');
+});
