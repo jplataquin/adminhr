@@ -89,6 +89,11 @@ Route::middleware('auth')->group(function () {
     //Ledger Entry
     Route::get('/ledger/entry/{id}', [App\Http\Controllers\LedgerEntryController::class, 'display'])->name('ledger');;
 
+    //Bulk Ledger Entry
+    Route::get('/bulk-ledger-entries', [App\Http\Controllers\BulkLedgerEntryController::class, 'list'])->name('bulk-ledger-entry');
+    Route::get('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, 'create'])->name('bulk-ledger-entry');
+    Route::get('/bulk-ledger-entry/{id}', [App\Http\Controllers\BulkLedgerEntryController::class, 'display'])->name('bulk-ledger-entry');
+
 
     /****** REVIEW *****/
     Route::get('/review',function(){
@@ -111,6 +116,10 @@ Route::middleware('auth')->group(function () {
         //Ledgers
         Route::get('/ledgers', [App\Http\Controllers\Review\LedgerController::class, 'list'])->name('review');
         Route::get('/ledger/{id}', [App\Http\Controllers\Review\LedgerController::class, 'display'])->name('review');
+        
+        //Bulk Ledger Entries
+        Route::get('/bulk-ledger-entries', [App\Http\Controllers\Review\BulkLedgerEntryController::class, 'list'])->name('review');
+        Route::get('/bulk-ledger-entry/{id}', [App\Http\Controllers\Review\BulkLedgerEntryController::class, 'display'])->name('review');
         
 
 

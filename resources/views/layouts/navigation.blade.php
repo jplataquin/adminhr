@@ -24,8 +24,13 @@
                     </x-nav-link>
                 </li>
                 <li class="nav-item">
-                    <x-nav-link href="/ledger/accounts" :active="request()->routeIs('ledger')">
+                    <x-nav-link href="/ledger/accounts" :active="request()->routeIs('ledger*')">
                         Ledger
+                    </x-nav-link>
+                </li>
+                <li class="nav-item">
+                    <x-nav-link href="/bulk-ledger-entries" :active="request()->routeIs('bulk-ledger-entry*')">
+                        Bulk Entries
                     </x-nav-link>
                 </li>
                 <li class="nav-item">

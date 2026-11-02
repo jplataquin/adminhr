@@ -8,6 +8,7 @@ use App\Models\Traits\HasUpdateLogs;
 use App\Models\Traits\NormalizesHtmlEntities;
 use App\Models\User;
 use App\Models\Ledger;
+use App\Models\BulkLedgerEntry;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LedgerEntry extends Model
@@ -22,6 +23,11 @@ class LedgerEntry extends Model
     public function Ledger(): BelongsTo
     {
         return $this->belongsTo(Ledger::class);
+    }
+
+    public function BulkLedgerEntry(): BelongsTo
+    {
+        return $this->belongsTo(BulkLedgerEntry::class, 'bulk_ledger_entry_id');
     }
 
     public function amount(){
