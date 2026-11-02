@@ -45,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ledger/{ledger_id}/entries',[App\Http\Controllers\LedgerEntryController::class, '_list']);
     Route::post('/ledger/entry/request/delete',[App\Http\Controllers\LedgerEntryController::class, '_request_delete']);
 
+    //Bulk Ledger Entry
+    Route::get('/bulk-ledger-entries', [App\Http\Controllers\BulkLedgerEntryController::class, '_list']);
+    Route::post('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, '_create']);
+
     /****** REVIEW *****/
     Route::prefix('review')->group(function () {
         
@@ -71,5 +75,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/ledger/entry/reject',[App\Http\Controllers\Review\LedgerEntryController::class, '_reject']);     
         Route::post('/ledger/entry/delete/approve',[App\Http\Controllers\Review\LedgerEntryController::class, '_approve_request_delete']);
         Route::post('/ledger/entry/delete/reject',[App\Http\Controllers\Review\LedgerEntryController::class, '_reject_request_delete']);
+
+        //Bulk Ledger Entries
+        Route::get('/bulk-ledger-entries', [App\Http\Controllers\Review\BulkLedgerEntryController::class, '_list']);
+        Route::post('/bulk-ledger-entry/approve', [App\Http\Controllers\Review\BulkLedgerEntryController::class, '_approve']);
+        Route::post('/bulk-ledger-entry/reject', [App\Http\Controllers\Review\BulkLedgerEntryController::class, '_reject']);
     });
 });

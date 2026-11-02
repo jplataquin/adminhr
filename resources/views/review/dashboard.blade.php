@@ -8,6 +8,7 @@
                 <a href="/review/ledger/accounts" class="list-group-item list-group-item-action">Ledger Accounts</a>
                 <a href="/review/ledgers" class="list-group-item list-group-item-action">Ledgers</a>
                 <a href="/review/ledger/entries" class="list-group-item list-group-item-action">Ledger Entries</a>
+                <a href="/review/bulk-ledger-entries" class="list-group-item list-group-item-action">Bulk Ledger Entries</a>
             </div>
         </div>
     </div>
