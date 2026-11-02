@@ -62,6 +62,8 @@
                                         <td>
                                             @if ($type->prototype === \App\Models\LedgerType::PROTOTYPE_ACCOUNTS_PAYABLE)
                                                 <span class="badge rounded-pill bg-warning text-dark">{{ $type->prototype }}</span>
+                                            @elseif ($type->prototype === \App\Models\LedgerType::PROTOTYPE_GUARANTOR)
+                                                <span class="badge rounded-pill bg-primary">{{ $type->prototype }}</span>
                                             @else
                                                 <span class="badge rounded-pill bg-info text-dark">{{ $type->prototype ?? 'Accounts Receivable' }}</span>
                                             @endif

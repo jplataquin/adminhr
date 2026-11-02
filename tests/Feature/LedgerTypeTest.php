@@ -33,6 +33,18 @@ it('can create a ledger type with Accounts Payable prototype', function () {
     expect($retrieved->prototype)->toBe('Accounts Payable');
 });
 
+it('can create a ledger type with Guarantor prototype', function () {
+    $ledgerType = LedgerType::create([
+        'text' => 'Loan Guarantor',
+        'prototype' => 'Guarantor',
+    ]);
+
+    expect($ledgerType->prototype)->toBe('Guarantor');
+
+    $retrieved = LedgerType::find($ledgerType->id);
+    expect($retrieved->prototype)->toBe('Guarantor');
+});
+
 it('supports soft deletes for custom ledger types', function () {
     $ledgerType = LedgerType::create([
         'text' => 'Temporary Type',
@@ -68,6 +80,7 @@ it('allows admin to view ledger types index and see protected badges and prototy
     LedgerType::firstOrCreate(['text' => 'Cash Advance', 'prototype' => 'Accounts Receivable']);
     LedgerType::firstOrCreate(['text' => 'Accounts Receivable', 'prototype' => 'Accounts Receivable']);
     LedgerType::create(['text' => 'Vendor Invoices', 'prototype' => 'Accounts Payable']);
+    LedgerType::create(['text' => 'Personal Guarantor', 'prototype' => 'Guarantor']);
 
     $response = $this->actingAs($admin)->get(route('admin.ledger-types.index'));
 
@@ -75,10 +88,12 @@ it('allows admin to view ledger types index and see protected badges and prototy
     $response->assertSee('Cash Advance');
     $response->assertSee('Accounts Receivable');
     $response->assertSee('Vendor Invoices');
+    $response->assertSee('Personal Guarantor');
     $response->assertSee('Protected');
     $response->assertSee('Prototype');
     $response->assertSee('<span class="badge rounded-pill bg-info text-dark">Accounts Receivable</span>', false);
     $response->assertSee('<span class="badge rounded-pill bg-warning text-dark">Accounts Payable</span>', false);
+    $response->assertSee('<span class="badge rounded-pill bg-primary">Guarantor</span>', false);
 });
 
 it('renders create view with Accounts Receivable selected by default in prototype dropdown', function () {
@@ -90,6 +105,7 @@ it('renders create view with Accounts Receivable selected by default in prototyp
     $response->assertSee('Prototype');
     $response->assertSee('Accounts Receivable');
     $response->assertSee('Accounts Payable');
+    $response->assertSee('Guarantor');
     $response->assertSee('<option value="Accounts Receivable" selected>Accounts Receivable</option>', false);
 });
 
@@ -111,6 +127,24 @@ it('allows admin to create a new ledger type with prototype', function () {
     ]);
 });
 
+it('allows admin to create a new ledger type with Guarantor prototype', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $response = $this->actingAs($admin)->post(route('admin.ledger-types.store'), [
+        'text' => 'Co-maker Guarantor',
+        'prototype' => 'Guarantor',
+    ]);
+
+    $response->assertRedirect(route('admin.ledger-types.index'));
+    $response->assertSessionHas('success');
+
+    $this->assertDatabaseHas('ledger_types', [
+        'text' => 'Co-maker Guarantor',
+        'prototype' => 'Guarantor',
+        'deleted_at' => null,
+    ]);
+});
+
 it('requires prototype field when creating a ledger type', function () {
     $admin = User::factory()->create(['is_admin' => true]);
 
@@ -121,7 +155,7 @@ it('requires prototype field when creating a ledger type', function () {
     $response->assertSessionHasErrors(['prototype']);
 });
 
-it('validates prototype is either Accounts Receivable or Accounts Payable', function () {
+it('validates prototype is a valid prototype option', function () {
     $admin = User::factory()->create(['is_admin' => true]);
 
     $response = $this->actingAs($admin)->post(route('admin.ledger-types.store'), [
@@ -151,6 +185,28 @@ it('allows admin to edit and update a custom ledger type with new prototype', fu
         'id' => $custom->id,
         'text' => 'Updated Title',
         'prototype' => 'Accounts Payable',
+    ]);
+});
+
+it('allows admin to edit and update a custom ledger type to Guarantor prototype', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    $custom = LedgerType::create([
+        'text' => 'Custom Loan Type',
+        'prototype' => 'Accounts Receivable',
+    ]);
+
+    $response = $this->actingAs($admin)->put(route('admin.ledger-types.update', $custom->id), [
+        'text' => 'Updated Guarantor Type',
+        'prototype' => 'Guarantor',
+    ]);
+
+    $response->assertRedirect(route('admin.ledger-types.index'));
+    $response->assertSessionHas('success');
+
+    $this->assertDatabaseHas('ledger_types', [
+        'id' => $custom->id,
+        'text' => 'Updated Guarantor Type',
+        'prototype' => 'Guarantor',
     ]);
 });
 
