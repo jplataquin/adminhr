@@ -22,4 +22,11 @@ class Division extends Model
     {
         return $this->hasMany(Employee::class, 'division_id');
     }
+
+    public function directEmployees()
+    {
+        return $this->hasMany(Employee::class, 'division_id')->where(function ($q) {
+            $q->whereNull('department_id')->orWhere('department_id', 0);
+        });
+    }
 }

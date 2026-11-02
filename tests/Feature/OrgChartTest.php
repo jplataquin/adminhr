@@ -339,3 +339,110 @@ it('successfully executes buildDepartmentTree without ordering on positions tabl
     expect($deptNode['employees'][1]['name'])->toContain('Zack Taylor');
     expect($deptNode['employees'][1]['position'])->toBe('Pos A');
 });
+
+it('places employees without department directly under their division node', function () {
+    $division = Division::create(['name' => 'Corporate Division', 'code' => 'CORPDIV_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Finance Dept', 'code' => 'FIN_' . uniqid()]);
+    $pos1 = Position::create(['department_id' => $dept->id, 'name' => 'VP Corporate', 'code' => 'VP_' . uniqid()]);
+    $pos2 = Position::create(['department_id' => $dept->id, 'name' => 'Accountant', 'code' => 'ACC_' . uniqid()]);
+
+    // Employee 1: Direct in division, NO department assigned
+    $directEmp = new Employee();
+    $directEmp->firstname = 'Rachel';
+    $directEmp->lastname = 'Green';
+    $directEmp->birthdate = '1988-05-05';
+    $directEmp->gender = 'F';
+    $directEmp->religion = 'None';
+    $directEmp->marital_status = 'SING';
+    $directEmp->current_address = 'Address';
+    $directEmp->permanent_address = 'Address';
+    $directEmp->educational_attainment = 'BD';
+    $directEmp->division_id = $division->id;
+    $directEmp->department_id = null;
+    $directEmp->position_id = $pos1->id;
+    $directEmp->employment_status = 'REGU';
+    $directEmp->duty_status = 'ONDU';
+    $directEmp->employment_start_date = '2019-01-01';
+    $directEmp->created_by = $this->user->id;
+    $directEmp->save();
+
+    // Employee 2: Assigned to Finance Dept
+    $deptEmp = new Employee();
+    $deptEmp->firstname = 'Monica';
+    $deptEmp->lastname = 'Geller';
+    $deptEmp->birthdate = '1989-06-06';
+    $deptEmp->gender = 'F';
+    $deptEmp->religion = 'None';
+    $deptEmp->marital_status = 'SING';
+    $deptEmp->current_address = 'Address';
+    $deptEmp->permanent_address = 'Address';
+    $deptEmp->educational_attainment = 'BD';
+    $deptEmp->division_id = $division->id;
+    $deptEmp->department_id = $dept->id;
+    $deptEmp->position_id = $pos2->id;
+    $deptEmp->employment_status = 'REGU';
+    $deptEmp->duty_status = 'ONDU';
+    $deptEmp->employment_start_date = '2020-02-02';
+    $deptEmp->created_by = $this->user->id;
+    $deptEmp->save();
+
+    $controller = new \App\Http\Controllers\OrgChartController();
+    $tree = $controller->buildDepartmentTree();
+
+    $corpDiv = collect($tree)->firstWhere('name', 'Corporate Division');
+    expect($corpDiv)->not->toBeNull();
+    expect($corpDiv['employees_count'])->toBe(2);
+    expect($corpDiv['direct_employees_count'])->toBe(1);
+    expect(count($corpDiv['direct_employees']))->toBe(1);
+    expect($corpDiv['direct_employees'][0]['name'])->toContain('Rachel Green');
+    expect($corpDiv['direct_employees'][0]['position'])->toBe('VP Corporate');
+    expect($corpDiv['direct_employees'][0]['department'])->toBe('None');
+
+    $finDept = collect($corpDiv['departments'])->firstWhere('name', 'Finance Dept');
+    expect($finDept)->not->toBeNull();
+    expect(count($finDept['employees']))->toBe(1);
+    expect($finDept['employees'][0]['name'])->toContain('Monica Geller');
+
+    // Verify page render includes both and shows direct employees count badge
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+    $response->assertSee('Rachel Green');
+    $response->assertSee('Monica Geller');
+    $response->assertSee('1 direct');
+});
+
+it('renders floating employee card markup and hover handlers on employee names', function () {
+    $division = Division::create(['name' => 'HQ Operations', 'code' => 'HQ_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'HQ Dept', 'code' => 'HQD_' . uniqid()]);
+    $pos = Position::create(['department_id' => $dept->id, 'name' => 'Coordinator', 'code' => 'COORD_' . uniqid()]);
+
+    $emp = new Employee();
+    $emp->firstname = 'Chandler';
+    $emp->lastname = 'Bing';
+    $emp->birthdate = '1987-04-08';
+    $emp->gender = 'M';
+    $emp->religion = 'None';
+    $emp->marital_status = 'MARD';
+    $emp->current_address = 'Address';
+    $emp->permanent_address = 'Address';
+    $emp->educational_attainment = 'BD';
+    $emp->division_id = $division->id;
+    $emp->department_id = null;
+    $emp->position_id = $pos->id;
+    $emp->employment_status = 'REGU';
+    $emp->duty_status = 'ONDU';
+    $emp->employment_start_date = '2018-05-01';
+    $emp->created_by = $this->user->id;
+    $emp->save();
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+    $response->assertSee('employee-floating-card', false);
+    $response->assertSee('showHoverCard', false);
+    $response->assertSee('hideHoverCard', false);
+    $response->assertSee('cancelHideHoverCard', false);
+    $response->assertSee('Employment Status');
+    $response->assertSee('Duty Status');
+    $response->assertSee('Division');
+    $response->assertSee('Department');
+});
