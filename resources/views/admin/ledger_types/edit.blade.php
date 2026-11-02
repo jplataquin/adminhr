@@ -55,6 +55,7 @@
                                     <select class="form-select @error('prototype') is-invalid @enderror" id="prototype" name="prototype" required @if($ledgerType->isProtected()) disabled @endif>
                                         <option value="Accounts Receivable" {{ old('prototype', $ledgerType->prototype ?? 'Accounts Receivable') === 'Accounts Receivable' ? 'selected' : '' }}>Accounts Receivable</option>
                                         <option value="Accounts Payable" {{ old('prototype', $ledgerType->prototype) === 'Accounts Payable' ? 'selected' : '' }}>Accounts Payable</option>
+                                        <option value="Guarantor" {{ old('prototype', $ledgerType->prototype) === 'Guarantor' ? 'selected' : '' }}>Guarantor</option>
                                     </select>
                                     @if($ledgerType->isProtected())
                                         <input type="hidden" name="prototype" value="{{ $ledgerType->prototype ?? 'Accounts Receivable' }}">
@@ -66,7 +67,7 @@
                                         @if($ledgerType->isProtected())
                                             <span class="text-warning"><i class="bi bi-lock-fill"></i> This default ledger type is protected and its prototype cannot be altered.</span>
                                         @else
-                                            Select whether this ledger type defines an Accounts Receivable or Accounts Payable prototype.
+                                            Select whether this ledger type defines an Accounts Receivable, Accounts Payable, or Guarantor prototype.
                                         @endif
                                     </div>
                                 </div>

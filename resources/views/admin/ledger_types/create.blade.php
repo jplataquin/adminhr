@@ -48,11 +48,12 @@
                                     <select class="form-select @error('prototype') is-invalid @enderror" id="prototype" name="prototype" required>
                                         <option value="Accounts Receivable" {{ old('prototype', 'Accounts Receivable') === 'Accounts Receivable' ? 'selected' : '' }}>Accounts Receivable</option>
                                         <option value="Accounts Payable" {{ old('prototype') === 'Accounts Payable' ? 'selected' : '' }}>Accounts Payable</option>
+                                        <option value="Guarantor" {{ old('prototype') === 'Guarantor' ? 'selected' : '' }}>Guarantor</option>
                                     </select>
                                     @error('prototype')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <div class="form-text small text-muted">Select whether this ledger type defines an Accounts Receivable or Accounts Payable prototype.</div>
+                                    <div class="form-text small text-muted">Select whether this ledger type defines an Accounts Receivable, Accounts Payable, or Guarantor prototype.</div>
                                 </div>
 
                                 <div class="d-flex justify-content-end gap-2">
