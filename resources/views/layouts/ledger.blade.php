@@ -13,8 +13,29 @@
     <!-- Ledger Workspace with Resizable Sidebar -->
     <div class="d-flex flex-column flex-md-row gap-0 py-3 position-relative" id="ledger-workspace">
         
+        <!-- Mobile Sidebar Navigation Toggle (Sticky on mobile scroll) -->
+        <div class="d-md-none w-100 mb-2 sticky-top" id="ledger-sidebar-mobile-toggle-wrapper">
+            <button type="button" 
+                    id="ledger-sidebar-mobile-toggle"
+                    class="btn btn-outline-primary bg-body w-100 d-flex align-items-center justify-content-between py-2 px-3 shadow-sm"
+                    aria-expanded="false" 
+                    aria-controls="ledger-sidebar-container">
+                <span class="d-flex align-items-center gap-2 fw-semibold">
+                    <i class="bi bi-layout-sidebar-inset text-primary"></i>
+                    <span>Ledger Navigation</span>
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis border rounded-pill px-2 py-1 small d-flex align-items-center gap-1">
+                    <span id="ledger-sidebar-mobile-status">Show</span>
+                    <i class="bi bi-chevron-down ms-1" id="ledger-sidebar-mobile-chevron"></i>
+                </span>
+            </button>
+        </div>
+
+        <!-- Mobile Sidebar Backdrop Overlay -->
+        <div id="ledger-sidebar-backdrop" class="d-md-none" aria-hidden="true"></div>
+
         <!-- Persistent Resizable Sidebar Container -->
-        <aside id="ledger-sidebar-container" class="position-relative flex-shrink-0" style="width: 320px; min-width: 240px; max-width: 650px;">
+        <aside id="ledger-sidebar-container" class="d-none d-md-block position-relative flex-shrink-0" style="width: 320px; min-width: 240px; max-width: 650px;">
             <script>
                 (function() {
                     if (window.innerWidth >= 768) {
@@ -78,7 +99,7 @@
             function applySavedWidth() {
                 if (!sidebar) return;
                 if (window.innerWidth < 768) {
-                    sidebar.style.width = '100%';
+                    sidebar.style.width = '';
                     return;
                 }
                 try {
@@ -99,8 +120,15 @@
                 applySavedWidth();
                 window.addEventListener('resize', () => {
                     if (window.innerWidth < 768) {
-                        sidebar.style.width = '100%';
+                        sidebar.style.width = '';
                     } else {
+                        if (typeof hideTimeout !== 'undefined' && hideTimeout) {
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
+                        }
+                        sidebar.classList.remove('show', 'is-hiding');
+                        const bd = document.getElementById('ledger-sidebar-backdrop');
+                        if (bd) bd.classList.remove('show');
                         applySavedWidth();
                     }
                 });
@@ -188,9 +216,251 @@
                 });
             }
 
-            // 2. SPA Navigation without Page Refresh
+            // 2. Mobile Sidebar Navigation Toggle & Swipe Handling
+            const mobileToggleBtn = document.getElementById('ledger-sidebar-mobile-toggle');
+            const mobileStatus = document.getElementById('ledger-sidebar-mobile-status');
+            const mobileChevron = document.getElementById('ledger-sidebar-mobile-chevron');
+            const backdrop = document.getElementById('ledger-sidebar-backdrop');
+            let hideTimeout = null;
+
+            function setMobileSidebarState(isOpen) {
+                if (!sidebar) return;
+
+                if (hideTimeout) {
+                    clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                }
+
+                if (isOpen) {
+                    sidebar.classList.remove('is-hiding');
+                    sidebar.classList.add('show');
+                    if (backdrop) {
+                        backdrop.classList.add('show');
+                    }
+                    if (mobileToggleBtn) {
+                        mobileToggleBtn.setAttribute('aria-expanded', 'true');
+                        mobileToggleBtn.classList.add('active');
+                    }
+                    if (mobileStatus) mobileStatus.textContent = 'Hide';
+                    if (mobileChevron) {
+                        mobileChevron.classList.remove('bi-chevron-down');
+                        mobileChevron.classList.add('bi-chevron-up');
+                    }
+                } else {
+                    if (mobileToggleBtn) {
+                        mobileToggleBtn.setAttribute('aria-expanded', 'false');
+                        mobileToggleBtn.classList.remove('active');
+                    }
+                    if (mobileStatus) mobileStatus.textContent = 'Show';
+                    if (mobileChevron) {
+                        mobileChevron.classList.remove('bi-chevron-up');
+                        mobileChevron.classList.add('bi-chevron-down');
+                    }
+                    if (backdrop) {
+                        backdrop.classList.remove('show');
+                    }
+
+                    if (sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        sidebar.classList.add('is-hiding');
+                        hideTimeout = setTimeout(() => {
+                            sidebar.classList.remove('is-hiding');
+                            hideTimeout = null;
+                        }, 240);
+                    } else {
+                        sidebar.classList.remove('is-hiding');
+                    }
+                }
+            }
+
+            window.$toggleLedgerMobileSidebar = function() {
+                if (!sidebar) return;
+                const isCurrentlyOpen = sidebar.classList.contains('show');
+                setMobileSidebarState(!isCurrentlyOpen);
+            };
+
+            window.$closeLedgerMobileSidebar = function() {
+                setMobileSidebarState(false);
+            };
+
+            window.$openLedgerMobileSidebar = function() {
+                setMobileSidebarState(true);
+            };
+
+            if (mobileToggleBtn) {
+                mobileToggleBtn.addEventListener('click', () => {
+                    window.$toggleLedgerMobileSidebar();
+                });
+            }
+
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    window.$closeLedgerMobileSidebar();
+                });
+            }
+
+            // Touch swipe gesture support for mobile view
+            let sidebarTouchStartX = 0;
+            let sidebarTouchStartY = 0;
+            let sidebarTouchStartTime = 0;
+
+            if (sidebar) {
+                sidebar.addEventListener('touchstart', (e) => {
+                    if (window.innerWidth >= 768 || e.touches.length !== 1) return;
+                    sidebarTouchStartX = e.touches[0].clientX;
+                    sidebarTouchStartY = e.touches[0].clientY;
+                    sidebarTouchStartTime = Date.now();
+                }, { passive: true });
+
+                sidebar.addEventListener('touchend', (e) => {
+                    if (window.innerWidth >= 768 || !sidebar.classList.contains('show')) return;
+                    const deltaX = e.changedTouches[0].clientX - sidebarTouchStartX;
+                    const deltaY = e.changedTouches[0].clientY - sidebarTouchStartY;
+                    const duration = Date.now() - sidebarTouchStartTime;
+
+                    // Swiping to the right dismisses / hides sidebar
+                    if (deltaX > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 600) {
+                        window.$closeLedgerMobileSidebar();
+                    }
+                }, { passive: true });
+            }
+
+            if (workspace) {
+                let workspaceTouchStartX = 0;
+                let workspaceTouchStartY = 0;
+                let workspaceTouchStartTime = 0;
+
+                workspace.addEventListener('touchstart', (e) => {
+                    if (window.innerWidth >= 768 || e.touches.length !== 1) return;
+                    workspaceTouchStartX = e.touches[0].clientX;
+                    workspaceTouchStartY = e.touches[0].clientY;
+                    workspaceTouchStartTime = Date.now();
+                }, { passive: true });
+
+                workspace.addEventListener('touchend', (e) => {
+                    if (window.innerWidth >= 768 || sidebar.classList.contains('show')) return;
+                    const deltaX = e.changedTouches[0].clientX - workspaceTouchStartX;
+                    const deltaY = e.changedTouches[0].clientY - workspaceTouchStartY;
+                    const duration = Date.now() - workspaceTouchStartTime;
+
+                    // Swiping from the left edge towards the right opens sidebar
+                    if (workspaceTouchStartX <= 40 && deltaX > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 600) {
+                        window.$openLedgerMobileSidebar();
+                    }
+                }, { passive: true });
+            }
+
+            // Dynamic Sidebar Hierarchy Updates
+            function updateSidebarFromDoc(doc, targetAccountId = null, targetLedgerId = null) {
+                if (!doc) return;
+                const newSidebarCard = doc.querySelector('#ledger-sidebar-container > .card');
+                const curSidebar = document.getElementById('ledger-sidebar-container');
+                if (!newSidebarCard || !curSidebar) return;
+
+                const curSidebarCard = curSidebar.querySelector('.card');
+                if (!curSidebarCard) return;
+
+                // Capture current Alpine state and scroll position
+                let currentSearch = '';
+                let currentExpanded = {};
+                let currentExpandedCategories = {};
+                let currentScrollTop = 0;
+
+                if (window.Alpine) {
+                    try {
+                        const curData = Alpine.$data(curSidebarCard);
+                        if (curData) {
+                            currentSearch = curData.search || '';
+                            currentExpanded = { ...(curData.expandedAccounts || {}) };
+                            currentExpandedCategories = { ...(curData.expandedCategories || {}) };
+                        }
+                    } catch(e) {}
+                }
+
+                const curScroll = document.getElementById('ledger-sidebar-scroll');
+                if (curScroll) {
+                    currentScrollTop = curScroll.scrollTop;
+                }
+
+                // Destroy existing Alpine instance on old card
+                if (window.Alpine) {
+                    try { Alpine.destroyTree(curSidebarCard); } catch(e) {}
+                }
+
+                // Replace the card DOM
+                curSidebarCard.replaceWith(newSidebarCard);
+
+                // Initialize Alpine on new card and restore preserved state
+                if (window.Alpine) {
+                    try {
+                        Alpine.initTree(newSidebarCard);
+                        const newData = Alpine.$data(newSidebarCard);
+                        if (newData) {
+                            if (currentSearch) {
+                                newData.search = currentSearch;
+                            }
+                            if (currentExpandedCategories && Object.keys(currentExpandedCategories).length > 0) {
+                                newData.expandedCategories = {
+                                    ...newData.expandedCategories,
+                                    ...currentExpandedCategories
+                                };
+                            }
+                            if (currentExpanded && Object.keys(currentExpanded).length > 0) {
+                                newData.expandedAccounts = {
+                                    ...newData.expandedAccounts,
+                                    ...currentExpanded
+                                };
+                            }
+                            if (targetAccountId !== null && targetAccountId !== undefined) {
+                                newData.activeAccountId = targetAccountId;
+                                newData.expandedAccounts[targetAccountId] = true;
+                                if (newData.accountCategoryMap && newData.accountCategoryMap[targetAccountId]) {
+                                    newData.expandedCategories[newData.accountCategoryMap[targetAccountId]] = true;
+                                }
+                            }
+                            if (targetLedgerId !== null && targetLedgerId !== undefined) {
+                                newData.activeLedgerId = targetLedgerId;
+                            }
+                            if (newData.scrollToActiveNode) {
+                                setTimeout(() => {
+                                    newData.scrollToActiveNode();
+                                }, 50);
+                            }
+                        }
+                    } catch(e) {}
+                }
+
+                // Restore previous scroll position if not focusing a new node
+                const newScroll = document.getElementById('ledger-sidebar-scroll');
+                if (newScroll && currentScrollTop > 0 && targetAccountId === null && targetLedgerId === null) {
+                    newScroll.scrollTop = currentScrollTop;
+                }
+            }
+
+            window.$ledgerReloadSidebar = async function(targetAccountId = null, targetLedgerId = null) {
+                try {
+                    const response = await fetch(window.location.href, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (!response.ok) return;
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    updateSidebarFromDoc(doc, targetAccountId, targetLedgerId);
+                } catch(err) {
+                    console.error('Failed to reload ledger sidebar:', err);
+                }
+            };
+
+            // 3. SPA Navigation without Page Refresh
             window.$ledgerNavigate = async function(url, accountId = null, ledgerId = null, pushHistory = true) {
                 if (!url) return;
+
+                if (window.innerWidth < 768 && window.$closeLedgerMobileSidebar) {
+                    window.$closeLedgerMobileSidebar();
+                }
 
                 const urlObj = new URL(url, window.location.origin);
                 const path = urlObj.pathname;
@@ -249,11 +519,16 @@
                     // Extract server-resolved IDs from response (e.g. for entry, logs, or ledger)
                     const resolvedAccountId = newContent.dataset.accountId ? parseInt(newContent.dataset.accountId, 10) : null;
                     const resolvedLedgerId = newContent.dataset.ledgerId ? parseInt(newContent.dataset.ledgerId, 10) : null;
+                    const finalAccountId = resolvedAccountId !== null ? resolvedAccountId : accountId;
+                    const finalLedgerId = resolvedLedgerId !== null ? resolvedLedgerId : ledgerId;
+
+                    // Update navigation sidebar hierarchy dynamically without page refresh
+                    updateSidebarFromDoc(doc, finalAccountId, finalLedgerId);
 
                     window.dispatchEvent(new CustomEvent('ledger-sidebar-set-active', {
                         detail: { 
-                            accountId: resolvedAccountId !== null ? resolvedAccountId : accountId, 
-                            ledgerId: resolvedLedgerId !== null ? resolvedLedgerId : ledgerId, 
+                            accountId: finalAccountId, 
+                            ledgerId: finalLedgerId, 
                             url: path 
                         }
                     }));
@@ -330,6 +605,9 @@
                     if (link.target === '_blank' || link.hasAttribute('download')) return;
                     const href = link.getAttribute('href');
                     if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+                    // Allow user holding Ctrl (or Meta) to open links in a new tab naturally
+                    if (e.ctrlKey || e.metaKey) return;
 
                     try {
                         const targetUrl = new URL(link.href, window.location.origin);

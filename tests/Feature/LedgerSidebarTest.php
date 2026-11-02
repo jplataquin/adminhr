@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\Ledger;
 use App\Models\LedgerAccount;
@@ -279,14 +281,155 @@ it('defines window.$ledgerReload and uses it in ledger forms instead of full pag
     $ledger->created_by = $user->id;
     $ledger->save();
 
-    // Verify layout defines window.$ledgerReload
+    // Verify layout defines window.$ledgerReload and window.$ledgerReloadSidebar
     $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
     $response->assertOk();
     $response->assertSee('window.$ledgerReload = function()', false);
+    $response->assertSee('window.$ledgerReloadSidebar = async function', false);
+    $response->assertSee('updateSidebarFromDoc(doc', false);
     $response->assertSee('(window.$ledgerReload || $reload)()', false);
 
-    // Verify account view uses $ledgerReload
+    // Verify account view uses $ledgerReload and calls $ledgerReloadSidebar
     $accountResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
     $accountResponse->assertOk();
     $accountResponse->assertSee('(window.$ledgerReload || $reload)()', false);
+    $accountResponse->assertSee('window.$ledgerReloadSidebar', false);
+
+    // Verify account list view calls $ledgerReloadSidebar
+    $listResponse = $this->actingAs($user)->get('/ledger/accounts');
+    $listResponse->assertOk();
+    $listResponse->assertSee('window.$ledgerReloadSidebar', false);
 });
+
+it('renders mobile sidebar toggle button, backdrop overlay, and header close button', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+
+    $response->assertOk();
+    $response->assertSee('id="ledger-sidebar-mobile-toggle-wrapper"', false);
+    $response->assertSee('sticky-top', false);
+    $response->assertSee('id="ledger-sidebar-mobile-toggle"', false);
+    $response->assertSee('aria-controls="ledger-sidebar-container"', false);
+    $response->assertSee('aria-expanded="false"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-status"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-chevron"', false);
+    $response->assertSee('id="ledger-sidebar-backdrop"', false);
+    $response->assertSee('id="ledger-sidebar-mobile-close"', false);
+    $response->assertSee('d-none d-md-block position-relative', false);
+    $response->assertSee('window.$toggleLedgerMobileSidebar', false);
+    $response->assertSee('window.$closeLedgerMobileSidebar', false);
+    $response->assertSee('window.$openLedgerMobileSidebar', false);
+});
+
+it('configures responsive mobile show and hide styles for ledger sidebar in SCSS', function () {
+    $scss = file_get_contents(resource_path('css/app.scss'));
+
+    expect($scss)->toContain('#ledger-sidebar-mobile-toggle');
+    expect($scss)->toContain('#ledger-sidebar-backdrop');
+    expect($scss)->toContain('@keyframes ledgerSidebarSwipeInLeft');
+    expect($scss)->toContain('@keyframes ledgerSidebarSwipeOutRight');
+    expect($scss)->toMatch('/#ledger-sidebar-mobile-toggle-wrapper\s*\{[^}]*position:\s*sticky/s');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*position:\s*(?:fixed|absolute)/s');
+    expect($scss)->toMatch('/#ledger-sidebar-container\s*\{[^}]*display:\s*none/s');
+    expect($scss)->toMatch('/&.show\s*\{[^}]*animation:\s*ledgerSidebarSwipeInLeft/s');
+    expect($scss)->toMatch('/&.is-hiding\s*\{[^}]*animation:\s*ledgerSidebarSwipeOutRight/s');
+});
+
+it('groups accounts by type_category into parent nodes in the navigation sidebar', function () {
+    $user = User::factory()->create();
+
+    $vendorAcc1 = LedgerAccount::create([
+        'name' => 'Acme Supplies',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+
+    $vendorAcc2 = LedgerAccount::create([
+        'name' => 'Fast Logistics',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+
+    $clientAcc = LedgerAccount::create([
+        'name' => 'Global Retailers',
+        'type_category' => 'Client',
+        'created_by' => $user->id,
+    ]);
+
+    $uncategorizedAcc = LedgerAccount::create([
+        'name' => 'General Holding',
+        'type_category' => null,
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get('/ledger/accounts');
+    $response->assertOk();
+
+    // Verify parent category nodes exist
+    $response->assertSee('id="sidebar-category-vendor"', false);
+    $response->assertSee('id="sidebar-category-client"', false);
+    $response->assertSee('id="sidebar-category-uncategorized"', false);
+
+    // Verify category names rendered
+    $response->assertSee('Vendor');
+    $response->assertSee('Client');
+    $response->assertSee('Uncategorized');
+
+    // Verify account items are inside the view
+    $response->assertSee('id="sidebar-account-' . $vendorAcc1->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $vendorAcc2->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $clientAcc->id . '"', false);
+    $response->assertSee('id="sidebar-account-' . $uncategorizedAcc->id . '"', false);
+
+    // When navigating to an account, verify parent category is expanded
+    $displayResponse = $this->actingAs($user)->get("/ledger/account/{$vendorAcc1->id}");
+    $displayResponse->assertOk();
+    $displayResponse->assertSee("'Vendor': true", false);
+});
+
+it('allows opening records in a new tab when holding the ctrl key on clicks', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Tabs Testing Account',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $ledger = new Ledger();
+    $ledger->name = 'Tabs Testing Ledger';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Tab testing';
+    $ledger->template = 'Template';
+    $ledger->unit = 'Unit';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    // 1. Verify layout workspace click handler supports ctrlKey and metaKey
+    $layoutResponse = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+    $layoutResponse->assertOk();
+    $layoutResponse->assertSee('if (e.ctrlKey || e.metaKey) return;', false);
+    $layoutResponse->assertSee('navigate(url, accountId, ledgerId, event = null)', false);
+    $layoutResponse->assertSee('window.open(url, \'_blank\');', false);
+
+    // 2. Verify account list view supports ctrlKey and metaKey on record click
+    $listResponse = $this->actingAs($user)->get('/ledger/accounts');
+    $listResponse->assertOk();
+    $listResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $listResponse->assertSee('window.open(url, \'_blank\')', false);
+
+    // 3. Verify account display view supports ctrlKey and metaKey on ledger row click
+    $accountResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
+    $accountResponse->assertOk();
+    $accountResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $accountResponse->assertSee('window.open(url, \'_blank\')', false);
+
+    // 4. Verify ledger display view supports ctrlKey and metaKey on entry row click
+    $ledgerResponse = $this->actingAs($user)->get("/ledger/{$ledger->id}");
+    $ledgerResponse->assertOk();
+    $ledgerResponse->assertSee('if (e && (e.ctrlKey || e.metaKey))', false);
+    $ledgerResponse->assertSee('window.open(url, \'_blank\')', false);
+});
+

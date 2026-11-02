@@ -32,7 +32,7 @@
 
 <div id="pageDoc">
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h3 class="h5 mb-0">
                 Ledger Account
             </h3>
@@ -45,6 +45,16 @@
             <form id="form" autocomplete="off">
                 <div class="mb-3">
                     <x-text-input class="editable" label="Name" name="name" id="name" disabled="true" value="{{$ledger_account->name}}"></x-text-input>
+                </div>
+                <div class="mb-3">
+                    <x-select-input class="editable" label="Type Category" name="type_category" id="type_category" disabled="true">
+                        <option value="">-- None --</option>
+                        @if(isset($type_categories))
+                            @foreach($type_categories as $category)
+                                <option value="{{ $category->name }}" @if($ledger_account->type_category == $category->name) selected @endif>{{ $category->name }}</option>
+                            @endforeach
+                        @endif
+                    </x-select-input>
                 </div>
                 <div class="mb-3">
                     <x-text-input label="Status" name="status" id="status" disabled="true" value="{{$ledger_account->status}}"></x-text-input>
@@ -68,7 +78,7 @@
             <x-display-controls status="{{$ledger_account->status}}">
                    @if($ledger_account->status == 'PEND')
                         <x-slot:right>
-                            <x-primary-button class="me-2" id="reviewLinkBtn" >Review Link</x-primary-button>
+                            <x-primary-button class="" id="reviewLinkBtn" >Review Link</x-primary-button>
                         </x-slot>
                     @endif
             </x-display-controls>
@@ -77,7 +87,7 @@
     
 
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h3 class="h5 mb-0">
                 Ledgers
             </h3>
@@ -92,7 +102,7 @@
             <div id="list" class="mt-4"></div>
 
             <div class="text-center mt-4 pt-3 border-top">
-                <button class="btn btn-secondary" id="showMoreBtn">Show More</button>
+                <button class="btn btn-secondary w-100 w-sm-auto" id="showMoreBtn">Show More</button>
             </div>
         </div>
     </div>
@@ -285,16 +295,28 @@
                     t.div({class:'card-body d-flex justify-content-between align-items-center'},()=>{
                         t.div(()=>{
                             t.h5({class:"h6 mb-0"},item.name);
+                            const formattedAmount = item.total_amount_formatted !== undefined 
+                                ? item.total_amount_formatted 
+                                : (window.$numberFormat ? window.$numberFormat(item.total_amount || 0, 2) : Number(item.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                            t.div({class:'small mt-1'}, ()=>{
+                                t.span({class:'text-white-50 me-1'}, 'Total Amount:');
+                                t.span({class:'fw-bold text-primary ledger-total-amount'}, formattedAmount);
+                            });
                             if(item.ledger_type && item.ledger_type.text){
-                                t.small({class:'text-muted'}, item.ledger_type.text);
+                                t.small({class:'text-muted d-block mt-1'}, item.ledger_type.text);
                             }
                         });
                         t.span({class:'badge bg-info text-dark'},item.status);
                     });
                 });
 
-                row.onclick = ()=>{
-                    $url('/ledger/'+item.id);
+                row.onclick = (e)=>{
+                    const url = '/ledger/'+item.id;
+                    if (e && (e.ctrlKey || e.metaKey)) {
+                        window.open(url, '_blank');
+                    } else {
+                        $url(url);
+                    }
                 }
 
                 $el.append(row).to(list);
@@ -393,12 +415,12 @@
         const create_ledger_form = t.div({class: 'p-4 mb-4'}, ()=>{
 
             t.div({class:'mb-3'},(el)=>{
-                el.append($t.label('Name', 'form-label'));
+                el.append($t.label('Name *', 'form-label'));
                 el.append(ledger_name);
             });
 
             t.div({class:'mb-3'},(el)=>{
-                el.append($t.label('Ledger Type', 'form-label'));
+                el.append($t.label('Ledger Type *', 'form-label'));
                 el.append(ledger_type);
             });
 
@@ -452,6 +474,10 @@
                 
                 pageDoc.reinitalize();
                 pageDoc.showData();
+
+                if (window.$ledgerReloadSidebar) {
+                    window.$ledgerReloadSidebar({{ $ledger_account->id }});
+                }
 
             });
         }

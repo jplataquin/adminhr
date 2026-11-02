@@ -12,7 +12,7 @@
     };
 @endphp
 
-<li class="org-tree-item" data-employee-id="{{ $node['id'] }}" data-search-text="{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['division'] . ' ' . $node['formatted_id']) }}">
+<li class="org-tree-item" data-employee-id="{{ $node['id'] }}" data-search-text="{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['division'] . ' ' . $node['formatted_id']) }}" style="list-style-type: none;">
     <div class="org-node-container d-inline-flex align-items-center">
         @if($hasChildren)
             <button type="button"
@@ -79,7 +79,7 @@
     </div>
 
     @if($hasChildren)
-        <ul class="org-tree-children ps-4" x-show="isNodeOpen('{{ $nodeKey }}')" x-collapse.duration.200ms>
+        <ul class="org-tree-children ps-4 list-unstyled" x-show="isNodeOpen('{{ $nodeKey }}')" x-collapse.duration.200ms style="list-style-type: none;">
             @foreach($node['subordinates'] as $subordinate)
                 @include('org_chart.partials.reporting-node', ['node' => $subordinate, 'level' => $level + 1])
             @endforeach

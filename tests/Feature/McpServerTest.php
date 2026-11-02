@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\Alert;
 use App\Models\Employee;
 use App\Models\Ledger;
@@ -48,10 +50,11 @@ it('lists all 8 registered read-only tools on AdminHrServer with their schemas a
     expect($employeesSchema)->toHaveKey('division_id');
     expect($employeesSchema)->toHaveKey('department_id');
 
-    // Verify list_ledger_accounts schema includes employee_id
+    // Verify list_ledger_accounts schema includes employee_id and type_category
     $listAccounts = app(ListLedgerAccountsTool::class);
     $accountsSchema = $listAccounts->toArray()['inputSchema']['properties'];
     expect($accountsSchema)->toHaveKey('employee_id');
+    expect($accountsSchema)->toHaveKey('type_category');
 
     // Verify list_ledgers schema includes ledger_type_id
     $listLedgers = app(ListLedgersTool::class);
@@ -211,6 +214,7 @@ it('filters ledger accounts by employee_id using list_ledger_accounts tool', fun
 
     $accA = new LedgerAccount();
     $accA->name = 'Account for EmpA';
+    $accA->type_category = 'Employee';
     $accA->employee_id = $empA->id;
     $accA->status = 'APRV';
     $accA->created_by = $user->id;
@@ -218,6 +222,7 @@ it('filters ledger accounts by employee_id using list_ledger_accounts tool', fun
 
     $accB = new LedgerAccount();
     $accB->name = 'Account for EmpB';
+    $accB->type_category = 'Vendor';
     $accB->employee_id = $empB->id;
     $accB->status = 'APRV';
     $accB->created_by = $user->id;
@@ -230,6 +235,14 @@ it('filters ledger accounts by employee_id using list_ledger_accounts tool', fun
     $response->assertOk()
         ->assertSee('Account for EmpA')
         ->assertDontSee('Account for EmpB');
+
+    // Filter by type_category of Vendor
+    $catResponse = AdminHrServer::tool(ListLedgerAccountsTool::class, [
+        'type_category' => 'Vendor',
+    ]);
+    $catResponse->assertOk()
+        ->assertSee('Account for EmpB')
+        ->assertDontSee('Account for EmpA');
 
     // Get ledger account details
     $getAccResponse = AdminHrServer::tool(GetLedgerAccountTool::class, [

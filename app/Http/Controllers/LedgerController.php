@@ -48,6 +48,10 @@ class LedgerController extends Controller
             ]);
         }
 
+        if (!$request->filled('ledger_type_id') && $request->filled('ledger_type')) {
+            $request->merge(['ledger_type_id' => $request->input('ledger_type')]);
+        }
+
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
@@ -57,11 +61,7 @@ class LedgerController extends Controller
                 })
             ],
             'ledger_type_id' => [
-                'nullable',
-                'exists:ledger_types,id'
-            ],
-            'ledger_type' => [
-                'nullable',
+                'required',
                 'exists:ledger_types,id'
             ],
             'description' => [
@@ -76,6 +76,8 @@ class LedgerController extends Controller
                 'required'
             ]
             
+        ], [
+            'ledger_type_id.required' => 'The ledger type field is required.',
         ]);
 
         if ($validator->fails()) {
@@ -88,7 +90,7 @@ class LedgerController extends Controller
 
         
         $name           = $request->input('name');
-        $ledger_type_id = $request->input('ledger_type_id') ?? $request->input('ledger_type');
+        $ledger_type_id = $request->input('ledger_type_id');
         $description    = $request->input('description');
         $template       = $request->input('template');
         $unit           = $request->input('unit');
@@ -98,7 +100,7 @@ class LedgerController extends Controller
         $ledger = new Ledger();
 
         $ledger->ledger_account_id = $id;
-        $ledger->ledger_type_id    = $ledger_type_id ? (int) $ledger_type_id : null;
+        $ledger->ledger_type_id    = (int) $ledger_type_id;
         
         $ledger->name           = $name;
         $ledger->description    = $description;
@@ -392,9 +394,9 @@ class LedgerController extends Controller
 
     public function _list(Request $request){
         
-        $page               = (int) $request->input('page')     ?? 1;
-        $limit              = (int) $request->input('limit')    ?? 10;
-        $ledger_account_id  = (int) $request->input('ledger_account_id') ?? 0;
+        $page               = (int) ($request->input('page') ?: 1);
+        $limit              = (int) ($request->input('limit') ?: 10);
+        $ledger_account_id  = (int) ($request->input('ledger_account_id') ?? 0);
         $orderBy            = $request->input('order_by')       ?? 'id';
         $order              = $request->input('order')          ?? 'DESC';
         $query              = $request->input('query')          ?? '';
@@ -423,6 +425,10 @@ class LedgerController extends Controller
             $result = $table->orderBy($orderBy,$order)->take($limit)->get();
         }
 
+        foreach ($result as $ledger) {
+            $ledger->total_amount = $ledger->getTotalAmount(['APRV']);
+            $ledger->total_amount_formatted = number_format($ledger->total_amount, 2);
+        }
 
         return response()->json([
             'status' => 1,

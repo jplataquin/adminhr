@@ -5,6 +5,10 @@ use App\Models\Division;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -109,6 +113,19 @@ it('renders the organization chart page with summary statistics and tree contain
     $response->assertSee('bi-caret-down-fill');
     $response->assertDontSee('org-leaf-bullet');
     $response->assertSee('openNodes: {}', false);
+    $response->assertSee('style="list-style-type: none;"', false);
+    $response->assertSee('style="gap: 20px;"', false);
+});
+
+it('applies list-style-type none on lists and 20px gap on org icon and node name flex containers', function () {
+    $division = Division::create(['name' => 'Operations Division', 'code' => 'OPS_' . uniqid()]);
+    $department = Department::create(['division_id' => $division->id, 'name' => 'Logistics Unit', 'code' => 'LOG_' . uniqid()]);
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+
+    $response->assertOk();
+    $response->assertSee('style="list-style-type: none;"', false);
+    $response->assertSee('style="gap: 20px;"', false);
 });
 
 it('provides organization chart data through the API endpoint with Division -> Department -> Employee structure', function () {

@@ -3,32 +3,32 @@
     'status'         => 'PEND'
 ])
 
-<div class="clearfix" id="{{$namespace}}controls">
-    <div class="float-start">
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2" id="{{$namespace}}controls">
+    <div class="d-flex flex-wrap align-items-center gap-2" id="{{$namespace}}controlsLeft">
         @if($status == 'PEND')
-            <x-primary-button class="me-2 d-none" id="{{$namespace}}deleteBtn">Delete</x-primary-button>
+            <x-primary-button class="d-none" id="{{$namespace}}deleteBtn">Delete</x-primary-button>
         @endif
         
         @if($status == 'APRV')
-            <x-primary-button class="me-2" id="{{$namespace}}requestDeleteBtn">Request Delete</x-primary-button>
+            <x-primary-button class="" id="{{$namespace}}requestDeleteBtn">Request Delete</x-primary-button>
         @endif
         
         @if($status == 'APRV')
-            <x-primary-button class="me-2" id="{{$namespace}}revertBtn">Revert</x-primary-button>
+            <x-primary-button class="" id="{{$namespace}}revertBtn">Revert</x-primary-button>
         @endif
 
         @if(isset($left))
             {{$left}}
         @endif
     </div>
-    <div class="float-end">
+    <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-sm-end gap-2" id="{{$namespace}}controlsRight">
         @if(isset($right))
             {{$right}}
         @endif
 
         @if($status == 'PEND' || (auth()->check() && auth()->user()->is_admin && $status == 'APRV'))
-            <x-primary-button class="me-2" id="{{$namespace}}editBtn">Edit</x-primary-button>
-            <x-primary-button class="d-none me-2" id="{{$namespace}}updateBtn">Update</x-primary-button>
+            <x-primary-button class="" id="{{$namespace}}editBtn">Edit</x-primary-button>
+            <x-primary-button class="d-none" id="{{$namespace}}updateBtn">Update</x-primary-button>
         @endif
         <x-secondary-button class="" id="{{$namespace}}cancelBtn">Cancel</x-secondary-button>
     </div>

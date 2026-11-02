@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
@@ -22,9 +24,12 @@ it('can create ledgers with the same name in different ledger accounts', functio
     $ledgerAccount2->created_by = $user->id;
     $ledgerAccount2->save();
 
+    $type = LedgerType::create(['text' => 'General Type']);
+
     // Create first ledger
     $response1 = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$ledgerAccount1->id}/create", [
         'name' => 'Same Ledger Name',
+        'ledger_type_id' => $type->id,
         'description' => 'Test',
         'template' => 'Test',
         'unit' => 'USD',
@@ -35,6 +40,7 @@ it('can create ledgers with the same name in different ledger accounts', functio
     // Create second ledger with SAME name but different account
     $response2 = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$ledgerAccount2->id}/create", [
         'name' => 'Same Ledger Name', // SAME NAME
+        'ledger_type_id' => $type->id,
         'description' => 'Test',
         'template' => 'Test',
         'unit' => 'USD',
@@ -224,4 +230,122 @@ it('renders Account Ledger Name and Ledger Name in the add entry drawer form set
     $response->assertSee('entry_account_name');
     $response->assertSee('entry_ledger_name');
 });
+
+it('shows total amount in number format below the ledger name in ledger list', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Construction Account',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $ledger = new Ledger();
+    $ledger->name = 'Heavy Equipment Fuel';
+    $ledger->ledger_account_id = $account->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Diesel fuel';
+    $ledger->template = 'Fuel';
+    $ledger->unit = 'Liters';
+    $ledger->created_by = $user->id;
+    $ledger->save();
+
+    // Add Credit Entry: 100 liters @ 50.00 = 5,000.00
+    $entry1 = new \App\Models\LedgerEntry();
+    $entry1->ledger_id = $ledger->id;
+    $entry1->tag = 'Diesel';
+    $entry1->particular = 'Batch 1 Refill';
+    $entry1->date = '2026-11-01';
+    $entry1->type = 'CRED';
+    $entry1->quantity = 100;
+    $entry1->unit_amount = 50;
+    $entry1->status = 'APRV';
+    $entry1->created_by = $user->id;
+    $entry1->save();
+
+    // Add Debit Entry: 20 liters @ 50.00 = 1,000.00
+    $entry2 = new \App\Models\LedgerEntry();
+    $entry2->ledger_id = $ledger->id;
+    $entry2->tag = 'Diesel';
+    $entry2->particular = 'Generator draw';
+    $entry2->date = '2026-11-02';
+    $entry2->type = 'DEBI';
+    $entry2->quantity = 20;
+    $entry2->unit_amount = 50;
+    $entry2->status = 'APRV';
+    $entry2->created_by = $user->id;
+    $entry2->save();
+
+    // Net total amount = 5000 - 1000 = 4,000.00
+
+    // 1. Verify API returns total_amount and total_amount_formatted
+    $apiResponse = $this->actingAs($user, 'sanctum')->getJson("/api/ledgers?ledger_account_id={$account->id}");
+    $apiResponse->assertOk();
+    $rows = $apiResponse->json('data.rows');
+    expect(count($rows))->toBe(1);
+    expect((float)$rows[0]['total_amount'])->toBe(4000.0);
+    expect($rows[0]['total_amount_formatted'])->toBe('4,000.00');
+
+    // 2. Verify account display view renders template logic for Total Amount below ledger name
+    $viewResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
+    $viewResponse->assertOk();
+    $viewResponse->assertSee('Total Amount:');
+    $viewResponse->assertSee('ledger-total-amount');
+});
+
+it('requires a ledger_type when creating a ledger', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Ledger Type Test Account',
+        'type_category' => 'General',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
+        'name' => 'Ledger Without Type',
+        'description' => 'Test Desc',
+        'template' => 'Test Template',
+        'unit' => 'USD',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', -2);
+    expect($response->json('data.ledger_type_id'))->not->toBeNull();
+    $this->assertDatabaseMissing('ledgers', [
+        'name' => 'Ledger Without Type',
+    ]);
+});
+
+it('accepts ledger_type alias for ledger_type_id when creating a ledger', function () {
+    $user = User::factory()->create();
+
+    $account = LedgerAccount::create([
+        'name' => 'Alias Test Account',
+        'type_category' => 'General',
+        'status' => 'APRV',
+        'created_by' => $user->id,
+    ]);
+
+    $type = LedgerType::create(['text' => 'Direct Type']);
+
+    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
+        'name' => 'Ledger With Type Alias',
+        'ledger_type' => $type->id,
+        'description' => 'Test Desc',
+        'template' => 'Test Template',
+        'unit' => 'USD',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    $this->assertDatabaseHas('ledgers', [
+        'name' => 'Ledger With Type Alias',
+        'ledger_type_id' => $type->id,
+    ]);
+});
+
+
 
