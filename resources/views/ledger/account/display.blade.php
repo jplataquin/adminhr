@@ -302,6 +302,10 @@
                                 t.span({class:'text-white-50 me-1'}, 'Total Amount:');
                                 t.span({class:'fw-bold text-primary ledger-total-amount'}, formattedAmount);
                             });
+                            if(item.prototype){
+                                let pillClass = item.prototype === 'Accounts Payable' ? 'bg-warning text-dark' : 'bg-info text-dark';
+                                t.span({class:'badge rounded-pill me-2 ' + pillClass}, item.prototype);
+                            }
                             if(item.ledger_type && item.ledger_type.text){
                                 t.small({class:'text-muted d-block mt-1'}, item.ledger_type.text);
                             }
@@ -386,9 +390,11 @@
 
     @php
         $type_options = ['' => ' -- Select Ledger Type -- '];
+        $type_prototypes = [];
         if (isset($ledger_types)) {
             foreach ($ledger_types as $type) {
                 $type_options[$type->id] = $type->text;
+                $type_prototypes[$type->id] = $type->prototype ?? 'Accounts Receivable';
             }
         }
     @endphp
@@ -399,6 +405,11 @@
         const t = new Template();
 
         const ledger_name           = $t.text_input();
+        const ledger_prototype      = $t.select({
+            '': ' -- Select Prototype -- ',
+            'Accounts Receivable': 'Accounts Receivable',
+            'Accounts Payable': 'Accounts Payable'
+        });
         const ledger_type           = $t.select(@json($type_options));
         const ledger_description    = $t.textarea();
         const ledger_template       = $t.textarea();
@@ -406,17 +417,30 @@
         const create_ledger_btn     = $t.button('Create');
         
         ledger_name.className        = 'form-control';
+        ledger_prototype.className   = 'form-select';
         ledger_type.className        = 'form-select';
         ledger_description.className = 'form-control';
         ledger_template.className    = 'form-control';
         ledger_unit.className        = 'form-control';
         create_ledger_btn.className  = 'btn btn-primary float-end';
 
+        const typePrototypes = @json($type_prototypes);
+        ledger_type.onchange = () => {
+            if (ledger_type.value && typePrototypes[ledger_type.value]) {
+                ledger_prototype.value = typePrototypes[ledger_type.value];
+            }
+        };
+
         const create_ledger_form = t.div({class: 'p-4 mb-4'}, ()=>{
 
             t.div({class:'mb-3'},(el)=>{
-                el.append($t.label('Name', 'form-label'));
+                el.append($t.label('Name *', 'form-label'));
                 el.append(ledger_name);
+            });
+
+            t.div({class:'mb-3'},(el)=>{
+                el.append($t.label('Prototype *', 'form-label'));
+                el.append(ledger_prototype);
             });
 
             t.div({class:'mb-3'},(el)=>{
@@ -447,6 +471,7 @@
         createBtn.onclick = ()=>{
 
             ledger_name.value           = '';
+            ledger_prototype.value      = '';
             ledger_type.value           = '';
             ledger_description.value    = '';
             $drawerModal.content('Create Ledger',create_ledger_form);
@@ -458,6 +483,7 @@
 
             $_POST('/api/ledger/{{$ledger_account->id}}/create',{
                 name: ledger_name.value,
+                prototype: ledger_prototype.value,
                 ledger_type_id: ledger_type.value,
                 description: ledger_description.value,
                 template: ledger_template.value,

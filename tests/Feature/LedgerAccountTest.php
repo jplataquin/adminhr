@@ -35,6 +35,7 @@ it('can create a ledger account with an employee', function () {
 
     $response = $this->actingAs($user, 'sanctum')->postJson('/api/ledger/account/create', [
         'name' => 'Test Ledger Account',
+        'type_category' => 'General',
         'employee_id' => $employee->id,
     ]);
 
@@ -43,6 +44,7 @@ it('can create a ledger account with an employee', function () {
 
     $this->assertDatabaseHas('ledger_accounts', [
         'name' => 'Test Ledger Account',
+        'type_category' => 'General',
         'employee_id' => $employee->id,
         'created_by' => $user->id,
     ]);
@@ -291,7 +293,7 @@ it('renders type_category options in ledger account create and display views', f
 
     $createResponse = $this->actingAs($user)->get('/ledger/account/create');
     $createResponse->assertOk();
-    $createResponse->assertSee('Type Category');
+    $createResponse->assertSee('Category Type');
     $createResponse->assertSee('Vendor');
     $createResponse->assertSee('Client');
 
@@ -403,3 +405,50 @@ it('shows category type cards with count in account ledger list and filters acco
     expect(count($uncatRows))->toBe(1);
     expect($uncatRows[0]['name'])->toBe('Uncategorized Gamma');
 });
+
+it('requires a category type value when creating a ledger account', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user, 'sanctum')->postJson('/api/ledger/account/create', [
+        'name' => 'Account Without Category',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', -2);
+    expect($response->json('data.type_category'))->not->toBeNull();
+    $this->assertDatabaseMissing('ledger_accounts', [
+        'name' => 'Account Without Category',
+    ]);
+});
+
+it('validates that category type must exist in active account type categories', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user, 'sanctum')->postJson('/api/ledger/account/create', [
+        'name' => 'Account With Invalid Category',
+        'type_category' => 'NonExistentCategory123',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', -2);
+    expect($response->json('data.type_category'))->not->toBeNull();
+});
+
+it('accepts category_type alias when creating a ledger account', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user, 'sanctum')->postJson('/api/ledger/account/create', [
+        'name' => 'Account With Category Type Alias',
+        'category_type' => 'Vendor',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('status', 1);
+
+    $this->assertDatabaseHas('ledger_accounts', [
+        'name' => 'Account With Category Type Alias',
+        'type_category' => 'Vendor',
+        'created_by' => $user->id,
+    ]);
+});
+

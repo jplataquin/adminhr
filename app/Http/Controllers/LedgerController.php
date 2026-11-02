@@ -48,6 +48,16 @@ class LedgerController extends Controller
             ]);
         }
 
+        if (!$request->filled('prototype')) {
+            $typeId = $request->input('ledger_type_id') ?? $request->input('ledger_type');
+            if ($typeId) {
+                $type = LedgerType::find($typeId);
+                if ($type && !empty($type->prototype)) {
+                    $request->merge(['prototype' => $type->prototype]);
+                }
+            }
+        }
+
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
@@ -55,6 +65,11 @@ class LedgerController extends Controller
                 Rule::unique('ledgers','name')->where(function (Builder $query) use ($id) { 
                     $query->where('ledger_account_id', $id); 
                 })
+            ],
+            'prototype' => [
+                'required',
+                'string',
+                Rule::in(LedgerType::PROTOTYPES),
             ],
             'ledger_type_id' => [
                 'nullable',
@@ -76,6 +91,9 @@ class LedgerController extends Controller
                 'required'
             ]
             
+        ], [
+            'prototype.required' => 'The prototype field is required.',
+            'prototype.in'       => 'The prototype must be either Accounts Receivable or Accounts Payable.',
         ]);
 
         if ($validator->fails()) {
@@ -88,6 +106,7 @@ class LedgerController extends Controller
 
         
         $name           = $request->input('name');
+        $prototype      = $request->input('prototype');
         $ledger_type_id = $request->input('ledger_type_id') ?? $request->input('ledger_type');
         $description    = $request->input('description');
         $template       = $request->input('template');
@@ -99,6 +118,7 @@ class LedgerController extends Controller
 
         $ledger->ledger_account_id = $id;
         $ledger->ledger_type_id    = $ledger_type_id ? (int) $ledger_type_id : null;
+        $ledger->prototype         = $prototype;
         
         $ledger->name           = $name;
         $ledger->description    = $description;
@@ -180,6 +200,11 @@ class LedgerController extends Controller
                 'max:255',
                 Rule::unique('ledgers','name')->where(fn (Builder $query) => $query->where('ledger_account_id', $ledger->ledger_account_id)->where('id','!=',$id))
             ],
+            'prototype' => [
+                'nullable',
+                'string',
+                Rule::in(LedgerType::PROTOTYPES),
+            ],
             'ledger_type_id' => [
                 'nullable',
                 'exists:ledger_types,id'
@@ -221,6 +246,16 @@ class LedgerController extends Controller
         if ($request->has('ledger_type_id') || $request->has('ledger_type')) {
             $ledger_type_val = $request->input('ledger_type_id') ?? $request->input('ledger_type');
             $ledger->ledger_type_id = $ledger_type_val ? (int) $ledger_type_val : null;
+            if (!$request->filled('prototype') && $ledger_type_val) {
+                $type = LedgerType::find($ledger_type_val);
+                if ($type && !empty($type->prototype)) {
+                    $ledger->prototype = $type->prototype;
+                }
+            }
+        }
+
+        if ($request->filled('prototype')) {
+            $ledger->prototype = $request->input('prototype');
         }
 
         $ledger->name           = $name;
@@ -399,6 +434,7 @@ class LedgerController extends Controller
         $order              = $request->input('order')          ?? 'DESC';
         $query              = $request->input('query')          ?? '';
         $status             = $request->input('status')         ?? '';
+        $prototype          = $request->input('prototype')      ?? '';
         $result     = [];
 
         $table = new Ledger();
@@ -411,6 +447,10 @@ class LedgerController extends Controller
 
         if($status != ''){
             $table = $table->where('status','=',$status);
+        }
+
+        if($prototype != ''){
+            $table = $table->where('prototype','=',$prototype);
         }
 
         if($limit > 0){

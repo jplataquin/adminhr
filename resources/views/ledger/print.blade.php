@@ -102,8 +102,8 @@
                 <tr>
                     <th>Ledger</th>
                     <td>{{$ledger->name}}</td>
-                    <th>Type</th>
-                    <td>{{$ledger->LedgerType->text ?? ' - '}}</td>
+                    <th>Type / Prototype</th>
+                    <td>{{$ledger->LedgerType->text ?? ' - '}} @if($ledger->prototype || ($ledger->LedgerType && $ledger->LedgerType->prototype)) ({{$ledger->prototype ?? $ledger->LedgerType->prototype}}) @endif</td>
                 </tr>
                 <tr>
                     <th width="25%">Status</th>

@@ -23,6 +23,9 @@ class ListLedgersTool extends Tool
                 ->description('Filter by ledger type ID.'),
             'ledger_account_id' => $schema->integer()
                 ->description('Filter ledgers belonging to a specific ledger account ID.'),
+            'prototype' => $schema->string()
+                ->enum(['Accounts Receivable', 'Accounts Payable'])
+                ->description('Filter by ledger prototype: Accounts Receivable or Accounts Payable.'),
             'status' => $schema->string()
                 ->enum(['PEND', 'APRV', 'REJC', 'RDEL', 'CLSD'])
                 ->description('Filter by ledger status: PEND, APRV, REJC, RDEL, CLSD.'),
@@ -46,6 +49,7 @@ class ListLedgersTool extends Tool
         $page = (int) $request->get('page', 1);
         $ledgerTypeId = $request->get('ledger_type_id');
         $ledgerAccountId = $request->get('ledger_account_id');
+        $prototype = $request->get('prototype');
         $status = $request->get('status');
         $query = $request->get('query');
 
@@ -57,6 +61,10 @@ class ListLedgersTool extends Tool
 
         if (!empty($ledgerAccountId)) {
             $builder->where('ledger_account_id', $ledgerAccountId);
+        }
+
+        if (!empty($prototype)) {
+            $builder->where('prototype', $prototype);
         }
 
         if (!empty($status)) {

@@ -49,6 +49,16 @@ class LedgerAccount extends Model
         return (object) $opt;
     }
 
+    public function getCategoryTypeAttribute(): ?string
+    {
+        return $this->type_category;
+    }
+
+    public function setCategoryTypeAttribute(?string $value): void
+    {
+        $this->attributes['type_category'] = $value;
+    }
+
 
     public function CreatedByUser(){   
 

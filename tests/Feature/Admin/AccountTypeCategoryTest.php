@@ -1,5 +1,7 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\AccountTypeCategory;
 use App\Models\LedgerAccount;

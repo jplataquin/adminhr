@@ -44,9 +44,9 @@
                     <x-text-input label="Name" name="name" id="name"></x-text-input>
                 </div>
                 <div class="col-span-12 sm:col-span-12 mb-3">
-                    <label for="type_category" class="form-label text-white">Type Category</label>
-                    <select id="type_category" name="type_category" class="form-select">
-                        <option value="">-- None --</option>
+                    <label for="type_category" class="form-label text-white">Category Type <span class="text-danger">*</span></label>
+                    <select id="type_category" name="type_category" class="form-select" required>
+                        <option value="">-- Select Category Type --</option>
                         @if(isset($type_categories))
                             @foreach($type_categories as $category)
                                 <option value="{{ $category->name }}">{{ $category->name }}</option>

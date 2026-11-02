@@ -221,7 +221,7 @@
         const t             = new Template();
         const name          = $t.text_input();
         @php
-        $category_options = ['' => '-- Select Type Category (Optional) --'];
+        $category_options = ['' => '-- Select Category Type --'];
         if (isset($type_categories)) {
             foreach ($type_categories as $cat) {
                 $category_options[$cat->name] = $cat->name;
@@ -247,7 +247,7 @@
                 });             
 
                 t.div({class:'col-12'},(el)=>{
-                    el.append($t.label('Type Category','form-label'));
+                    el.append($t.label('Category Type *','form-label'));
                     el.append(type_category);
                 });
 

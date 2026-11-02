@@ -20,6 +20,14 @@ class Ledger extends Model
 
     protected $table = 'ledgers';
 
+    public const PROTOTYPE_ACCOUNTS_RECEIVABLE = 'Accounts Receivable';
+    public const PROTOTYPE_ACCOUNTS_PAYABLE = 'Accounts Payable';
+
+    public const PROTOTYPES = [
+        self::PROTOTYPE_ACCOUNTS_RECEIVABLE,
+        self::PROTOTYPE_ACCOUNTS_PAYABLE,
+    ];
+
     public function Entries(): HasMany
     {
         return $this->hasMany(LedgerEntry::class);

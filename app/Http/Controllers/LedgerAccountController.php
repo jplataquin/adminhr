@@ -26,6 +26,10 @@ class LedgerAccountController extends Controller
 
     public function _create(Request $request){
 
+        if ($request->has('category_type') && !$request->has('type_category')) {
+            $request->merge(['type_category' => $request->input('category_type')]);
+        }
+
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
@@ -33,7 +37,15 @@ class LedgerAccountController extends Controller
                 Rule::unique('ledger_accounts','name')
             ],
             'employee_id' => 'nullable|exists:employees,id',
-            'type_category' => 'nullable|string|max:255'
+            'type_category' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::exists('account_type_categories', 'name')->whereNull('deleted_at'),
+            ],
+        ], [
+            'type_category.required' => 'The category type value is required.',
+            'type_category.exists'   => 'The selected category type is invalid.',
         ]);
 
         if ($validator->fails()) {
@@ -214,6 +226,10 @@ class LedgerAccountController extends Controller
         }
 
 
+        if ($request->has('category_type') && !$request->has('type_category')) {
+            $request->merge(['type_category' => $request->input('category_type')]);
+        }
+
         $validator = Validator::make($request->all(),[
             'name' => [
                 'required',
@@ -221,7 +237,12 @@ class LedgerAccountController extends Controller
                 Rule::unique('ledger_accounts','name')->where(fn (Builder $query) => $query->where('id','!=',$id))
             ],
             'employee_id' => 'nullable|exists:employees,id',
-            'type_category' => 'nullable|string|max:255'
+            'type_category' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::exists('account_type_categories', 'name')->whereNull('deleted_at'),
+            ],
         ]);
 
         if ($validator->fails()) {
