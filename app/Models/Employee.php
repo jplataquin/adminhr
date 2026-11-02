@@ -5,12 +5,67 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use App\Models\LedgerAccount;
+use Illuminate\Support\Facades\Auth;
 
 class Employee extends Model
 {
     use SoftDeletes;
 
     protected $table = 'employees';
+
+    protected static function booted()
+    {
+        static::created(function (Employee $employee) {
+            $baseName = trim($employee->full_name);
+            if (empty($baseName)) {
+                $baseName = 'Employee ' . $employee->id;
+            }
+
+            $name = $baseName;
+            if (LedgerAccount::withTrashed()->where('name', $name)->exists()) {
+                $name = $baseName . ' - ' . $employee->id;
+            }
+
+            $ledgerAccount = new LedgerAccount();
+            $ledgerAccount->name = $name;
+            $ledgerAccount->employee_id = $employee->id;
+            $ledgerAccount->created_by = $employee->created_by ?? Auth::id() ?? User::value('id') ?? 1;
+            $ledgerAccount->save();
+        });
+
+        static::updated(function (Employee $employee) {
+            if ($employee->isDirty(['prefix', 'firstname', 'middlename', 'lastname', 'suffix'])) {
+                $baseName = trim($employee->full_name);
+                if (empty($baseName)) {
+                    $baseName = 'Employee ' . $employee->id;
+                }
+
+                $ledgerAccount = LedgerAccount::where('employee_id', $employee->id)->first();
+                if ($ledgerAccount) {
+                    $name = $baseName;
+                    if (LedgerAccount::withTrashed()->where('name', $name)->where('id', '!=', $ledgerAccount->id)->exists()) {
+                        $name = $baseName . ' - ' . $employee->id;
+                    }
+
+                    $ledgerAccount->name = $name;
+                    $ledgerAccount->updated_by = $employee->updated_by ?? Auth::id() ?? $ledgerAccount->created_by;
+                    $ledgerAccount->save();
+                } else {
+                    $name = $baseName;
+                    if (LedgerAccount::withTrashed()->where('name', $name)->exists()) {
+                        $name = $baseName . ' - ' . $employee->id;
+                    }
+
+                    $ledgerAccount = new LedgerAccount();
+                    $ledgerAccount->name = $name;
+                    $ledgerAccount->employee_id = $employee->id;
+                    $ledgerAccount->created_by = $employee->updated_by ?? Auth::id() ?? User::value('id') ?? 1;
+                    $ledgerAccount->save();
+                }
+            }
+        });
+    }
 
     public static function employment_status_options($key = null){
         //RSGN AWOL LAOF TRMN RETR DECE
@@ -241,5 +296,10 @@ class Employee extends Model
     public function alerts()
     {
         return $this->hasMany(Alert::class, 'employee_id');
+    }
+
+    public function ledgerAccount()
+    {
+        return $this->hasOne(LedgerAccount::class, 'employee_id');
     }
 }
