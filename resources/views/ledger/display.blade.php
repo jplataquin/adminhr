@@ -20,13 +20,6 @@
                     <x-text-input label="Name" name="name" class="editable" id="name" disabled="true" value="{{$ledger->name}}"></x-text-input>
                 </div>
                 <div class="mb-3">
-                    <x-select-input label="Prototype" name="prototype" id="prototype" class="editable" disabled="true">
-                        <option value=""> -- Select Prototype -- </option>
-                        <option value="Accounts Receivable" @if(($ledger->prototype ?? $ledger->LedgerType?->prototype ?? 'Accounts Receivable') === 'Accounts Receivable') selected @endif>Accounts Receivable</option>
-                        <option value="Accounts Payable" @if(($ledger->prototype ?? $ledger->LedgerType?->prototype) === 'Accounts Payable') selected @endif>Accounts Payable</option>
-                    </x-select-input>
-                </div>
-                <div class="mb-3">
                     <x-select-input label="Ledger Type" name="ledger_type_id" id="ledger_type_id" class="editable" disabled="true">
                         <option value=""> -- Select Ledger Type -- </option>
                         @if(isset($ledger_types))

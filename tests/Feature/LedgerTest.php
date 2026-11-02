@@ -24,10 +24,12 @@ it('can create ledgers with the same name in different ledger accounts', functio
     $ledgerAccount2->created_by = $user->id;
     $ledgerAccount2->save();
 
+    $type = LedgerType::create(['text' => 'General Type']);
+
     // Create first ledger
     $response1 = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$ledgerAccount1->id}/create", [
         'name' => 'Same Ledger Name',
-        'prototype' => 'Accounts Receivable',
+        'ledger_type_id' => $type->id,
         'description' => 'Test',
         'template' => 'Test',
         'unit' => 'USD',
@@ -38,7 +40,7 @@ it('can create ledgers with the same name in different ledger accounts', functio
     // Create second ledger with SAME name but different account
     $response2 = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$ledgerAccount2->id}/create", [
         'name' => 'Same Ledger Name', // SAME NAME
-        'prototype' => 'Accounts Receivable',
+        'ledger_type_id' => $type->id,
         'description' => 'Test',
         'template' => 'Test',
         'unit' => 'USD',
@@ -291,18 +293,18 @@ it('shows total amount in number format below the ledger name in ledger list', f
     $viewResponse->assertSee('ledger-total-amount');
 });
 
-it('requires a prototype when creating a ledger without ledger_type', function () {
+it('requires a ledger_type when creating a ledger', function () {
     $user = User::factory()->create();
 
     $account = LedgerAccount::create([
-        'name' => 'Prototype Test Account',
+        'name' => 'Ledger Type Test Account',
         'type_category' => 'General',
         'status' => 'APRV',
         'created_by' => $user->id,
     ]);
 
     $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
-        'name' => 'Ledger Without Prototype',
+        'name' => 'Ledger Without Type',
         'description' => 'Test Desc',
         'template' => 'Test Template',
         'unit' => 'USD',
@@ -310,222 +312,40 @@ it('requires a prototype when creating a ledger without ledger_type', function (
 
     $response->assertStatus(200);
     $response->assertJsonPath('status', -2);
-    expect($response->json('data.prototype'))->not->toBeNull();
+    expect($response->json('data.ledger_type_id'))->not->toBeNull();
     $this->assertDatabaseMissing('ledgers', [
-        'name' => 'Ledger Without Prototype',
+        'name' => 'Ledger Without Type',
     ]);
 });
 
-it('validates that prototype must be Accounts Receivable or Accounts Payable', function () {
+it('accepts ledger_type alias for ledger_type_id when creating a ledger', function () {
     $user = User::factory()->create();
 
     $account = LedgerAccount::create([
-        'name' => 'Prototype Validation Account',
+        'name' => 'Alias Test Account',
         'type_category' => 'General',
         'status' => 'APRV',
         'created_by' => $user->id,
     ]);
 
+    $type = LedgerType::create(['text' => 'Direct Type']);
+
     $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
-        'name' => 'Invalid Prototype Ledger',
-        'prototype' => 'Invalid Prototype Value',
+        'name' => 'Ledger With Type Alias',
+        'ledger_type' => $type->id,
         'description' => 'Test Desc',
         'template' => 'Test Template',
         'unit' => 'USD',
     ]);
 
     $response->assertStatus(200);
-    $response->assertJsonPath('status', -2);
-    expect($response->json('data.prototype'))->not->toBeNull();
-});
-
-it('creates a ledger with explicit prototype and persists it to the database', function () {
-    $user = User::factory()->create();
-
-    $account = LedgerAccount::create([
-        'name' => 'AR Test Account',
-        'type_category' => 'Client',
-        'status' => 'APRV',
-        'created_by' => $user->id,
-    ]);
-
-    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
-        'name' => 'Receivable Ledger',
-        'prototype' => 'Accounts Receivable',
-        'description' => 'AR tracking',
-        'template' => 'AR Template',
-        'unit' => 'USD',
-    ]);
-
-    $response->assertStatus(200);
     $response->assertJsonPath('status', 1);
 
-    $ledgerId = $response->json('data.id');
     $this->assertDatabaseHas('ledgers', [
-        'id' => $ledgerId,
-        'name' => 'Receivable Ledger',
-        'prototype' => 'Accounts Receivable',
+        'name' => 'Ledger With Type Alias',
+        'ledger_type_id' => $type->id,
     ]);
 });
 
-it('automatically inherits prototype from ledger_type when ledger_type_id is provided', function () {
-    $user = User::factory()->create();
-
-    $account = LedgerAccount::create([
-        'name' => 'AP Test Account',
-        'type_category' => 'Vendor',
-        'status' => 'APRV',
-        'created_by' => $user->id,
-    ]);
-
-    $apType = LedgerType::create([
-        'text' => 'Supplier Invoices',
-        'prototype' => 'Accounts Payable',
-    ]);
-
-    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/{$account->id}/create", [
-        'name' => 'Vendor Ledger',
-        'ledger_type_id' => $apType->id,
-        'description' => 'AP tracking',
-        'template' => 'AP Template',
-        'unit' => 'PHP',
-    ]);
-
-    $response->assertStatus(200);
-    $response->assertJsonPath('status', 1);
-
-    $ledgerId = $response->json('data.id');
-    $this->assertDatabaseHas('ledgers', [
-        'id' => $ledgerId,
-        'name' => 'Vendor Ledger',
-        'ledger_type_id' => $apType->id,
-        'prototype' => 'Accounts Payable',
-    ]);
-
-    $ledger = Ledger::find($ledgerId);
-    expect($ledger->prototype)->toBe('Accounts Payable');
-});
-
-it('allows updating the prototype on an existing ledger', function () {
-    $user = User::factory()->create();
-
-    $account = LedgerAccount::create([
-        'name' => 'Update Prototype Account',
-        'type_category' => 'General',
-        'status' => 'APRV',
-        'created_by' => $user->id,
-    ]);
-
-    $ledger = new Ledger();
-    $ledger->ledger_account_id = $account->id;
-    $ledger->name = 'Editable Prototype Ledger';
-    $ledger->prototype = 'Accounts Receivable';
-    $ledger->description = 'Test';
-    $ledger->template = 'Test';
-    $ledger->unit = 'USD';
-    $ledger->status = 'PEND';
-    $ledger->created_by = $user->id;
-    $ledger->save();
-
-    $response = $this->actingAs($user, 'sanctum')->postJson("/api/ledger/update/{$ledger->id}", [
-        'name' => 'Editable Prototype Ledger',
-        'prototype' => 'Accounts Payable',
-        'description' => 'Updated Desc',
-        'template' => 'Updated Template',
-        'unit' => 'USD',
-    ]);
-
-    $response->assertStatus(200);
-    $response->assertJsonPath('status', 1);
-
-    $ledger->refresh();
-    expect($ledger->prototype)->toBe('Accounts Payable');
-});
-
-it('renders prototype in ledger display, review, and print views', function () {
-    $user = User::factory()->create();
-
-    $account = LedgerAccount::create([
-        'name' => 'Views Prototype Account',
-        'type_category' => 'Vendor',
-        'status' => 'APRV',
-        'created_by' => $user->id,
-    ]);
-
-    $ledger = new Ledger();
-    $ledger->ledger_account_id = $account->id;
-    $ledger->name = 'Display Prototype Ledger';
-    $ledger->prototype = 'Accounts Payable';
-    $ledger->description = 'Testing view display';
-    $ledger->template = 'Template';
-    $ledger->unit = 'PHP';
-    $ledger->status = 'PEND';
-    $ledger->created_by = $user->id;
-    $ledger->save();
-
-    // 1. Ledger display view
-    $response = $this->actingAs($user)->get("/ledger/{$ledger->id}");
-    $response->assertOk();
-    $response->assertSee('Prototype');
-    $response->assertSee('name="prototype"', false);
-    $response->assertSee('Accounts Payable');
-
-    // 2. Ledger account display view
-    $accResponse = $this->actingAs($user)->get("/ledger/account/{$account->id}");
-    $accResponse->assertOk();
-    $accResponse->assertSee('Prototype');
-
-    // 3. Review ledger display view
-    $reviewResponse = $this->actingAs($user)->get("/review/ledger/{$ledger->id}");
-    $reviewResponse->assertOk();
-    $reviewResponse->assertSee('Prototype');
-    $reviewResponse->assertSee('Accounts Payable');
-
-    // 4. Print view
-    $printResponse = $this->actingAs($user)->get("/ledger/print/{$ledger->id}");
-    $printResponse->assertOk();
-    $printResponse->assertSee('Type / Prototype');
-    $printResponse->assertSee('Accounts Payable');
-});
-
-it('filters ledgers by prototype in list API', function () {
-    $user = User::factory()->create();
-
-    $account = LedgerAccount::create([
-        'name' => 'Filter Prototype Account',
-        'type_category' => 'General',
-        'status' => 'APRV',
-        'created_by' => $user->id,
-    ]);
-
-    $arLedger = new Ledger();
-    $arLedger->ledger_account_id = $account->id;
-    $arLedger->name = 'AR 1';
-    $arLedger->prototype = 'Accounts Receivable';
-    $arLedger->description = 'Desc';
-    $arLedger->template = 'Tpl';
-    $arLedger->unit = 'USD';
-    $arLedger->status = 'APRV';
-    $arLedger->created_by = $user->id;
-    $arLedger->save();
-
-    $apLedger = new Ledger();
-    $apLedger->ledger_account_id = $account->id;
-    $apLedger->name = 'AP 1';
-    $apLedger->prototype = 'Accounts Payable';
-    $apLedger->description = 'Desc';
-    $apLedger->template = 'Tpl';
-    $apLedger->unit = 'USD';
-    $apLedger->status = 'APRV';
-    $apLedger->created_by = $user->id;
-    $apLedger->save();
-
-    $response = $this->actingAs($user, 'sanctum')->getJson("/api/ledgers?ledger_account_id={$account->id}&prototype=Accounts+Payable");
-    $response->assertOk();
-    $rows = $response->json('data.rows');
-    expect(count($rows))->toBe(1);
-    expect($rows[0]['name'])->toBe('AP 1');
-    expect($rows[0]['prototype'])->toBe('Accounts Payable');
-});
 
 
