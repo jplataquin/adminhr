@@ -1,10 +1,16 @@
 <?php
 
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Division;
 use App\Models\Department;
 use App\Models\Position;
+use App\Models\Ledger;
+use App\Models\LedgerAccount;
+use App\Models\LedgerType;
+use App\Models\LedgerEntry;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -253,3 +259,79 @@ it('returns correct employee metrics and filters by employment status in /api/em
     expect(count($rowsReg))->toBe(1);
     expect($rowsReg[0]['firstname'])->toBe('RegUser');
 });
+
+it('renders ledgers tab in employee record display page with employee ledgers', function () {
+    $employee = createTestEmployee($this->user, [
+        'firstname' => 'Alice',
+        'lastname' => 'Wonderland',
+    ]);
+
+    // LedgerAccount is automatically created by model lifecycle event
+    $ledgerAccount = LedgerAccount::where('employee_id', $employee->id)->first();
+    expect($ledgerAccount)->not->toBeNull();
+
+    $type = LedgerType::create([
+        'text' => 'Staff Allowance',
+        'prototype' => 'Accounts Payable',
+    ]);
+
+    $ledger = new Ledger();
+    $ledger->name = 'Alice Travel Allowance';
+    $ledger->ledger_account_id = $ledgerAccount->id;
+    $ledger->ledger_type_id = $type->id;
+    $ledger->status = 'APRV';
+    $ledger->description = 'Monthly travel stipend';
+    $ledger->template = 'Travel';
+    $ledger->unit = 'PHP';
+    $ledger->created_by = $this->user->id;
+    $ledger->save();
+
+    // Add credit entry of 2,500.00
+    $entry = new LedgerEntry();
+    $entry->ledger_id = $ledger->id;
+    $entry->tag = 'Allowance';
+    $entry->particular = 'November Allowance';
+    $entry->date = '2026-11-01';
+    $entry->type = 'CRED';
+    $entry->quantity = 1;
+    $entry->unit_amount = 2500;
+    $entry->status = 'APRV';
+    $entry->created_by = $this->user->id;
+    $entry->save();
+
+    // Verify relationship on Employee model
+    expect($employee->ledgers)->toHaveCount(1);
+    expect($employee->ledgers->first()->name)->toBe('Alice Travel Allowance');
+
+    // Request display page
+    $response = $this->actingAs($this->user)->get("/employee/{$employee->id}");
+    $response->assertOk();
+
+    // Verify Ledgers tab exists
+    $response->assertSee('Ledgers');
+    $response->assertSee('target="#employee_ledgers_display_view"', false);
+    $response->assertSee('id="employee_ledgers_display_view"', false);
+
+    // Verify ledger table and record details
+    $response->assertSee('id="employee-ledgers-table"', false);
+    $response->assertSee('Alice Travel Allowance');
+    $response->assertSee('Staff Allowance');
+    $response->assertSee('2,500.00');
+    $response->assertSee('Linked Account Ledger');
+});
+
+it('renders empty state in ledgers tab when employee has no ledgers', function () {
+    $employee = createTestEmployee($this->user, [
+        'firstname' => 'Bob',
+        'lastname' => 'NoLedgers',
+    ]);
+
+    $response = $this->actingAs($this->user)->get("/employee/{$employee->id}");
+    $response->assertOk();
+
+    $response->assertSee('Ledgers');
+    $response->assertSee('id="employee_ledgers_display_view"', false);
+    $response->assertSee('No ledgers found for this employee.');
+    $response->assertSee('id="employee-ledgers-empty"', false);
+});
+

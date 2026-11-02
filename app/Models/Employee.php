@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\LedgerAccount;
+use App\Models\Ledger;
 use Illuminate\Support\Facades\Auth;
 
 class Employee extends Model
@@ -301,5 +302,15 @@ class Employee extends Model
     public function ledgerAccount()
     {
         return $this->hasOne(LedgerAccount::class, 'employee_id');
+    }
+
+    public function ledgerAccounts()
+    {
+        return $this->hasMany(LedgerAccount::class, 'employee_id');
+    }
+
+    public function ledgers()
+    {
+        return $this->hasManyThrough(Ledger::class, LedgerAccount::class, 'employee_id', 'ledger_account_id');
     }
 }

@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Models\Employee;
+use App\Models\Ledger;
+use App\Models\LedgerAccount;
 use App\Rules\UploadExists;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -34,9 +36,24 @@ class EmployeeController extends Controller
             'employee' => $employee
         ]);
 
+        $ledgerAccounts = LedgerAccount::where('employee_id', $employee->id)->get();
+        $accountIds = $ledgerAccounts->pluck('id');
+
+        $ledgers = Ledger::whereIn('ledger_account_id', $accountIds)
+            ->with(['LedgerType', 'Account'])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        foreach ($ledgers as $ledger) {
+            $ledger->total_amount = $ledger->getTotalAmount();
+            $ledger->total_amount_formatted = number_format($ledger->total_amount, 2);
+        }
+
         return view('employee/display',[
             'employee'                   => $employee,
-            'employee_data_display_view' => $employee_data_display_view
+            'employee_data_display_view' => $employee_data_display_view,
+            'ledgers'                    => $ledgers,
+            'ledger_account'             => $employee->ledgerAccount ?? $ledgerAccounts->first(),
         ]);
     }
 
