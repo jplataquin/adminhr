@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasUpdateLogs;
+use App\Models\Traits\NormalizesHtmlEntities;
 use App\Models\User;
 use App\Models\Ledger;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,11 +14,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LedgerAccount extends Model
 {
     
-    use SoftDeletes, HasUpdateLogs;
+    use SoftDeletes, HasUpdateLogs, NormalizesHtmlEntities;
 
     protected $table = 'ledger_accounts';
 
     protected $guarded = [];
+
+    protected array $normalizableFields = ['name'];
 
     public function Ledgers(): HasMany
     {

@@ -18,4 +18,4 @@
 </label>
 @endif
 
-<textarea @disabled($disabled) name="{{$name}}" placeholder="{{$placeholder}}" id="{{$id}}" rows="{{$rows}}" {{ $attributes->merge(['class' => "form-control"]) }}>{{ $slot }}</textarea>
+<textarea @disabled($disabled) name="{{$name}}" placeholder="{{$placeholder}}" id="{{$id}}" rows="{{$rows}}" {{ $attributes->merge(['class' => "form-control"]) }}>{!! e($slot, false) !!}</textarea>

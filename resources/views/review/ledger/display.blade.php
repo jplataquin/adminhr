@@ -271,7 +271,13 @@
 
                     t.td({class:'text-center'},item.status);
                     t.td({class:'text-center'},item.tag);
-                    t.td(item.particular.replace(/\n/g, "<br />"));
+                    t.td((el) => {
+                        const lines = (item.particular || '').split('\n');
+                        lines.forEach((line, idx) => {
+                            if (idx > 0) el.appendChild(document.createElement('br'));
+                            el.appendChild(document.createTextNode(line));
+                        });
+                    });
                     t.td({class:'text-center'},item.date);
                     t.td({class:'text-center'},''+item.quantity);
                     t.td({class:'text-center'},''+item.unit_amount);
