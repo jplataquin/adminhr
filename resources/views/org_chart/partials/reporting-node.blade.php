@@ -46,11 +46,15 @@
                 <!-- Info -->
                 <div class="min-w-0 flex-grow-1">
                     <div class="d-flex align-items-center gap-1.5 lh-1 mb-1">
-                        <a href="{{ url('/employee/' . $node['id']) }}" class="fw-bold text-decoration-none text-body text-truncate employee-name-link small" title="View employee details">
+                        <a href="{{ url('/employee/' . $node['id']) }}"
+                           class="fw-bold text-decoration-none text-body text-truncate employee-name-link small org-employee-name-link"
+                           title="View employee details"
+                           @mouseenter="showHoverCard(@js($node), $event)"
+                           @mouseleave="hideHoverCard()">
                             {{ $node['name'] }}
                         </a>
                         <span class="badge bg-secondary-subtle text-secondary font-monospace px-1 py-0" style="font-size: 0.65rem;">#{{ $node['formatted_id'] }}</span>
-                        <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status'] }}</span>
+                        <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status_label'] ?? $node['employment_status'] }}</span>
                     </div>
 
                     <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem;">

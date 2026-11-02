@@ -187,6 +187,80 @@
                 </div>
             </div>
         </div>
+
+        <!-- Floating Employee Card -->
+        <div x-show="hoveredEmployee"
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 transform -translate-y-1 scale-95"
+             x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 transform -translate-y-1 scale-95"
+             class="card shadow-lg border border-primary-subtle rounded-3 position-absolute employee-floating-card"
+             :style="`top: ${hoverCardPosition.top}px; left: ${hoverCardPosition.left}px; z-index: 1060; width: 340px;`"
+             @mouseenter="cancelHideHoverCard()"
+             @mouseleave="hideHoverCard()"
+             x-cloak
+             style="display: none;">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-start gap-3">
+                    <!-- Larger Thumbnail Photo -->
+                    <div class="flex-shrink-0">
+                        <template x-if="hoveredEmployee && hoveredEmployee.photo_url">
+                            <img :src="hoveredEmployee.photo_url"
+                                 :alt="hoveredEmployee.name"
+                                 class="rounded-3 border object-fit-cover shadow-sm"
+                                 style="width: 72px; height: 72px;">
+                        </template>
+                        <template x-if="hoveredEmployee && !hoveredEmployee.photo_url">
+                            <div class="rounded-3 bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center border border-primary-subtle shadow-sm"
+                                 style="width: 72px; height: 72px; font-size: 1.5rem;"
+                                 x-text="hoveredEmployee ? (hoveredEmployee.initials || (hoveredEmployee.firstname ? hoveredEmployee.firstname.charAt(0) : 'E')) : 'E'">
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Employee Info Header -->
+                    <div class="min-w-0 flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.7rem;">
+                                #<span x-text="hoveredEmployee ? hoveredEmployee.formatted_id : ''"></span>
+                            </span>
+                            <a :href="hoveredEmployee ? `{{ url('/employee') }}/${hoveredEmployee.id}` : '#'"
+                               class="btn btn-sm btn-outline-primary py-0 px-1.5"
+                               style="font-size: 0.7rem;"
+                               title="Open Profile">
+                                <i class="bi bi-box-arrow-up-right me-0.5"></i> View
+                            </a>
+                        </div>
+                        <h6 class="mb-0 fw-bold text-body text-truncate" x-text="hoveredEmployee ? hoveredEmployee.name : ''"></h6>
+                        <div class="text-primary small fw-semibold text-truncate mb-1" x-text="hoveredEmployee ? hoveredEmployee.position : ''"></div>
+                    </div>
+                </div>
+
+                <hr class="my-2.5 opacity-25">
+
+                <!-- Basic Data Grid -->
+                <div class="row g-2 small">
+                    <div class="col-6">
+                        <div class="text-secondary text-uppercase fw-semibold" style="font-size: 0.65rem;">Employment Status</div>
+                        <div class="fw-semibold text-body" x-text="hoveredEmployee ? (hoveredEmployee.employment_status_label || hoveredEmployee.employment_status || 'None') : ''"></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-secondary text-uppercase fw-semibold" style="font-size: 0.65rem;">Duty Status</div>
+                        <div class="fw-semibold text-body" x-text="hoveredEmployee ? (hoveredEmployee.duty_status_label || hoveredEmployee.duty_status || 'None') : ''"></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-secondary text-uppercase fw-semibold" style="font-size: 0.65rem;">Division</div>
+                        <div class="text-body text-truncate" x-text="hoveredEmployee ? (hoveredEmployee.division || 'None') : ''"></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-secondary text-uppercase fw-semibold" style="font-size: 0.65rem;">Department</div>
+                        <div class="text-body text-truncate" x-text="hoveredEmployee ? (hoveredEmployee.department || 'None') : ''"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -197,6 +271,50 @@
                 search: '',
                 // Collapsed by default: empty object means no node is open
                 openNodes: {},
+
+                init() {
+                    @if(!empty($departmentTree))
+                        @foreach($departmentTree as $div)
+                            @if(!empty($div['direct_employees']))
+                                this.openNodes['div-{{ $div['id'] }}'] = true;
+                            @endif
+                        @endforeach
+                    @endif
+                },
+
+                hoveredEmployee: null,
+                hoverCardPosition: { top: 0, left: 0 },
+                hoverCardTimeout: null,
+
+                showHoverCard(emp, event) {
+                    if (this.hoverCardTimeout) clearTimeout(this.hoverCardTimeout);
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const cardWidth = 340;
+                    const cardHeight = 220;
+                    let left = rect.left + window.scrollX;
+                    if (left + cardWidth > window.innerWidth - 16) {
+                        left = window.innerWidth - cardWidth - 16;
+                    }
+                    if (left < 16) left = 16;
+
+                    let top = rect.bottom + window.scrollY + 6;
+                    if (rect.bottom + cardHeight > window.innerHeight && rect.top - cardHeight > 0) {
+                        top = rect.top + window.scrollY - cardHeight - 6;
+                    }
+
+                    this.hoverCardPosition = { top, left };
+                    this.hoveredEmployee = emp;
+                },
+
+                hideHoverCard() {
+                    this.hoverCardTimeout = setTimeout(() => {
+                        this.hoveredEmployee = null;
+                    }, 200);
+                },
+
+                cancelHideHoverCard() {
+                    if (this.hoverCardTimeout) clearTimeout(this.hoverCardTimeout);
+                },
 
                 isNodeOpen(key) {
                     return !!this.openNodes[key];

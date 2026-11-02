@@ -21,12 +21,12 @@
     </label>
     @endif
 
-    <input @disabled($disabled) name="{{$name}}" type="{{$type}}" placeholder="{{$placeholder}}" id="{{$id}}" value="{{$value}}" {{ $attributes->merge(['class' => 'form-control']) }}/>
+    <input @disabled($disabled) name="{{$name}}" type="{{$type}}" placeholder="{{$placeholder}}" id="{{$id}}" value="{!! e($value, false) !!}" {{ $attributes->merge(['class' => 'form-control']) }}/>
 
 @else
 
     <div class="form-floating mb-3">
-        <input type="{{$type}}" name="{{$name}}" placeholder="{{$placeholder}}" id="{{$id}}" value="{{$value}}" @disabled($disabled) {{ $attributes->merge(['class' => 'form-control']) }} />
+        <input type="{{$type}}" name="{{$name}}" placeholder="{{$placeholder}}" id="{{$id}}" value="{!! e($value, false) !!}" @disabled($disabled) {{ $attributes->merge(['class' => 'form-control']) }} />
         
         <label for="{{$id}}">
             {{$label}}
