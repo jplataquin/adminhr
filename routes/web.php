@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ledger/account/{id}', [App\Http\Controllers\LedgerAccountController::class, 'display'])->name('ledger');
 
     //Ledger
+    Route::get('/ledgers/search', [App\Http\Controllers\LedgerController::class, 'search'])->name('ledgers.search');
     Route::get('/ledger/{id}/logs', [App\Http\Controllers\LedgerController::class, 'logs'])->name('ledger.logs');
     Route::get('/ledger/{id}', [App\Http\Controllers\LedgerController::class, 'display'])->name('ledger');
     Route::get('/ledger/print/{id}',[App\Http\Controllers\LedgerController::class, 'print'])->name('ledger');

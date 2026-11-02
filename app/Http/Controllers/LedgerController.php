@@ -392,6 +392,17 @@ class LedgerController extends Controller
     }
 
 
+    public function search(Request $request)
+    {
+        $ledger_types = LedgerType::orderBy('text', 'asc')->get();
+        $account_categories = \App\Models\AccountTypeCategory::orderBy('name', 'asc')->get();
+
+        return view('ledger/search', [
+            'ledger_types' => $ledger_types,
+            'account_categories' => $account_categories,
+        ]);
+    }
+
     public function _list(Request $request){
         
         $page               = (int) ($request->input('page') ?: 1);
@@ -401,11 +412,19 @@ class LedgerController extends Controller
         $order              = $request->input('order')          ?? 'DESC';
         $query              = $request->input('query')          ?? '';
         $status             = $request->input('status')         ?? '';
+        
+        $ledger_type_id     = $request->input('ledger_type_id') ?? '';
+        $type_category      = $request->input('type_category')  ?? '';
+        $employee_name      = $request->input('employee_name')  ?? '';
+        $no_employee        = filter_var($request->input('no_employee'), FILTER_VALIDATE_BOOLEAN);
+
         $result     = [];
 
-        $table = new Ledger();
+        $table = Ledger::with(['LedgerType', 'Account.Employee']);
 
-        $table = $table->where('ledger_account_id',$ledger_account_id)->with('LedgerType');
+        if ($ledger_account_id > 0) {
+            $table = $table->where('ledger_account_id', $ledger_account_id);
+        }
 
         if($query != ''){
             $table = $table->where('name','LIKE','%'.$query.'%');
@@ -413,6 +432,29 @@ class LedgerController extends Controller
 
         if($status != ''){
             $table = $table->where('status','=',$status);
+        }
+
+        if ($ledger_type_id != '') {
+            $table = $table->where('ledger_type_id', $ledger_type_id);
+        }
+
+        if ($type_category != '' || $employee_name != '' || $no_employee) {
+            $table = $table->whereHas('Account', function ($q) use ($type_category, $employee_name, $no_employee) {
+                if ($type_category != '') {
+                    $q->where('type_category', $type_category);
+                }
+                
+                if ($no_employee) {
+                    $q->where(function ($subQ) {
+                        $subQ->whereNull('employee_id')->orWhere('employee_id', 0);
+                    });
+                } else if ($employee_name != '') {
+                    $q->whereHas('Employee', function ($empQ) use ($employee_name) {
+                        $empQ->where('firstname', 'LIKE', '%' . $employee_name . '%')
+                             ->orWhere('lastname', 'LIKE', '%' . $employee_name . '%');
+                    });
+                }
+            });
         }
 
         if($limit > 0){

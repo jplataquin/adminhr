@@ -173,6 +173,12 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('ledgers.search') }}" 
+               @click="if ($event.ctrlKey || $event.metaKey) { return; } $event.preventDefault(); navigate('{{ route('ledgers.search') }}', null, null, $event)"
+               class="btn btn-sm btn-outline-info py-1 px-2" 
+               title="Advanced Ledger Search">
+                <i class="bi bi-search"></i>
+            </a>
             <a href="{{ url('/ledger/accounts') }}" 
                @click="if ($event.ctrlKey || $event.metaKey) { return; } $event.preventDefault(); navigate('{{ url('/ledger/accounts') }}', null, null, $event)"
                class="btn btn-sm btn-outline-primary py-1 px-2" 

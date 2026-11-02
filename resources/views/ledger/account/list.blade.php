@@ -5,7 +5,12 @@
             <h3 class="h5 mb-0">
                 Ledger Accounts
             </h3>
-            <button class="btn btn-primary btn-sm" id="createAccountBtn">Create Account</button>
+            <div class="d-flex gap-2">
+                <a href="{{ route('ledgers.search') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-search me-1"></i>Advanced Search
+                </a>
+                <button class="btn btn-primary btn-sm" id="createAccountBtn">Create Account</button>
+            </div>
         </div>
 
         <div class="card-body">
