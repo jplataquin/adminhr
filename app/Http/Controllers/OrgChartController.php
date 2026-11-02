@@ -215,18 +215,27 @@ class OrgChartController extends Controller
                 $q->orderBy('firstname')->orderBy('lastname');
             },
             'departments.employees.position',
-            'directEmployees' => function ($q) {
-                $q->orderBy('firstname')->orderBy('lastname');
-            },
-            'directEmployees.position',
         ])->orderBy('name')->get();
 
         $tree = [];
 
         foreach ($divisions as $division) {
-            // Direct employees of this division (no department assigned)
+            $validDeptIds = $division->departments->pluck('id')->filter()->toArray();
+
+            // Direct employees belonging to this division where department is unassigned/null
+            $directEmployees = Employee::where('division_id', $division->id)
+                ->where(function ($q) use ($validDeptIds) {
+                    $q->whereNull('department_id')
+                      ->orWhere('department_id', 0)
+                      ->orWhereNotIn('department_id', $validDeptIds);
+                })
+                ->with(['position', 'division'])
+                ->orderBy('firstname')
+                ->orderBy('lastname')
+                ->get();
+
             $directEmpList = [];
-            foreach ($division->directEmployees as $emp) {
+            foreach ($directEmployees as $emp) {
                 $directEmpList[] = $this->formatEmployeeNode($emp, $division->name, 'None');
             }
 
@@ -263,8 +272,11 @@ class OrgChartController extends Controller
         }
 
         // Only employees who have NO division assigned at all
-        $unassigned = Employee::where(function ($q) {
-            $q->whereNull('division_id')->orWhere('division_id', 0);
+        $validDivIds = $divisions->pluck('id')->filter()->toArray();
+        $unassigned = Employee::where(function ($q) use ($validDivIds) {
+            $q->whereNull('division_id')
+              ->orWhere('division_id', 0)
+              ->orWhereNotIn('division_id', $validDivIds);
         })->with(['position', 'division', 'department'])->orderBy('firstname')->get();
 
         if ($unassigned->isNotEmpty()) {

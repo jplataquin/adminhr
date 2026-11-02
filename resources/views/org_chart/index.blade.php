@@ -272,6 +272,16 @@
                 // Collapsed by default: empty object means no node is open
                 openNodes: {},
 
+                init() {
+                    @if(!empty($departmentTree))
+                        @foreach($departmentTree as $div)
+                            @if(!empty($div['direct_employees']))
+                                this.openNodes['div-{{ $div['id'] }}'] = true;
+                            @endif
+                        @endforeach
+                    @endif
+                },
+
                 hoveredEmployee: null,
                 hoverCardPosition: { top: 0, left: 0 },
                 hoverCardTimeout: null,

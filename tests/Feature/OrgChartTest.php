@@ -409,6 +409,12 @@ it('places employees without department directly under their division node', fun
     $response->assertSee('Rachel Green');
     $response->assertSee('Monica Geller');
     $response->assertSee('1 direct');
+
+    // Direct employee under division appears before department employees
+    $content = $response->getContent();
+    $posRachel = strpos($content, 'Rachel Green');
+    $posMonica = strpos($content, 'Monica Geller');
+    expect($posRachel)->toBeLessThan($posMonica);
 });
 
 it('renders floating employee card markup and hover handlers on employee names', function () {

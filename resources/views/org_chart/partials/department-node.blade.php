@@ -8,7 +8,7 @@
 @endphp
 
 <li class="org-tree-item" data-division-id="{{ $division['id'] }}" data-search-text="{{ strtolower($division['name'] . ' ' . $division['code']) }}" style="list-style-type: none;">
-    <!-- Level 1: Division -->
+    <!-- Level 1: Division Node -->
     <div class="org-node-container d-inline-flex align-items-center">
         @if($hasChildren)
             <button type="button"
@@ -46,9 +46,16 @@
         </div>
     </div>
 
-    <!-- Level 2: Children (Departments + Direct Employees with no department) -->
+    <!-- Children under the Division Node: Direct Employees first, then Departments -->
     @if($hasChildren)
         <ul class="org-tree-children ps-4 list-unstyled" x-show="isNodeOpen('{{ $divKey }}')" x-collapse.duration.200ms style="list-style-type: none;">
+            {{-- Direct Employees without Department (Placed immediately under the division node) --}}
+            @if($hasDirectEmployees)
+                @foreach($division['direct_employees'] as $emp)
+                    @include('org_chart.partials.employee-leaf-node', ['emp' => $emp])
+                @endforeach
+            @endif
+
             {{-- Departments List --}}
             @foreach($division['departments'] as $dept)
                 @php
@@ -97,13 +104,6 @@
                     @endif
                 </li>
             @endforeach
-
-            {{-- Direct Employees without Department (Direct Children of Division) --}}
-            @if($hasDirectEmployees)
-                @foreach($division['direct_employees'] as $emp)
-                    @include('org_chart.partials.employee-leaf-node', ['emp' => $emp])
-                @endforeach
-            @endif
         </ul>
     @endif
 </li>
