@@ -60,6 +60,7 @@ it('can view bulk ledger entries list page', function () {
     $response->assertOk();
     $response->assertSee('Bulk Ledger Entries');
     $response->assertSee('Create Bulk Entry');
+    $response->assertDontSee("from '/adarna.js'", false);
 });
 
 it('can view create bulk ledger entry page with available accounts', function () {
@@ -68,6 +69,7 @@ it('can view create bulk ledger entry page with available accounts', function ()
     $response->assertSee('Create Bulk Ledger Entry');
     $response->assertSee('Account Alpha');
     $response->assertSee('Account Beta');
+    $response->assertDontSee("from '/adarna.js'", false);
 });
 
 it('validates required fields when creating a bulk ledger entry via API', function () {

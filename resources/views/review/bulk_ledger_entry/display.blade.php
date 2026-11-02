@@ -156,8 +156,6 @@
     </div>
 
     <script type="module">
-        import {$_POST, $ui, $url} from '/adarna.js';
-
         const recordId = {{ $bulk_ledger_entry->id }};
 
         controls.onApproveClick = () => {

@@ -59,8 +59,6 @@
     </div>
 
     <script type="module">
-        import {$_POST, $ui, $url} from '/adarna.js';
-
         const accountsData = @json($accounts);
         const entriesBody = document.getElementById('entries-body');
         const addRowBtn = document.getElementById('add-row-btn');

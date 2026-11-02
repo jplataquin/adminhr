@@ -55,8 +55,6 @@
     </div>
 
     <script type="module">
-        import {$_GET, $el, $url} from '/adarna.js';
-
         let currentPage = 1;
         const limit = 10;
         let totalCount = 0;
