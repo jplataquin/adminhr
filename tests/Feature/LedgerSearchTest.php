@@ -48,9 +48,11 @@ it('loads the advanced ledger search page successfully', function () {
     $response->assertOk();
     $response->assertSee('Advanced Ledger Search');
     $response->assertSee('Records with no linked Employee');
+    $response->assertSee('Records with no Ledger Type');
+    $response->assertSee('No Ledger Type (Unassigned)');
 });
 
-it('filters ledgers by ledger type', function () {
+it('filters ledgers by ledger type and records with no type value', function () {
     $type1 = LedgerType::create(['text' => 'Type Alpha', 'prototype' => 'Accounts Receivable']);
     $type2 = LedgerType::create(['text' => 'Type Beta', 'prototype' => 'Accounts Payable']);
 
@@ -82,12 +84,37 @@ it('filters ledgers by ledger type', function () {
     $ledger2->created_by = $this->user->id;
     $ledger2->save();
 
-    $response = $this->actingAs($this->user)->getJson('/api/ledgers?ledger_type_id=' . $type1->id);
+    $ledgerNoType = new Ledger();
+    $ledgerNoType->ledger_account_id = $account->id;
+    $ledgerNoType->ledger_type_id = null;
+    $ledgerNoType->name = 'Ledger Without Type';
+    $ledgerNoType->description = 'Desc 3';
+    $ledgerNoType->template = 'Tpl 3';
+    $ledgerNoType->unit = 'pcs';
+    $ledgerNoType->status = 'APRV';
+    $ledgerNoType->created_by = $this->user->id;
+    $ledgerNoType->save();
 
+    // Filter by specific type
+    $response = $this->actingAs($this->user)->getJson('/api/ledgers?ledger_type_id=' . $type1->id);
     $response->assertOk();
     $rows = $response->json('data.rows');
     expect(count($rows))->toBe(1);
     expect($rows[0]['name'])->toBe('Ledger One');
+
+    // Filter by no ledger type via no_ledger_type=1
+    $responseNoType1 = $this->actingAs($this->user)->getJson('/api/ledgers?no_ledger_type=1');
+    $responseNoType1->assertOk();
+    $rowsNoType1 = $responseNoType1->json('data.rows');
+    expect(count($rowsNoType1))->toBe(1);
+    expect($rowsNoType1[0]['name'])->toBe('Ledger Without Type');
+
+    // Filter by no ledger type via ledger_type_id=none
+    $responseNoType2 = $this->actingAs($this->user)->getJson('/api/ledgers?ledger_type_id=none');
+    $responseNoType2->assertOk();
+    $rowsNoType2 = $responseNoType2->json('data.rows');
+    expect(count($rowsNoType2))->toBe(1);
+    expect($rowsNoType2[0]['name'])->toBe('Ledger Without Type');
 });
 
 it('filters ledgers by account category type', function () {

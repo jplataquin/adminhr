@@ -414,6 +414,7 @@ class LedgerController extends Controller
         $status             = $request->input('status')         ?? '';
         
         $ledger_type_id     = $request->input('ledger_type_id') ?? '';
+        $no_ledger_type     = filter_var($request->input('no_ledger_type'), FILTER_VALIDATE_BOOLEAN) || $ledger_type_id === 'none' || $ledger_type_id === 'no_type';
         $type_category      = $request->input('type_category')  ?? '';
         $employee_name      = $request->input('employee_name')  ?? '';
         $no_employee        = filter_var($request->input('no_employee'), FILTER_VALIDATE_BOOLEAN);
@@ -434,7 +435,11 @@ class LedgerController extends Controller
             $table = $table->where('status','=',$status);
         }
 
-        if ($ledger_type_id != '') {
+        if ($no_ledger_type) {
+            $table = $table->where(function ($q) {
+                $q->whereNull('ledger_type_id')->orWhere('ledger_type_id', 0);
+            });
+        } elseif ($ledger_type_id !== '') {
             $table = $table->where('ledger_type_id', $ledger_type_id);
         }
 

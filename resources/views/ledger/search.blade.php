@@ -27,6 +27,7 @@
                             <label for="filter_ledger_type" class="form-label small fw-bold">Ledger Type</label>
                             <select class="form-select form-select-sm" id="filter_ledger_type">
                                 <option value="">All Ledger Types</option>
+                                <option value="none">-- No Ledger Type (Unassigned) --</option>
                                 @foreach($ledger_types as $type)
                                     <option value="{{ $type->id }}">{{ $type->text }}</option>
                                 @endforeach
@@ -45,17 +46,26 @@
                         </div>
 
                         <!-- Employee Name Filter -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="filter_employee_name" class="form-label small fw-bold">Employee Name</label>
                             <input type="text" class="form-control form-control-sm" id="filter_employee_name" placeholder="Search by employee name...">
                         </div>
 
-                        <!-- No Linked Employee Switch -->
-                        <div class="col-md-6 d-flex align-items-end">
-                            <div class="form-check form-switch mb-2">
+                        <!-- Switches: No Linked Employee & No Ledger Type -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch mb-1">
                                 <input class="form-check-input" type="checkbox" role="switch" id="filter_no_employee">
                                 <label class="form-check-label small fw-bold" for="filter_no_employee">
                                     Records with no linked Employee
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" role="switch" id="filter_no_ledger_type">
+                                <label class="form-check-label small fw-bold" for="filter_no_ledger_type">
+                                    Records with no Ledger Type
                                 </label>
                             </div>
                         </div>
@@ -100,6 +110,7 @@
         const searchForm = document.getElementById('searchForm');
         const filterQuery = document.getElementById('filter_query');
         const filterLedgerType = document.getElementById('filter_ledger_type');
+        const filterNoLedgerType = document.getElementById('filter_no_ledger_type');
         const filterTypeCategory = document.getElementById('filter_type_category');
         const filterEmployeeName = document.getElementById('filter_employee_name');
         const filterNoEmployee = document.getElementById('filter_no_employee');
@@ -115,6 +126,25 @@
                 filterEmployeeName.disabled = true;
             } else {
                 filterEmployeeName.disabled = false;
+            }
+        });
+
+        // Toggle ledger type select based on no-ledger-type switch
+        filterNoLedgerType.addEventListener('change', () => {
+            if (filterNoLedgerType.checked) {
+                filterLedgerType.value = 'none';
+                filterLedgerType.disabled = true;
+            } else {
+                filterLedgerType.value = '';
+                filterLedgerType.disabled = false;
+            }
+        });
+
+        filterLedgerType.addEventListener('change', () => {
+            if (filterLedgerType.value === 'none') {
+                filterNoLedgerType.checked = true;
+            } else {
+                filterNoLedgerType.checked = false;
             }
         });
 
@@ -152,6 +182,8 @@
                                 t.h5({class: "h6 mb-0 text-truncate text-white fw-bold"}, item.name);
                                 if (item.ledger_type && item.ledger_type.text) {
                                     t.span({class: 'badge bg-primary-subtle text-primary border border-primary-subtle'}, item.ledger_type.text);
+                                } else {
+                                    t.span({class: 'badge bg-secondary-subtle text-secondary border border-secondary-subtle'}, 'No Type');
                                 }
                                 t.span({class: 'badge ' + (item.status === 'APRV' ? 'bg-success' : 'bg-warning text-dark')}, item.status);
                             });
@@ -206,7 +238,8 @@
                 order_by: orderBy,
                 limit: 15,
                 query: filterQuery.value.trim(),
-                ledger_type_id: filterLedgerType.value,
+                ledger_type_id: filterNoLedgerType.checked ? 'none' : filterLedgerType.value,
+                no_ledger_type: (filterNoLedgerType.checked || filterLedgerType.value === 'none') ? 1 : 0,
                 type_category: filterTypeCategory.value,
                 employee_name: filterEmployeeName.value.trim(),
                 no_employee: filterNoEmployee.checked ? 1 : 0
@@ -252,6 +285,9 @@
         resetBtn.onclick = () => {
             searchForm.reset();
             filterEmployeeName.disabled = false;
+            filterLedgerType.disabled = false;
+            filterNoLedgerType.checked = false;
+            filterNoEmployee.checked = false;
             reinitalize();
             showData();
         };
