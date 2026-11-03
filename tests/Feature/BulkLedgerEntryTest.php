@@ -69,6 +69,11 @@ it('can view create bulk ledger entry page with available accounts', function ()
     $response->assertSee('Create Bulk Ledger Entry');
     $response->assertSee('Account Alpha');
     $response->assertSee('Account Beta');
+    $response->assertSee('bulkLedgerForm');
+    $response->assertSee('Add Account Ledger');
+    $response->assertSee('Add Ledger');
+    $response->assertSee('Add Entry');
+    $response->assertDontSee('<table', false);
     $response->assertDontSee("from '/adarna.js'", false);
 });
 
