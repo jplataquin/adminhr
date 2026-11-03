@@ -3,7 +3,7 @@
         <!-- Page Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
             <div>
-                <h3 class="h4 fw-bold text-dark mb-1">
+                <h3 class="h4 fw-bold mb-1">
                     <i class="bi bi-collection me-2 text-primary"></i>Create Bulk Ledger Entry
                 </h3>
                 <p class="text-muted small mb-0">Organize and batch-submit multiple ledger entries nested hierarchically by Account and Ledger.</p>
@@ -16,7 +16,7 @@
         <!-- Batch Description Card -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
-                <label for="bulk_description" class="form-label fw-semibold text-dark">
+                <label for="bulk_description" class="form-label fw-semibold">
                     <i class="bi bi-chat-left-text me-1 text-secondary"></i> Batch Description / Notes
                 </label>
                 <textarea id="bulk_description" x-model="description" class="form-control" rows="2" placeholder="Describe the purpose of this bulk batch (e.g., Monthly Department Allowances, Vendor Disbursements)..."></textarea>
@@ -26,7 +26,7 @@
         <!-- Account Ledgers Section Header -->
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h5 class="fw-bold mb-0 text-dark">Account Ledgers</h5>
+                <h5 class="fw-bold mb-0">Account Ledgers</h5>
                 <small class="text-muted">Structure entries under Account Ledgers, then Ledgers, then individual Entry items.</small>
             </div>
             <button type="button" @click="addAccount()" class="btn btn-primary btn-sm px-3 shadow-sm">
@@ -67,7 +67,7 @@
                     </div>
 
                     <!-- Account Card Body -->
-                    <div class="card-body p-4 bg-white">
+                    <div class="card-body p-4">
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <span class="fw-semibold text-secondary small text-uppercase tracking-wider">
                                 <i class="bi bi-journals me-1"></i> Ledgers under this Account
@@ -81,10 +81,10 @@
                         <div class="d-flex flex-column gap-3">
                             <template x-for="(ledger, ledgerIndex) in acc.ledgers" :key="ledger.uid">
                                 <!-- Single Ledger Card -->
-                                <div class="card border border-2 border-light-subtle rounded-3 bg-light bg-opacity-50">
-                                    <div class="card-header bg-white border-bottom border-light-subtle py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="card border border-2 border-light-subtle rounded-3 bg-body-tertiary">
+                                    <div class="card-header bg-body border-bottom border-light-subtle py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
                                         <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width: 280px; max-width: 500px;">
-                                            <span class="badge bg-secondary-subtle text-dark border px-2 py-1">
+                                            <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">
                                                 <i class="bi bi-book me-1"></i> Ledger
                                             </span>
                                             <div class="flex-grow-1">
@@ -112,7 +112,7 @@
                                         <div class="d-flex flex-column gap-3 mb-3">
                                             <template x-for="(entry, entryIndex) in ledger.entries" :key="entry.uid">
                                                 <!-- Single Entry Div -->
-                                                <div class="card border shadow-xs bg-white rounded-3 p-3">
+                                                <div class="card border shadow-xs bg-body rounded-3 p-3">
                                                     <div class="row g-3 align-items-end">
                                                         <div class="col-md-2 col-sm-6">
                                                             <label class="form-label form-label-sm small fw-semibold text-secondary mb-1">Type *</label>
@@ -153,7 +153,7 @@
 
                                                     <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
                                                         <span class="small text-muted">
-                                                            Item Subtotal: <strong class="text-dark" x-text="formatCurrency((entry.quantity || 0) * (entry.unit_amount || 0))"></strong>
+                                                            Item Subtotal: <strong class="text-body" x-text="formatCurrency((entry.quantity || 0) * (entry.unit_amount || 0))"></strong>
                                                         </span>
                                                         <button type="button" @click="removeEntry(ledger, entryIndex)" class="btn btn-link text-danger p-0 text-decoration-none small">
                                                             <i class="bi bi-trash me-1"></i> Remove Entry
@@ -163,7 +163,7 @@
                                             </template>
 
                                             <!-- Empty state for Entries -->
-                                            <div x-show="ledger.entries.length === 0" class="text-center py-3 text-muted small bg-white rounded border" style="border-style: dashed !important;">
+                                            <div x-show="ledger.entries.length === 0" class="text-center py-3 text-muted small bg-body rounded border" style="border-style: dashed !important;">
                                                 <i class="bi bi-pencil-square me-1"></i> No entries added yet to this ledger.
                                             </div>
                                         </div>
@@ -176,7 +176,7 @@
                             </template>
 
                             <!-- Empty state for Ledgers -->
-                            <div x-show="acc.ledgers.length === 0" class="text-center py-4 text-muted small bg-white rounded border" style="border-style: dashed !important;">
+                            <div x-show="acc.ledgers.length === 0" class="text-center py-4 text-muted small bg-body rounded border" style="border-style: dashed !important;">
                                 <i class="bi bi-journal-x fs-5 d-block mb-1 text-secondary"></i>
                                 No ledgers added under this account yet. Click "Add Ledger" above to start.
                             </div>
@@ -188,7 +188,7 @@
             <!-- Empty state for Accounts -->
             <div x-show="accounts.length === 0" class="card border-0 shadow-sm p-5 text-center text-muted">
                 <i class="bi bi-wallet2 fs-2 text-secondary mb-2"></i>
-                <h6 class="fw-bold text-dark">No Account Ledgers Added</h6>
+                <h6 class="fw-bold">No Account Ledgers Added</h6>
                 <p class="small mb-3">Begin by adding an account ledger to structure your entries.</p>
                 <div>
                     <button type="button" @click="addAccount()" class="btn btn-primary btn-sm px-3">
