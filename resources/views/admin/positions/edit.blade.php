@@ -43,7 +43,7 @@
                                     <select class="form-select" id="division_id" name="division_id" required autofocus>
                                         <option value="">-- Select Division --</option>
                                         @foreach ($divisions as $division)
-                                            <option value="{{ $division->id }}" {{ old('division_id', $position->department->division_id) == $division->id ? 'selected' : '' }}>
+                                            <option value="{{ $division->id }}" {{ old('division_id', $position->department?->division_id) == $division->id ? 'selected' : '' }}>
                                                 {{ $division->name }}
                                             </option>
                                         @endforeach

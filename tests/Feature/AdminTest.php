@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Division;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -89,4 +92,57 @@ class AdminTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Master Data');
     }
+
+    public function test_admin_can_access_positions_index_with_deleted_or_null_department(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $position = Position::first();
+        if ($position && $position->department) {
+            $position->department->delete();
+        }
+
+        $response = $this->actingAs($admin)->get('/admin/master-data/positions');
+
+        $response->assertStatus(200);
+        $response->assertSee('Positions');
+        if ($position) {
+            $response->assertSee($position->name);
+        }
+    }
+
+    public function test_admin_can_access_positions_edit_with_deleted_department(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $position = Position::first();
+        if ($position && $position->department) {
+            $position->department->delete();
+        }
+
+        $response = $this->actingAs($admin)->get("/admin/master-data/positions/{$position->id}/edit");
+
+        $response->assertStatus(200);
+        $response->assertSee('Edit Position');
+        $response->assertSee($position->name);
+    }
+
+    public function test_admin_can_access_departments_index_with_deleted_division(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $department = Department::first();
+        if ($department && $department->division) {
+            $department->division->delete();
+        }
+
+        $response = $this->actingAs($admin)->get('/admin/master-data/departments');
+
+        $response->assertStatus(200);
+        $response->assertSee('Departments');
+        if ($department) {
+            $response->assertSee($department->name);
+        }
+    }
 }
+

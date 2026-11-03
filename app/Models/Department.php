@@ -15,7 +15,7 @@ class Department extends Model
 
     public function division()
     {
-        return $this->belongsTo(Division::class, 'division_id');
+        return $this->belongsTo(Division::class, 'division_id')->withTrashed();
     }
 
     public function positions()

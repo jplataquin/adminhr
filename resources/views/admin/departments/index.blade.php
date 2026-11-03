@@ -49,8 +49,8 @@
                                     <tr>
                                         <td class="px-4 text-white-50">{{ $department->id }}</td>
                                         <td>
-                                            <span class="badge bg-success font-monospace">{{ $department->division->code }}</span>
-                                            <span class="small text-white-50 ms-1 d-none d-md-inline">{{ $department->division->name }}</span>
+                                            <span class="badge bg-success font-monospace">{{ $department->division?->code ?? ' - ' }}</span>
+                                            <span class="small text-white-50 ms-1 d-none d-md-inline">{{ $department->division?->name ?? ' - ' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-info font-monospace">{{ $department->code }}</span>
