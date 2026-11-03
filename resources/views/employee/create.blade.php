@@ -65,6 +65,7 @@
                     </div>
                     <div class="col-md-6">
                         <x-select-input label="Department" id="department_id" dependon="#division_id">
+                            <option value=""> - </option>
                             @foreach($employee->department_options_grouped() as $group=>$options)
                                 @foreach($options as $val=>$text)
                                     <option group="{{$group}}" value="{{$val}}">{{$text}}</option>

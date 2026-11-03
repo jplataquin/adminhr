@@ -1,7 +1,5 @@
 <?php
 
-uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Division;
@@ -42,6 +40,7 @@ function createTestEmployee(User $user, array $attributes = []) {
     $employee->employment_start_date = $attributes['employment_start_date'] ?? '2020-01-01';
     $employee->created_by = $user->id;
     $employee->photo = $attributes['photo'] ?? 'test_photo.jpg';
+    Storage::disk('public')->put('employee/photos/' . $employee->photo, 'fake photo');
     
     foreach ($attributes as $key => $val) {
         $employee->$key = $val;
@@ -334,4 +333,168 @@ it('renders empty state in ledgers tab when employee has no ledgers', function (
     $response->assertSee('No ledgers found for this employee.');
     $response->assertSee('id="employee-ledgers-empty"', false);
 });
+
+it('can create an employee with null department', function () {
+    $photoName = 'temp_null_dept.jpg';
+    Storage::disk('local')->put('temp_uploads/' . $photoName, 'dummy image content');
+
+    $division = Division::first();
+    $position = Position::first();
+
+    $response = $this->actingAs($this->user)->postJson('/api/employee/create', [
+        'photo' => $photoName,
+        'prefix' => 'Mr.',
+        'birthdate' => '1995-05-15',
+        'firstname' => 'NullDept',
+        'lastname' => 'Test',
+        'gender' => 'M',
+        'marital_status' => 'SING',
+        'current_address' => '123 Main St',
+        'permanent_address' => '123 Main St',
+        'educational_attainment' => 'BD',
+        'position_id' => $position->id,
+        'division_id' => $division->id,
+        'department_id' => null,
+        'employment_status' => 'REGU',
+        'duty_status' => 'ONDU',
+        'employment_start_date' => '2023-01-01',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJson(['status' => 1]);
+
+    $this->assertDatabaseHas('employees', [
+        'firstname' => 'NullDept',
+        'lastname' => 'Test',
+        'department_id' => null,
+    ]);
+});
+
+it('can create an employee with empty string department', function () {
+    $photoName = 'temp_empty_dept.jpg';
+    Storage::disk('local')->put('temp_uploads/' . $photoName, 'dummy image content');
+
+    $division = Division::first();
+    $position = Position::first();
+
+    $response = $this->actingAs($this->user)->postJson('/api/employee/create', [
+        'photo' => $photoName,
+        'prefix' => 'Ms.',
+        'birthdate' => '1995-05-15',
+        'firstname' => 'EmptyDept',
+        'lastname' => 'Test',
+        'gender' => 'F',
+        'marital_status' => 'SING',
+        'current_address' => '123 Main St',
+        'permanent_address' => '123 Main St',
+        'educational_attainment' => 'BD',
+        'position_id' => $position->id,
+        'division_id' => $division->id,
+        'department_id' => '',
+        'employment_status' => 'REGU',
+        'duty_status' => 'ONDU',
+        'employment_start_date' => '2023-01-01',
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJson(['status' => 1]);
+
+    $this->assertDatabaseHas('employees', [
+        'firstname' => 'EmptyDept',
+        'lastname' => 'Test',
+        'department_id' => null,
+    ]);
+});
+
+it('can update an employee to clear department to null', function () {
+    $department = Department::first();
+    $employee = createTestEmployee($this->user, [
+        'department_id' => $department->id,
+    ]);
+
+    expect($employee->department_id)->toBe($department->id);
+
+    $response = $this->actingAs($this->user)->postJson('/api/employee/update', [
+        'id' => $employee->id,
+        'photo' => $employee->photo,
+        'prefix' => $employee->prefix,
+        'birthdate' => $employee->birthdate,
+        'firstname' => $employee->firstname,
+        'lastname' => $employee->lastname,
+        'gender' => $employee->gender,
+        'marital_status' => $employee->marital_status,
+        'current_address' => $employee->current_address,
+        'permanent_address' => $employee->permanent_address,
+        'educational_attainment' => $employee->educational_attainment,
+        'position_id' => $employee->position_id,
+        'division_id' => $employee->division_id,
+        'department_id' => null,
+        'employment_status' => $employee->employment_status,
+        'duty_status' => $employee->duty_status,
+        'employment_start_date' => $employee->employment_start_date,
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJson(['status' => 1]);
+
+    $employee->refresh();
+    expect($employee->department_id)->toBeNull();
+});
+
+it('can update an employee to clear department with empty string', function () {
+    $department = Department::first();
+    $employee = createTestEmployee($this->user, [
+        'department_id' => $department->id,
+    ]);
+
+    expect($employee->department_id)->toBe($department->id);
+
+    $response = $this->actingAs($this->user)->postJson('/api/employee/update', [
+        'id' => $employee->id,
+        'photo' => $employee->photo,
+        'prefix' => $employee->prefix,
+        'birthdate' => $employee->birthdate,
+        'firstname' => $employee->firstname,
+        'lastname' => $employee->lastname,
+        'gender' => $employee->gender,
+        'marital_status' => $employee->marital_status,
+        'current_address' => $employee->current_address,
+        'permanent_address' => $employee->permanent_address,
+        'educational_attainment' => $employee->educational_attainment,
+        'position_id' => $employee->position_id,
+        'division_id' => $employee->division_id,
+        'department_id' => '',
+        'employment_status' => $employee->employment_status,
+        'duty_status' => $employee->duty_status,
+        'employment_start_date' => $employee->employment_start_date,
+    ]);
+
+    $response->assertStatus(200);
+    $response->assertJson(['status' => 1]);
+
+    $employee->refresh();
+    expect($employee->department_id)->toBeNull();
+});
+
+it('renders department dropdown with empty option on employee create page', function () {
+    $response = $this->actingAs($this->user)->get('/employee/create');
+    $response->assertOk();
+
+    // Verify select input for department exists and contains the empty option
+    $response->assertSee('id="department_id"', false);
+    $response->assertSee('<option value=""> - </option>', false);
+});
+
+it('renders department dropdown with empty option selected when employee has no department', function () {
+    $employee = createTestEmployee($this->user, [
+        'department_id' => null,
+    ]);
+
+    $response = $this->actingAs($this->user)->get("/employee/{$employee->id}");
+    $response->assertOk();
+
+    // Verify select input has empty option marked selected
+    $response->assertSee('<option value=""  selected > - </option>', false);
+});
+
 

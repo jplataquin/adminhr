@@ -300,7 +300,7 @@
                                             getSelectedLabel() {
                                                 const options = getDepartmentOptions(emp.division_id);
                                                 const selected = options.find(dept => (dept.value || '') == (emp.department_id || ''));
-                                                return selected ? selected.label : '- Select -';
+                                                return selected ? selected.label : ' - ';
                                             }
                                         }" 
                                         :style="open ? 'z-index: 1060 !important;' : ''"
@@ -472,16 +472,20 @@
                 },
 
                 getDepartmentOptions(divisionId) {
-                    
+                    const defaultOption = { value: '', label: ' - ' };
                     if (!divisionId || !this.options.department_grouped[divisionId]) {
-                        return [];
+                        return [defaultOption];
                     }
                     const group = this.options.department_grouped[divisionId];
 
-                    return Object.entries(group).map(([key, val]) => ({
-                        value: val === ' - ' ? '' : key,
-                        label: val
-                    }));
+                    const list = Object.entries(group)
+                        .filter(([key, val]) => val !== ' - ')
+                        .map(([key, val]) => ({
+                            value: key,
+                            label: val
+                        }));
+
+                    return [defaultOption, ...list];
                 },
 
                 async commitUpdates() {

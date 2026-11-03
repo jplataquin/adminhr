@@ -396,7 +396,7 @@ class EmployeeController extends Controller
         $employment_status              = $request->input('employment_status');
         $duty_status                    = $request->input('duty_status');
         $division_id                    = $request->input('division_id');
-        $department_id                  = $request->input('department_id');
+        $department_id                  = $request->input('department_id') ?: null;
         $position_id                    = $request->input('position_id');
         $sss                            = $request->input('sss');
         $philhealth                     = $request->input('philhealth');
@@ -520,7 +520,7 @@ class EmployeeController extends Controller
         $employment_status              = $request->input('employment_status');
         $duty_status                    = $request->input('duty_status');
         $division_id                    = $request->input('division_id');
-        $department_id                  = $request->input('department_id');
+        $department_id                  = $request->input('department_id') ?: null;
         $position_id                    = $request->input('position_id');
         $sss                            = $request->input('sss');
         $philhealth                     = $request->input('philhealth');

@@ -7,8 +7,6 @@ use App\Models\Division;
 use App\Models\Department;
 use App\Models\Position;
 
-uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
     $this->user = User::factory()->create();
 });

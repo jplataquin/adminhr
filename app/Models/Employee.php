@@ -169,6 +169,11 @@ class Employee extends Model
         return $this->belongsTo(Department::class, 'department_id')->withTrashed();
     }
 
+    public function setDepartmentIdAttribute($value)
+    {
+        $this->attributes['department_id'] = !empty($value) ? $value : null;
+    }
+
     public function position()
     {
         return $this->belongsTo(Position::class, 'position_id')->withTrashed();
