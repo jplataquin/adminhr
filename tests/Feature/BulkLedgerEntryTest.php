@@ -239,12 +239,13 @@ it('renders bulk ledger entry display page', function () {
     $response->assertSee('id="reviewLinkBtn"', false);
     $response->assertDontSee('Review & Approve');
 
-    // Requirement 2: Printable nested divs style in A4
+    // Requirement 2: Printable nested divs style in A4 with entries table
     $response->assertSee('Print');
     $response->assertSee('ble-account-box');
     $response->assertSee('ble-ledger-box');
-    $response->assertSee('ble-entry-box');
-    $response->assertDontSee('<table', false);
+    $response->assertSee('ble-entries-table');
+    $response->assertSee('Particular');
+    $response->assertSee('Unit Amount');
     $response->assertSee('size: A4 portrait;', false);
 });
 
