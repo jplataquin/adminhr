@@ -128,7 +128,7 @@
                                 <!-- Single Ledger Card -->
                                 <div class="card border border-2 border-light-subtle rounded-3 bg-body-tertiary">
                                     <div class="card-header bg-body border-bottom border-light-subtle py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                                        <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width: 280px; max-width: 500px;">
+                                        <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width: 280px; max-width: 600px;">
                                             <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">
                                                 <i class="bi bi-book me-1"></i> Ledger
                                             </span>
@@ -140,9 +140,24 @@
                                                     </template>
                                                 </select>
                                             </div>
+                                            <!-- Current Total Balance Badge -->
+                                            <template x-if="ledger.ledger_id && getSelectedLedger(acc.account_id, ledger.ledger_id)">
+                                                <span class="badge bg-body border px-2 py-1 small text-nowrap d-inline-flex align-items-center gap-1 shadow-xs"
+                                                      :class="getLedgerBalance(acc, ledger) < 0 ? 'text-danger border-danger-subtle' : 'text-primary border-primary-subtle'"
+                                                      title="Current total balance of this ledger">
+                                                    <i class="bi bi-wallet2"></i>
+                                                    <span class="text-secondary fw-normal">Balance:</span>
+                                                    <strong x-text="formatCurrency(getLedgerBalance(acc, ledger))"></strong>
+                                                </span>
+                                            </template>
                                         </div>
 
                                         <div class="d-flex align-items-center gap-3">
+                                            <template x-if="ledger.ledger_id && getSelectedLedger(acc.account_id, ledger.ledger_id)">
+                                                <span class="small text-muted d-none d-md-inline border-end pe-3">
+                                                    Current Balance: <strong :class="getLedgerBalance(acc, ledger) < 0 ? 'text-danger' : 'text-primary'" x-text="formatCurrency(getLedgerBalance(acc, ledger))"></strong>
+                                                </span>
+                                            </template>
                                             <span class="small text-muted">
                                                 Ledger Subtotal: <strong class="text-success" x-text="formatCurrency(calculateLedgerSubtotal(ledger))"></strong>
                                             </span>
@@ -354,6 +369,17 @@
                     if (!accountId) return [];
                     const acc = this.accountsData.find(a => a.id === parseInt(accountId));
                     return (acc && acc.ledgers) ? acc.ledgers : [];
+                },
+
+                getSelectedLedger(accountId, ledgerId) {
+                    if (!accountId || !ledgerId) return null;
+                    const available = this.getAvailableLedgers(accountId);
+                    return available.find(l => l.id === parseInt(ledgerId)) || null;
+                },
+
+                getLedgerBalance(acc, ledger) {
+                    const found = this.getSelectedLedger(acc.account_id, ledger.ledger_id);
+                    return found ? (parseFloat(found.total_amount) || 0) : 0;
                 },
 
                 addLedger(acc) {

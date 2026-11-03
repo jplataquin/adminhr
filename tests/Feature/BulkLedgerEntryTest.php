@@ -1,7 +1,5 @@
 <?php
 
-uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 use App\Models\User;
 use App\Models\LedgerAccount;
 use App\Models\Ledger;
@@ -80,6 +78,39 @@ it('can view create bulk ledger entry page with available accounts', function ()
     $response->assertDontSee('text-dark');
     $response->assertDontSee('bg-white');
     $response->assertDontSee("from '/adarna.js'", false);
+});
+
+it('provides current total balance of ledgers to the create view', function () {
+    $entry1 = new LedgerEntry();
+    $entry1->ledger_id = $this->ledger1->id;
+    $entry1->type = 'CRED';
+    $entry1->tag = 'REGU';
+    $entry1->particular = 'Initial Credit';
+    $entry1->quantity = 1;
+    $entry1->unit_amount = 1500;
+    $entry1->date = '2026-11-01';
+    $entry1->status = 'APRV';
+    $entry1->created_by = $this->user->id;
+    $entry1->save();
+
+    $entry2 = new LedgerEntry();
+    $entry2->ledger_id = $this->ledger1->id;
+    $entry2->type = 'DEBI';
+    $entry2->tag = 'REGU';
+    $entry2->particular = 'Debit Part';
+    $entry2->quantity = 1;
+    $entry2->unit_amount = 300;
+    $entry2->date = '2026-11-02';
+    $entry2->status = 'APRV';
+    $entry2->created_by = $this->user->id;
+    $entry2->save();
+
+    $response = $this->actingAs($this->user)->get('/bulk-ledger-entry/create');
+    $response->assertOk();
+    $response->assertSee('Current Balance');
+    $response->assertSee('getLedgerBalance');
+    $response->assertSee('total_amount');
+    $response->assertSee('1200');
 });
 
 it('validates required fields when creating a bulk ledger entry via API', function () {

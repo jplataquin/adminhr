@@ -67,6 +67,21 @@ class BulkLedgerEntryController extends Controller
             $q->where('status', 'APRV')->with('LedgerType');
         }])->where('status', 'APRV')->orderBy('name', 'asc')->get();
 
+        $balances = DB::table('ledger_entries')
+            ->select('ledger_id', DB::raw("SUM(CASE WHEN type = 'CRED' THEN quantity * unit_amount ELSE -(quantity * unit_amount) END) as balance"))
+            ->where('status', 'APRV')
+            ->whereNull('deleted_at')
+            ->groupBy('ledger_id')
+            ->pluck('balance', 'ledger_id');
+
+        foreach ($accounts as $account) {
+            foreach ($account->Ledgers as $ledger) {
+                $bal = (float) ($balances[$ledger->id] ?? 0);
+                $ledger->total_amount = $bal;
+                $ledger->total_amount_formatted = number_format($bal, 2);
+            }
+        }
+
         return view('bulk_ledger_entry/create', [
             'ledger_entry' => $ledger_entry,
             'accounts'     => $accounts,
