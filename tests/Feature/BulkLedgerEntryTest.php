@@ -243,7 +243,8 @@ it('renders bulk ledger entry display page', function () {
     $response->assertSee('Print');
     $response->assertSee('ble-account-box');
     $response->assertSee('ble-ledger-box');
-    $response->assertSee('ble-entries-table');
+    $response->assertSee('ble-entry-box');
+    $response->assertDontSee('<table', false);
     $response->assertSee('size: A4 portrait;', false);
 });
 
