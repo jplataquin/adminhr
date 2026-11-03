@@ -233,6 +233,18 @@ it('renders bulk ledger entry display page', function () {
     $response->assertSee('Sample Display Particular');
     $response->assertSee('750.00');
     $response->assertSee('PEND');
+
+    // Requirement 1: Replace Review & Approve button with Copy Review Link button
+    $response->assertSee('Copy Review Link');
+    $response->assertSee('id="reviewLinkBtn"', false);
+    $response->assertDontSee('Review & Approve');
+
+    // Requirement 2: Printable nested divs style in A4
+    $response->assertSee('Print');
+    $response->assertSee('ble-account-box');
+    $response->assertSee('ble-ledger-box');
+    $response->assertSee('ble-entries-table');
+    $response->assertSee('size: A4 portrait;', false);
 });
 
 it('allows admin to approve a bulk ledger entry and activates all child entries to APRV status', function () {
