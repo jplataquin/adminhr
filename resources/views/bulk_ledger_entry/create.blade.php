@@ -45,13 +45,58 @@
                             <span class="badge bg-primary px-3 py-2 text-uppercase fs-7 shadow-xs">
                                 <i class="bi bi-wallet2 me-1"></i> Account Ledger
                             </span>
-                            <div class="flex-grow-1">
-                                <select class="form-select form-select-sm fw-semibold shadow-sm" x-model.number="acc.account_id" @change="onAccountChange(acc)">
-                                    <option value="">-- Select Account Ledger * --</option>
-                                    <template x-for="a in accountsData" :key="a.id">
-                                        <option :value="a.id" x-text="a.name" :selected="a.id === acc.account_id"></option>
-                                    </template>
-                                </select>
+                            <!-- Searchable Account Ledger Dropdown -->
+                            <div class="flex-grow-1 position-relative" @click.away="acc.searchOpen = false">
+                                <button type="button" 
+                                        class="form-select form-select-sm fw-semibold shadow-sm text-start text-truncate bg-body"
+                                        :class="!acc.account_id ? 'text-secondary' : ''"
+                                        @click="acc.searchOpen = !acc.searchOpen; if (acc.searchOpen) { $nextTick(() => $el.nextElementSibling.querySelector('input')?.focus()); }">
+                                    <span x-text="getSelectedAccountLabel(acc)"></span>
+                                </button>
+
+                                <div x-show="acc.searchOpen" 
+                                     x-transition
+                                     class="dropdown-menu show p-2 position-absolute shadow-lg w-100" 
+                                     style="z-index: 1050; max-height: 280px; left: 0; right: 0; top: 100%; display: none;">
+                                    
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text bg-body-tertiary border-end-0">
+                                            <i class="bi bi-search text-secondary"></i>
+                                        </span>
+                                        <input type="text" 
+                                               class="form-control form-control-sm border-start-0" 
+                                               placeholder="Search account or category..." 
+                                               x-model="acc.searchTerm"
+                                               @click.stop
+                                               @keydown.escape="acc.searchOpen = false">
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary btn-sm" 
+                                                x-show="(acc.searchTerm || '').length > 0" 
+                                                @click="acc.searchTerm = ''">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="list-group list-group-flush overflow-auto" style="max-height: 200px;">
+                                        <button type="button" 
+                                                class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small text-secondary fst-italic"
+                                                :class="!acc.account_id ? 'active text-primary fw-bold' : ''"
+                                                @click="selectAccount(acc, null)">
+                                            -- Select Account Ledger * --
+                                        </button>
+                                        <template x-for="a in getFilteredAccounts(acc)" :key="a.id">
+                                            <button type="button" 
+                                                    class="list-group-item list-group-item-action py-1 px-2 border-0 text-start text-truncate small"
+                                                    :class="acc.account_id === a.id ? 'active bg-primary text-white fw-bold' : ''"
+                                                    @click="selectAccount(acc, a)">
+                                                <span x-text="formatAccountLabel(a)"></span>
+                                            </button>
+                                        </template>
+                                        <div x-show="getFilteredAccounts(acc).length === 0" class="text-muted text-center py-2 small">
+                                            No matching accounts found
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -255,6 +300,8 @@
                     const acc = {
                         uid: this.generateUid(),
                         account_id: '',
+                        searchOpen: false,
+                        searchTerm: '',
                         ledgers: []
                     };
                     this.accounts.push(acc);
@@ -263,6 +310,34 @@
 
                 removeAccount(index) {
                     this.accounts.splice(index, 1);
+                },
+
+                formatAccountLabel(a) {
+                    if (!a) return '';
+                    const cat = a.type_category || a.category_type || 'Uncategorized';
+                    return `${a.name} [${cat}]`;
+                },
+
+                getSelectedAccountLabel(acc) {
+                    if (!acc.account_id) return '-- Select Account Ledger * --';
+                    const found = this.accountsData.find(a => a.id === acc.account_id);
+                    return found ? this.formatAccountLabel(found) : '-- Select Account Ledger * --';
+                },
+
+                getFilteredAccounts(acc) {
+                    const term = (acc.searchTerm || '').toLowerCase().trim();
+                    if (!term) return this.accountsData;
+                    return this.accountsData.filter(a => {
+                        const label = this.formatAccountLabel(a).toLowerCase();
+                        return label.includes(term);
+                    });
+                },
+
+                selectAccount(acc, accountObj) {
+                    acc.account_id = accountObj ? accountObj.id : '';
+                    acc.searchOpen = false;
+                    acc.searchTerm = '';
+                    this.onAccountChange(acc);
                 },
 
                 onAccountChange(acc) {

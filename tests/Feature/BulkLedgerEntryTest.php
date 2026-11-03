@@ -73,6 +73,9 @@ it('can view create bulk ledger entry page with available accounts', function ()
     $response->assertSee('Add Account Ledger');
     $response->assertSee('Add Ledger');
     $response->assertSee('Add Entry');
+    $response->assertSee('Search account or category...');
+    $response->assertSee('formatAccountLabel');
+    $response->assertSee('getFilteredAccounts');
     $response->assertDontSee('<table', false);
     $response->assertDontSee('text-dark');
     $response->assertDontSee('bg-white');
