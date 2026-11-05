@@ -14,9 +14,23 @@
         </div>
 
         <div class="card-body">
+            @php
+                $statusConfig = [
+                    'REGU' => ['slug' => 'regular', 'label' => 'Regular Employees', 'icon' => 'bi-person-check-fill', 'color' => 'success'],
+                    'PROB' => ['slug' => 'probationary', 'label' => 'Probationary Employees', 'icon' => 'bi-person-badge-fill', 'color' => 'warning'],
+                    'CONT' => ['slug' => 'contractual', 'label' => 'Contractual Employees', 'icon' => 'bi-file-earmark-person-fill', 'color' => 'info'],
+                    'RSGN' => ['slug' => 'resigned', 'label' => 'Resigned Employees', 'icon' => 'bi-box-arrow-right', 'color' => 'secondary'],
+                    'LAOF' => ['slug' => 'laid-off', 'label' => 'Laid Off Employees', 'icon' => 'bi-person-dash-fill', 'color' => 'danger'],
+                    'AWOL' => ['slug' => 'awol', 'label' => 'AWOL Employees', 'icon' => 'bi-person-x-fill', 'color' => 'danger'],
+                    'TRMN' => ['slug' => 'terminated', 'label' => 'Terminated Employees', 'icon' => 'bi-person-slash', 'color' => 'danger'],
+                    'RETR' => ['slug' => 'retired', 'label' => 'Retired Employees', 'icon' => 'bi-award-fill', 'color' => 'primary'],
+                    'DECE' => ['slug' => 'deceased', 'label' => 'Deceased Employees', 'icon' => 'bi-moon-fill', 'color' => 'dark'],
+                ];
+            @endphp
+
             <!-- Employee Summary Metric Cards -->
             <div class="row g-3 mb-4" id="employee-stats-cards">
-                <div class="col-12 col-sm-6 col-xl-3">
+                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
                     <div class="card h-100 border-0 shadow-sm cursor-pointer stat-card active-stat" id="card-total-employees" data-status="" role="button" title="Show all employees">
                         <div class="card-body p-3 d-flex align-items-center justify-content-between">
                             <div>
@@ -30,47 +44,29 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card h-100 border-0 shadow-sm cursor-pointer stat-card" id="card-regular-employees" data-status="REGU" role="button" title="Filter regular employees">
+                @foreach(App\Models\Employee::employment_status_options() as $key => $label)
+                @php
+                    $cfg = $statusConfig[$key] ?? [
+                        'slug' => strtolower($key),
+                        'label' => $label . ' Employees',
+                        'icon' => 'bi-person-fill',
+                        'color' => 'secondary'
+                    ];
+                @endphp
+                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                    <div class="card h-100 border-0 shadow-sm cursor-pointer stat-card" id="card-{{ $cfg['slug'] }}-employees" data-status="{{ $key }}" role="button" title="Filter {{ strtolower($cfg['label']) }}">
                         <div class="card-body p-3 d-flex align-items-center justify-content-between">
                             <div>
-                                <span class="text-secondary small text-uppercase fw-semibold d-block">Regular Employees</span>
-                                <h3 class="h4 fw-bold mb-0 mt-1" id="stat-regular-count">{{ number_format($stats['regular'] ?? 0) }}</h3>
+                                <span class="text-secondary small text-uppercase fw-semibold d-block">{{ $cfg['label'] }}</span>
+                                <h3 class="h4 fw-bold mb-0 mt-1 stat-count-val" data-status-key="{{ $key }}" data-slug="{{ $cfg['slug'] }}" id="stat-{{ $cfg['slug'] }}-count">{{ number_format($stats[$key] ?? 0) }}</h3>
                             </div>
-                            <div class="rounded-3 p-3 bg-success-subtle text-success fs-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                <i class="bi bi-person-check-fill"></i>
+                            <div class="rounded-3 p-3 bg-{{ $cfg['color'] }}-subtle text-{{ $cfg['color'] }} fs-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="bi {{ $cfg['icon'] }}"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card h-100 border-0 shadow-sm cursor-pointer stat-card" id="card-probationary-employees" data-status="PROB" role="button" title="Filter probationary employees">
-                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-secondary small text-uppercase fw-semibold d-block">Probationary Employees</span>
-                                <h3 class="h4 fw-bold mb-0 mt-1" id="stat-probationary-count">{{ number_format($stats['probationary'] ?? 0) }}</h3>
-                            </div>
-                            <div class="rounded-3 p-3 bg-warning-subtle text-warning fs-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                <i class="bi bi-person-badge-fill"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card h-100 border-0 shadow-sm cursor-pointer stat-card" id="card-contractual-employees" data-status="CONT" role="button" title="Filter contractual employees">
-                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-secondary small text-uppercase fw-semibold d-block">Contractual Employees</span>
-                                <h3 class="h4 fw-bold mb-0 mt-1" id="stat-contractual-count">{{ number_format($stats['contractual'] ?? 0) }}</h3>
-                            </div>
-                            <div class="rounded-3 p-3 bg-info-subtle text-info fs-4 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                <i class="bi bi-file-earmark-person-fill"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <div class="mb-4">
@@ -229,13 +225,14 @@
                 if(reply.data && reply.data.stats){
                     const s = reply.data.stats;
                     const elTotal = document.getElementById('stat-total-count');
-                    const elReg = document.getElementById('stat-regular-count');
-                    const elProb = document.getElementById('stat-probationary-count');
-                    const elCont = document.getElementById('stat-contractual-count');
                     if (elTotal) elTotal.textContent = Number(s.total || 0).toLocaleString();
-                    if (elReg) elReg.textContent = Number(s.regular || 0).toLocaleString();
-                    if (elProb) elProb.textContent = Number(s.probationary || 0).toLocaleString();
-                    if (elCont) elCont.textContent = Number(s.contractual || 0).toLocaleString();
+
+                    document.querySelectorAll('.stat-count-val').forEach(el => {
+                        const key = el.getAttribute('data-status-key');
+                        if (key && s[key] !== undefined) {
+                            el.textContent = Number(s[key] || 0).toLocaleString();
+                        }
+                    });
                 }
 
                 page++;

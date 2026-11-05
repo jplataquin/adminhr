@@ -58,20 +58,39 @@ class EmployeeController extends Controller
     }
 
 
+    private function get_stats(){
+        $counts = Employee::selectRaw('employment_status, count(*) as count')
+            ->groupBy('employment_status')
+            ->pluck('count', 'employment_status')
+            ->toArray();
+
+        $stats = [
+            'total' => Employee::count(),
+        ];
+
+        foreach (Employee::employment_status_options() as $key => $label) {
+            $stats[$key] = $counts[$key] ?? 0;
+        }
+
+        if (isset($counts['CNTR'])) {
+            $stats['CONT'] = ($stats['CONT'] ?? 0) + $counts['CNTR'];
+        }
+
+        // Retain legacy keys for backwards compatibility
+        $stats['regular'] = $stats['REGU'] ?? 0;
+        $stats['probationary'] = $stats['PROB'] ?? 0;
+        $stats['contractual'] = $stats['CONT'] ?? 0;
+
+        return $stats;
+    }
+
     public function list(){
 
         $employee = new Employee();
 
-        $stats = [
-            'total' => Employee::count(),
-            'regular' => Employee::where('employment_status', 'REGU')->count(),
-            'probationary' => Employee::where('employment_status', 'PROB')->count(),
-            'contractual' => Employee::whereIn('employment_status', ['CONT', 'CNTR'])->count(),
-        ];
-        
         return view('employee/list',[
             'employee' => $employee,
-            'stats' => $stats,
+            'stats' => $this->get_stats(),
         ]);
     }
 
@@ -127,12 +146,7 @@ class EmployeeController extends Controller
             'message'=>'',
             'data'=> [
                 'rows'=>$result,
-                'stats' => [
-                    'total' => Employee::count(),
-                    'regular' => Employee::where('employment_status', 'REGU')->count(),
-                    'probationary' => Employee::where('employment_status', 'PROB')->count(),
-                    'contractual' => Employee::whereIn('employment_status', ['CONT', 'CNTR'])->count(),
-                ]
+                'stats' => $this->get_stats()
             ]
         ]);
     }

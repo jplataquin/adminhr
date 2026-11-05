@@ -497,4 +497,35 @@ it('renders department dropdown with empty option selected when employee has no 
     $response->assertSee('<option value=""  selected > - </option>', false);
 });
 
+it('includes all employment status options in the employee index view and stats API', function () {
+    createTestEmployee($this->user, ['employment_status' => 'REGU']);
+    createTestEmployee($this->user, ['employment_status' => 'PROB']);
+    createTestEmployee($this->user, ['employment_status' => 'RSGN']);
+
+    $statuses = Employee::employment_status_options();
+
+    $response = $this->actingAs($this->user)->get('/employees');
+    $response->assertOk();
+
+    foreach ($statuses as $code => $label) {
+        $response->assertSee('data-status="' . $code . '"', false);
+        $response->assertSee($label, false);
+    }
+
+    $apiResponse = $this->actingAs($this->user)->getJson('/api/employees');
+    $apiResponse->assertOk();
+    $stats = $apiResponse->json('data.stats');
+
+    expect($stats)->toHaveKey('total');
+    foreach ($statuses as $code => $label) {
+        expect($stats)->toHaveKey($code);
+    }
+
+    expect($stats['REGU'])->toBe(1);
+    expect($stats['PROB'])->toBe(1);
+    expect($stats['RSGN'])->toBe(1);
+    expect($stats['DECE'])->toBe(0);
+});
+
+
 
