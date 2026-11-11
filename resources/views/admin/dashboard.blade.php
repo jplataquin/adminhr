@@ -52,6 +52,21 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3 text-info">
+                                <i class="bi bi-person-badge-fill fs-1"></i>
+                            </div>
+                            <h5 class="card-title mb-3">ID Template Generator</h5>
+                            <p class="card-text text-muted small">Manually create and preview employee ID cards with base64 export.</p>
+                            <a href="{{ route('admin.id-generator') }}" class="btn btn-primary w-100 mt-3">
+                                Open Generator
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
