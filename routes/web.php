@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
     //Bulk Ledger Entry
     Route::get('/bulk-ledger-entries', [App\Http\Controllers\BulkLedgerEntryController::class, 'list'])->name('bulk-ledger-entry');
     Route::get('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, 'create'])->name('bulk-ledger-entry');
+    Route::post('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, '_create']);
     Route::get('/bulk-ledger-entry/{id}', [App\Http\Controllers\BulkLedgerEntryController::class, 'display'])->name('bulk-ledger-entry');
 
 

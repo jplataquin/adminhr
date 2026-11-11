@@ -60,7 +60,7 @@ class BulkLedgerEntryController extends Controller
         ]);
     }
 
-    public function create()
+    public function get_create_data()
     {
         $ledger_entry = new LedgerEntry();
         $accounts = LedgerAccount::with(['Ledgers' => function ($q) {
@@ -82,10 +82,43 @@ class BulkLedgerEntryController extends Controller
             }
         }
 
-        return view('bulk_ledger_entry/create', [
+        return [
             'ledger_entry' => $ledger_entry,
             'accounts'     => $accounts,
-        ]);
+        ];
+    }
+
+    public function create(Request $request)
+    {
+        $data = $this->get_create_data();
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'status'  => 1,
+                'message' => '',
+                'data'    => [
+                    'accounts' => $data['accounts'],
+                ]
+            ]);
+        }
+
+        return view('bulk_ledger_entry/create', $data);
+    }
+
+    public function _create_form(Request $request)
+    {
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+            $data = $this->get_create_data();
+            return response()->json([
+                'status'  => 1,
+                'message' => '',
+                'data'    => [
+                    'accounts' => $data['accounts'],
+                ]
+            ]);
+        }
+
+        return redirect('/bulk-ledger-entry/create');
     }
 
     public function _create(Request $request)

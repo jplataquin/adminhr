@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Bulk Ledger Entry
     Route::get('/bulk-ledger-entries', [App\Http\Controllers\BulkLedgerEntryController::class, '_list']);
+    Route::get('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, '_create_form']);
     Route::post('/bulk-ledger-entry/create', [App\Http\Controllers\BulkLedgerEntryController::class, '_create']);
 
     /****** REVIEW *****/

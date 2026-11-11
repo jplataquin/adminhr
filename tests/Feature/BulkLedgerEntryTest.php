@@ -349,3 +349,45 @@ it('allows admin to reject a bulk ledger entry and sets all child entries to REJ
     // Total remains 0.0 because entries are rejected
     expect($this->ledger1->fresh()->getTotalAmount())->toBe(0.0);
 });
+
+it('handles GET requests to /api/bulk-ledger-entry/create properly for browser and json requests', function () {
+    // 1. Browser GET request (does not expect JSON) should redirect to /bulk-ledger-entry/create
+    $browserResponse = $this->actingAs($this->user)->get('/api/bulk-ledger-entry/create');
+    $browserResponse->assertRedirect('/bulk-ledger-entry/create');
+
+    // 2. API JSON GET request should return JSON with status 1 and accounts
+    $jsonResponse = $this->actingAs($this->user, 'sanctum')->getJson('/api/bulk-ledger-entry/create');
+    $jsonResponse->assertOk();
+    $jsonResponse->assertJsonPath('status', 1);
+    expect($jsonResponse->json('data.accounts'))->toBeArray();
+    expect(count($jsonResponse->json('data.accounts')))->toBeGreaterThanOrEqual(1);
+});
+
+it('allows submitting bulk ledger entry creation via web route as well', function () {
+    $payload = [
+        'description' => 'Web Route Batch Submission',
+        'entries' => [
+            [
+                'ledger_account_id' => $this->account1->id,
+                'ledger_id'         => $this->ledger1->id,
+                'type'              => 'CRED',
+                'tag'               => 'REGU',
+                'particular'        => 'Web Route Particular',
+                'quantity'          => 2,
+                'unit_amount'       => 150.00,
+                'date'              => '2026-11-03',
+            ]
+        ]
+    ];
+
+    $response = $this->actingAs($this->user)->postJson('/bulk-ledger-entry/create', $payload);
+    $response->assertOk();
+    $response->assertJsonPath('status', 1);
+
+    $createdBulkId = $response->json('data.id');
+    $bulk = BulkLedgerEntry::find($createdBulkId);
+    expect($bulk)->not->toBeNull();
+    expect($bulk->description)->toBe('Web Route Batch Submission');
+    expect($bulk->Entries)->toHaveCount(1);
+});
+
