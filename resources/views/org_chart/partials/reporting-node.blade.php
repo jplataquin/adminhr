@@ -34,10 +34,10 @@
                         <img src="{{ $node['photo_url'] }}"
                              alt="{{ $node['name'] }}"
                              class="rounded-circle object-fit-cover border"
-                             style="width: 32px; height: 32px;">
+                             style="width: 50px; height: 50px;">
                     @else
                         <div class="avatar-circle rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center border border-primary-subtle"
-                             style="width: 32px; height: 32px; font-size: 0.75rem;">
+                             style="width: 50px; height: 50px; font-size: 1.1rem;">
                             {{ $initials }}
                         </div>
                     @endif
@@ -45,7 +45,7 @@
 
                 <!-- Info -->
                 <div class="min-w-0 flex-grow-1">
-                    <div class="d-flex align-items-center gap-1.5 lh-1" style="margin-bottom: 2px;">
+                    <div class="d-flex align-items-center gap-1.5 lh-1" style="margin-bottom: 10px;">
                         <a href="{{ url('/employee/' . $node['id']) }}"
                            class="fw-bold text-decoration-none text-body text-truncate employee-name-link small org-employee-name-link"
                            title="View employee details"
@@ -56,13 +56,13 @@
                         <span class="badge bg-secondary-subtle text-secondary font-monospace px-1 py-0" style="font-size: 0.65rem;">#{{ $node['formatted_id'] }}</span>
                     </div>
 
-                    <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem; margin-bottom: 2px;">
-                        <span class="fw-medium text-body-secondary"><i class="bi bi-briefcase me-1 text-primary"></i>{{ $node['position'] }}</span>
+                    <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem; margin-bottom: 10px;">
+                        <span class="fw-medium text-body-secondary">{{ $node['position'] }}</span>
                         <span class="text-white-50">•</span>
                         <span><i class="bi bi-diagram-3 me-1 text-info"></i>{{ $node['department'] }}</span>
                     </div>
 
-                    <div class="lh-1" style="margin-bottom: 2px;">
+                    <div class="lh-1">
                         <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status_label'] ?? $node['employment_status'] }}</span>
                     </div>
                 </div>

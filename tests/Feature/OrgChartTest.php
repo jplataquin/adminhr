@@ -585,7 +585,7 @@ it('keeps all nodes collapsed by default when the user views the organization ch
     $response->assertSee('Collapsed by default. Click arrow to expand.');
 });
 
-it('arranges employee node text with name, position, and employment status on separate lines with 2px margin bottom', function () {
+it('arranges employee node with 10px margin bottom on name and position, 50px photo, and no briefcase icon', function () {
     $division = Division::create(['name' => 'Layout Div', 'code' => 'LYT_' . uniqid()]);
     $dept = Department::create(['division_id' => $division->id, 'name' => 'Layout Dept', 'code' => 'LYTD_' . uniqid()]);
     $pos = Position::create(['department_id' => $dept->id, 'name' => 'Layout Specialist', 'code' => 'LYTS_' . uniqid()]);
@@ -612,10 +612,12 @@ it('arranges employee node text with name, position, and employment status on se
     $response = $this->actingAs($this->user)->get('/organization-chart');
     $response->assertOk();
 
-    // Verify 2px margin bottom on employee lines in rendered html
+    // Verify 10px margin bottom on name and position divs, 50px photo dimensions, and absence of briefcase in employee card
     $content = $response->getContent();
-    expect($content)->toContain('style="margin-bottom: 2px;"');
+    expect($content)->toContain('style="margin-bottom: 10px;"');
+    expect($content)->toContain('width: 50px; height: 50px;');
     expect($content)->toContain('Miles Davis');
     expect($content)->toContain('Layout Specialist');
     expect($content)->toContain('Regular');
+    expect($content)->not->toContain('<i class="bi bi-briefcase me-1 text-primary"></i>');
 });

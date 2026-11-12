@@ -14,25 +14,25 @@
     <!-- Leaf Node: No Circle Bullet -->
     <div class="org-node-container d-inline-flex align-items-center">
         <div class="card org-card org-card-employee border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($emp['name'] . ' ' . ($emp['employment_status_label'] ?? $emp['employment_status']) . ' ' . $emp['position'] . ' ' . $emp['formatted_id']) }}') }">
-            <div class="card-body d-flex align-items-center gap-2">
+            <div class="card-body d-flex align-items-center gap-2.5">
                 <!-- Avatar / Photo -->
                 <div class="flex-shrink-0">
                     @if($emp['photo_url'])
                         <img src="{{ $emp['photo_url'] }}"
                              alt="{{ $emp['name'] }}"
                              class="rounded-circle object-fit-cover border"
-                             style="width: 26px; height: 26px;">
+                             style="width: 50px; height: 50px;">
                     @else
                         <div class="avatar-circle rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center border border-primary-subtle"
-                             style="width: 26px; height: 26px; font-size: 0.7rem;">
+                             style="width: 50px; height: 50px; font-size: 1.1rem;">
                             {{ $initials }}
                         </div>
                     @endif
                 </div>
 
-                <!-- {Employee Name, Position, Employment Status - one line each with 2px margin bottom} -->
+                <!-- {Employee Name, Position, Employment Status} -->
                 <div class="min-w-0 flex-grow-1">
-                    <div class="lh-1 text-truncate" style="margin-bottom: 2px;">
+                    <div class="lh-1 text-truncate" style="margin-bottom: 10px;">
                         <a href="{{ url('/employee/' . $emp['id']) }}"
                            class="fw-bold text-decoration-none text-body small text-truncate org-employee-name-link"
                            title="View employee details"
@@ -41,12 +41,12 @@
                             {{ $emp['name'] }}
                         </a>
                     </div>
-                    <div class="lh-1 text-truncate" style="margin-bottom: 2px;">
+                    <div class="lh-1 text-truncate" style="margin-bottom: 10px;">
                         <span class="fw-medium text-body-secondary small text-truncate">
-                            <i class="bi bi-briefcase me-1 text-primary"></i>{{ $emp['position'] }}
+                            {{ $emp['position'] }}
                         </span>
                     </div>
-                    <div class="lh-1" style="margin-bottom: 2px;">
+                    <div class="lh-1">
                         <span class="badge {{ $statusClass }} px-1.5 py-0" style="font-size: 0.65rem;">
                             {{ $emp['employment_status_label'] ?? $emp['employment_status'] }}
                         </span>
