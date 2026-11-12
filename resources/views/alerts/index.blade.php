@@ -132,7 +132,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge bg-light text-dark border">{{ $alert->document_type }}</span>
+                                            <span class="badge text-dark border">{{ $alert->document_type }}</span>
                                         </td>
                                         <td>
                                             @if ($alert->employee)
@@ -200,7 +200,7 @@
                         </table>
                     </div>
                     @if ($alerts->hasPages())
-                        <div class="card-footer bg-white border-0 py-3">
+                        <div class="card-footer border-0 py-3">
                             {{ $alerts->links() }}
                         </div>
                     @endif
@@ -221,7 +221,7 @@
                     </div>
                     <div class="modal-body py-4">
                         <p class="text-muted">Setting a new future expiry date will reset the alert tracking to Active state.</p>
-                        <div class="p-3 bg-light rounded mb-4">
+                        <div class="p-3 rounded mb-4">
                             <span class="small text-muted d-block text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Document Name</span>
                             <strong id="renewAlertTitle" class="text-dark"></strong>
                         </div>

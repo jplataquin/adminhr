@@ -12,12 +12,18 @@ use Illuminate\Http\Request;
 class OrgChartController extends Controller
 {
     /**
+     * Employment statuses displayed in the organizational chart.
+     * Only employees who have employment status Regular (REGU), Probationary (PROB), or Contractual (CONT) are shown.
+     */
+    public const ALLOWED_EMPLOYMENT_STATUSES = ['REGU', 'PROB', 'CONT'];
+
+    /**
      * Display the organization chart page.
      */
     public function index()
     {
         $stats = [
-            'total_employees'   => Employee::count(),
+            'total_employees'   => Employee::whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)->count(),
             'total_divisions'   => Division::count(),
             'total_departments' => Department::count(),
             'total_positions'   => Position::count(),
@@ -39,7 +45,7 @@ class OrgChartController extends Controller
     public function data(): JsonResponse
     {
         $stats = [
-            'total_employees'   => Employee::count(),
+            'total_employees'   => Employee::whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)->count(),
             'total_divisions'   => Division::count(),
             'total_departments' => Department::count(),
             'total_positions'   => Position::count(),
@@ -121,7 +127,8 @@ class OrgChartController extends Controller
      */
     public function buildReportingTree(): array
     {
-        $employees = Employee::with(['division', 'department', 'position'])
+        $employees = Employee::whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)
+            ->with(['division', 'department', 'position'])
             ->orderBy('firstname')
             ->orderBy('lastname')
             ->get();
@@ -212,7 +219,9 @@ class OrgChartController extends Controller
     {
         $divisions = Division::with([
             'departments.employees' => function ($q) {
-                $q->orderBy('firstname')->orderBy('lastname');
+                $q->whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)
+                  ->orderBy('firstname')
+                  ->orderBy('lastname');
             },
             'departments.employees.position',
         ])->orderBy('name')->get();
@@ -224,6 +233,7 @@ class OrgChartController extends Controller
 
             // Direct employees belonging to this division where department is unassigned/null
             $directEmployees = Employee::where('division_id', $division->id)
+                ->whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)
                 ->where(function ($q) use ($validDeptIds) {
                     $q->whereNull('department_id')
                       ->orWhere('department_id', 0)
@@ -273,11 +283,12 @@ class OrgChartController extends Controller
 
         // Only employees who have NO division assigned at all
         $validDivIds = $divisions->pluck('id')->filter()->toArray();
-        $unassigned = Employee::where(function ($q) use ($validDivIds) {
-            $q->whereNull('division_id')
-              ->orWhere('division_id', 0)
-              ->orWhereNotIn('division_id', $validDivIds);
-        })->with(['position', 'division', 'department'])->orderBy('firstname')->get();
+        $unassigned = Employee::whereIn('employment_status', self::ALLOWED_EMPLOYMENT_STATUSES)
+            ->where(function ($q) use ($validDivIds) {
+                $q->whereNull('division_id')
+                  ->orWhere('division_id', 0)
+                  ->orWhereNotIn('division_id', $validDivIds);
+            })->with(['position', 'division', 'department'])->orderBy('firstname')->get();
 
         if ($unassigned->isNotEmpty()) {
             $unassignedList = [];

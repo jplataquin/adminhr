@@ -307,7 +307,7 @@
                                             </a>
 
                                             <span class="badge rounded-pill"
-                                                  :class="activeLedgerId === {{ $ledger->id }} ? 'bg-white text-dark' : '{{ $ledger->status == 'APRV' ? 'bg-success' : 'bg-warning text-dark' }}'"
+                                                  :class="activeLedgerId === {{ $ledger->id }} ? 'text-dark' : '{{ $ledger->status == 'APRV' ? 'bg-success' : 'bg-warning text-dark' }}'"
                                                   style="font-size: 0.6rem;">
                                                 {{ $ledger->status }}
                                             </span>

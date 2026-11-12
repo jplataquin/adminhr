@@ -273,13 +273,8 @@
                 openNodes: {},
 
                 init() {
-                    @if(!empty($departmentTree))
-                        @foreach($departmentTree as $div)
-                            @if(!empty($div['direct_employees']))
-                                this.openNodes['div-{{ $div['id'] }}'] = true;
-                            @endif
-                        @endforeach
-                    @endif
+                    // All nodes collapsed by default
+                    this.openNodes = {};
                 },
 
                 hoveredEmployee: null,

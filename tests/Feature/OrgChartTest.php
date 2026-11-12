@@ -450,3 +450,137 @@ it('renders floating employee card markup and hover handlers on employee names',
     $response->assertSee('Division');
     $response->assertSee('Department');
 });
+
+it('only includes employees with Regular, Probationary, or Contractual employment status in the organization chart', function () {
+    $division = Division::create(['name' => 'Field Ops', 'code' => 'FLD_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Patrol Dept', 'code' => 'PAT_' . uniqid()]);
+    $pos = Position::create(['department_id' => $dept->id, 'name' => 'Officer', 'code' => 'OFF_' . uniqid()]);
+
+    $createEmp = function (string $firstname, string $lastname, string $status, ?int $deptId = null) use ($division, $pos) {
+        $emp = new Employee();
+        $emp->firstname = $firstname;
+        $emp->lastname = $lastname;
+        $emp->birthdate = '1990-01-01';
+        $emp->gender = 'M';
+        $emp->religion = 'None';
+        $emp->marital_status = 'SING';
+        $emp->current_address = 'Address';
+        $emp->permanent_address = 'Address';
+        $emp->educational_attainment = 'BD';
+        $emp->division_id = $division->id;
+        $emp->department_id = $deptId;
+        $emp->position_id = $pos->id;
+        $emp->employment_status = $status;
+        $emp->duty_status = 'ONDU';
+        $emp->employment_start_date = '2020-01-01';
+        $emp->created_by = $this->user->id;
+        $emp->save();
+        return $emp;
+    };
+
+    $regularEmp = $createEmp('Reggie', 'Regular', 'REGU', $dept->id);
+    $probationEmp = $createEmp('Percy', 'Probation', 'PROB', $dept->id);
+    $contractEmp = $createEmp('Connie', 'Contractual', 'CONT', null); // direct under division
+    $resignedEmp = $createEmp('Rita', 'Resigned', 'RSGN', $dept->id);
+    $terminatedEmp = $createEmp('Tom', 'Terminated', 'TRMN', $dept->id);
+    $awolEmp = $createEmp('Aaron', 'Awol', 'AWOL', null);
+    $retiredEmp = $createEmp('Ray', 'Retired', 'RETR', null);
+
+    $controller = new \App\Http\Controllers\OrgChartController();
+
+    // 1. Verify reporting tree only contains REGU, PROB, CONT
+    $reportingTree = $controller->buildReportingTree();
+    $reportingIds = [];
+    $collectIds = function ($node) use (&$collectIds, &$reportingIds) {
+        $reportingIds[] = $node['id'];
+        foreach ($node['subordinates'] as $child) {
+            $collectIds($child);
+        }
+    };
+    foreach ($reportingTree as $root) {
+        $collectIds($root);
+    }
+
+    expect($reportingIds)->toContain($regularEmp->id);
+    expect($reportingIds)->toContain($probationEmp->id);
+    expect($reportingIds)->toContain($contractEmp->id);
+    expect($reportingIds)->not->toContain($resignedEmp->id);
+    expect($reportingIds)->not->toContain($terminatedEmp->id);
+    expect($reportingIds)->not->toContain($awolEmp->id);
+    expect($reportingIds)->not->toContain($retiredEmp->id);
+
+    // 2. Verify department tree only contains REGU, PROB, CONT
+    $deptTree = $controller->buildDepartmentTree();
+    $fieldDiv = collect($deptTree)->firstWhere('id', $division->id);
+    expect($fieldDiv)->not->toBeNull();
+    // Direct employees under division should only include Connie
+    $directNames = collect($fieldDiv['direct_employees'])->pluck('name')->all();
+    expect($directNames)->toContain('Connie Contractual');
+    expect($directNames)->not->toContain('Aaron Awol');
+    expect($directNames)->not->toContain('Ray Retired');
+
+    // Department employees should only include Reggie and Percy
+    $patrolDept = collect($fieldDiv['departments'])->firstWhere('id', $dept->id);
+    expect($patrolDept)->not->toBeNull();
+    $deptEmpNames = collect($patrolDept['employees'])->pluck('name')->all();
+    expect($deptEmpNames)->toContain('Reggie Regular');
+    expect($deptEmpNames)->toContain('Percy Probation');
+    expect($deptEmpNames)->not->toContain('Rita Resigned');
+    expect($deptEmpNames)->not->toContain('Tom Terminated');
+
+    // 3. Verify API endpoint data stats
+    $apiResponse = $this->actingAs($this->user)->getJson('/api/organization-chart/data');
+    $apiResponse->assertOk();
+    $apiResponse->assertJson([
+        'status' => 1,
+        'data' => [
+            'stats' => [
+                'total_employees' => 3,
+            ],
+        ],
+    ]);
+
+    // 4. Verify web view rendering
+    $webResponse = $this->actingAs($this->user)->get('/organization-chart');
+    $webResponse->assertOk();
+    $webResponse->assertSee('Reggie Regular');
+    $webResponse->assertSee('Percy Probation');
+    $webResponse->assertSee('Connie Contractual');
+    $webResponse->assertDontSee('Rita Resigned');
+    $webResponse->assertDontSee('Tom Terminated');
+    $webResponse->assertDontSee('Aaron Awol');
+    $webResponse->assertDontSee('Ray Retired');
+});
+
+it('keeps all nodes collapsed by default when the user views the organization chart', function () {
+    $division = Division::create(['name' => 'Collapsed Div', 'code' => 'CLP_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Collapsed Dept', 'code' => 'CLPD_' . uniqid()]);
+    $pos = Position::create(['department_id' => $dept->id, 'name' => 'Specialist', 'code' => 'SPEC_' . uniqid()]);
+
+    $emp = new Employee();
+    $emp->firstname = 'Nina';
+    $emp->lastname = 'Simone';
+    $emp->birthdate = '1990-01-01';
+    $emp->gender = 'F';
+    $emp->religion = 'None';
+    $emp->marital_status = 'SING';
+    $emp->current_address = 'Address';
+    $emp->permanent_address = 'Address';
+    $emp->educational_attainment = 'BD';
+    $emp->division_id = $division->id;
+    $emp->department_id = null; // Direct employee in division
+    $emp->position_id = $pos->id;
+    $emp->employment_status = 'REGU';
+    $emp->duty_status = 'ONDU';
+    $emp->employment_start_date = '2020-01-01';
+    $emp->created_by = $this->user->id;
+    $emp->save();
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+
+    // Confirm openNodes is initialized as empty and direct employees do not auto-open division
+    $response->assertSee('openNodes: {}', false);
+    $response->assertDontSee("this.openNodes['div-{$division->id}'] = true", false);
+    $response->assertSee('Collapsed by default. Click arrow to expand.');
+});

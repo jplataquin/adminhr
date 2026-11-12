@@ -29,7 +29,7 @@
                 <!-- User List -->
                 <div class="col-lg-8 mb-4">
                     <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white py-3">
+                        <div class="card-header py-3">
                             <h5 class="mb-0">System Users</h5>
                         </div>
                         <div class="table-responsive">
@@ -70,7 +70,7 @@
                             </table>
                         </div>
                         @if($users->hasPages())
-                            <div class="card-footer bg-white py-3">
+                            <div class="card-footer py-3">
                                 {{ $users->links() }}
                             </div>
                         @endif
@@ -80,7 +80,7 @@
                 <!-- Create User Form -->
                 <div class="col-lg-4">
                     <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white py-3">
+                        <div class="card-header py-3">
                             <h5 class="mb-0">Create New User</h5>
                         </div>
                         <div class="card-body">

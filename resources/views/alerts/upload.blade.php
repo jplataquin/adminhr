@@ -115,7 +115,7 @@
                                 </tbody>
                             </table>
 
-                            <div class="d-flex align-items-center bg-light-subtle p-3 rounded border">
+                            <div class="d-flex align-items-center p-3 rounded border">
                                 <div class="fs-3 text-primary me-3">
                                     <i class="bi bi-cloud-arrow-down-fill"></i>
                                 </div>

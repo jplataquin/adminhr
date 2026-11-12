@@ -16,7 +16,7 @@
                 <!-- Form Inputs -->
                 <div class="col-lg-5 mb-4">
                     <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white py-3">
+                        <div class="card-header py-3">
                             <h5 class="card-title mb-0">ID Details</h5>
                         </div>
                         <div class="card-body">
@@ -108,7 +108,7 @@
                 <!-- Preview and Base64 Output -->
                 <div class="col-lg-7">
                     <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Preview & Output</h5>
                             <div>
                                 <button type="button" id="btnDownloadFront" class="btn btn-sm btn-outline-primary me-2" disabled>
@@ -124,7 +124,7 @@
                             <div class="row text-center mb-4">
                                 <div class="col-md-6 mb-3">
                                     <h6 class="text-muted fw-bold mb-2">Front Side Preview</h6>
-                                    <div class="border rounded p-2 bg-light d-flex justify-content-center align-items-center" style="min-height: 480px;">
+                                    <div class="border rounded p-2 d-flex justify-content-center align-items-center" style="min-height: 480px;">
                                         <canvas id="frontCanvas" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; display: none;"></canvas>
                                         <img id="frontImgPreview" alt="Front Preview" style="max-width: 100%; height: auto; border-radius: 8px; display: none;" />
                                         <span id="frontPlaceholder" class="text-muted small">Fill form and click "Generate ID Card"</span>
@@ -132,7 +132,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <h6 class="text-muted fw-bold mb-2">Back Side Preview</h6>
-                                    <div class="border rounded p-2 bg-light d-flex justify-content-center align-items-center" style="min-height: 480px;">
+                                    <div class="border rounded p-2 d-flex justify-content-center align-items-center" style="min-height: 480px;">
                                         <canvas id="backCanvas" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; display: none;"></canvas>
                                         <img id="backImgPreview" alt="Back Preview" style="max-width: 100%; height: auto; border-radius: 8px; display: none;" />
                                         <span id="backPlaceholder" class="text-muted small">Fill form and click "Generate ID Card"</span>
