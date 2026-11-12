@@ -45,7 +45,7 @@
 
                 <!-- Info -->
                 <div class="min-w-0 flex-grow-1">
-                    <div class="d-flex align-items-center gap-1.5 lh-1 mb-1">
+                    <div class="d-flex align-items-center gap-1.5 lh-1" style="margin-bottom: 2px;">
                         <a href="{{ url('/employee/' . $node['id']) }}"
                            class="fw-bold text-decoration-none text-body text-truncate employee-name-link small org-employee-name-link"
                            title="View employee details"
@@ -54,13 +54,16 @@
                             {{ $node['name'] }}
                         </a>
                         <span class="badge bg-secondary-subtle text-secondary font-monospace px-1 py-0" style="font-size: 0.65rem;">#{{ $node['formatted_id'] }}</span>
-                        <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status_label'] ?? $node['employment_status'] }}</span>
                     </div>
 
-                    <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem;">
+                    <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-secondary" style="font-size: 0.72rem; margin-bottom: 2px;">
                         <span class="fw-medium text-body-secondary"><i class="bi bi-briefcase me-1 text-primary"></i>{{ $node['position'] }}</span>
                         <span class="text-white-50">•</span>
                         <span><i class="bi bi-diagram-3 me-1 text-info"></i>{{ $node['department'] }}</span>
+                    </div>
+
+                    <div class="lh-1" style="margin-bottom: 2px;">
+                        <span class="badge {{ $statusClass }} px-1 py-0" style="font-size: 0.65rem;">{{ $node['employment_status_label'] ?? $node['employment_status'] }}</span>
                     </div>
                 </div>
 

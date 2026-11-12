@@ -584,3 +584,38 @@ it('keeps all nodes collapsed by default when the user views the organization ch
     $response->assertDontSee("this.openNodes['div-{$division->id}'] = true", false);
     $response->assertSee('Collapsed by default. Click arrow to expand.');
 });
+
+it('arranges employee node text with name, position, and employment status on separate lines with 2px margin bottom', function () {
+    $division = Division::create(['name' => 'Layout Div', 'code' => 'LYT_' . uniqid()]);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Layout Dept', 'code' => 'LYTD_' . uniqid()]);
+    $pos = Position::create(['department_id' => $dept->id, 'name' => 'Layout Specialist', 'code' => 'LYTS_' . uniqid()]);
+
+    $emp = new Employee();
+    $emp->firstname = 'Miles';
+    $emp->lastname = 'Davis';
+    $emp->birthdate = '1990-01-01';
+    $emp->gender = 'M';
+    $emp->religion = 'None';
+    $emp->marital_status = 'SING';
+    $emp->current_address = 'Address';
+    $emp->permanent_address = 'Address';
+    $emp->educational_attainment = 'BD';
+    $emp->division_id = $division->id;
+    $emp->department_id = $dept->id;
+    $emp->position_id = $pos->id;
+    $emp->employment_status = 'REGU';
+    $emp->duty_status = 'ONDU';
+    $emp->employment_start_date = '2020-01-01';
+    $emp->created_by = $this->user->id;
+    $emp->save();
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+
+    // Verify 2px margin bottom on employee lines in rendered html
+    $content = $response->getContent();
+    expect($content)->toContain('style="margin-bottom: 2px;"');
+    expect($content)->toContain('Miles Davis');
+    expect($content)->toContain('Layout Specialist');
+    expect($content)->toContain('Regular');
+});

@@ -30,23 +30,27 @@
                     @endif
                 </div>
 
-                <!-- {Employee Name - Employment Status - Position} -->
-                <div class="d-flex flex-wrap align-items-center gap-1.5 lh-1 text-truncate">
-                    <a href="{{ url('/employee/' . $emp['id']) }}"
-                       class="fw-bold text-decoration-none text-body small text-truncate org-employee-name-link"
-                       title="View employee details"
-                       @mouseenter="showHoverCard(@js($emp), $event)"
-                       @mouseleave="hideHoverCard()">
-                        {{ $emp['name'] }}
-                    </a>
-                    <span class="text-secondary small">-</span>
-                    <span class="badge {{ $statusClass }} px-1.5 py-0" style="font-size: 0.65rem;">
-                        {{ $emp['employment_status_label'] ?? $emp['employment_status'] }}
-                    </span>
-                    <span class="text-secondary small">-</span>
-                    <span class="fw-medium text-body-secondary small text-truncate">
-                        <i class="bi bi-briefcase me-1 text-primary"></i>{{ $emp['position'] }}
-                    </span>
+                <!-- {Employee Name, Position, Employment Status - one line each with 2px margin bottom} -->
+                <div class="min-w-0 flex-grow-1">
+                    <div class="lh-1 text-truncate" style="margin-bottom: 2px;">
+                        <a href="{{ url('/employee/' . $emp['id']) }}"
+                           class="fw-bold text-decoration-none text-body small text-truncate org-employee-name-link"
+                           title="View employee details"
+                           @mouseenter="showHoverCard(@js($emp), $event)"
+                           @mouseleave="hideHoverCard()">
+                            {{ $emp['name'] }}
+                        </a>
+                    </div>
+                    <div class="lh-1 text-truncate" style="margin-bottom: 2px;">
+                        <span class="fw-medium text-body-secondary small text-truncate">
+                            <i class="bi bi-briefcase me-1 text-primary"></i>{{ $emp['position'] }}
+                        </span>
+                    </div>
+                    <div class="lh-1" style="margin-bottom: 2px;">
+                        <span class="badge {{ $statusClass }} px-1.5 py-0" style="font-size: 0.65rem;">
+                            {{ $emp['employment_status_label'] ?? $emp['employment_status'] }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
