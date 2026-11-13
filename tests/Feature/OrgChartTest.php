@@ -612,9 +612,10 @@ it('arranges employee node with 10px margin bottom on name and position, 50px ph
     $response = $this->actingAs($this->user)->get('/organization-chart');
     $response->assertOk();
 
-    // Verify 10px margin bottom on name and position divs, 50px photo dimensions, and absence of briefcase in employee card
+    // Verify 10px margin bottom on name and position divs, 50px photo dimensions, 10px margin right on photo div, and absence of briefcase in employee card
     $content = $response->getContent();
     expect($content)->toContain('style="margin-bottom: 10px;"');
+    expect($content)->toContain('style="margin-right: 10px;"');
     expect($content)->toContain('width: 50px; height: 50px;');
     expect($content)->toContain('Miles Davis');
     expect($content)->toContain('Layout Specialist');

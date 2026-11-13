@@ -29,7 +29,7 @@
         <div class="card org-card border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($node['name'] . ' ' . $node['position'] . ' ' . $node['department'] . ' ' . $node['formatted_id']) }}') }">
             <div class="card-body d-flex align-items-center gap-2.5">
                 <!-- Avatar / Photo -->
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0" style="margin-right: 10px;">
                     @if($node['photo_url'])
                         <img src="{{ $node['photo_url'] }}"
                              alt="{{ $node['name'] }}"

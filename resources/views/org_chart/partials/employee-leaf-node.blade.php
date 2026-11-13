@@ -16,7 +16,7 @@
         <div class="card org-card org-card-employee border-0 shadow-sm" :class="{ 'org-card-matched': isMatch('{{ strtolower($emp['name'] . ' ' . ($emp['employment_status_label'] ?? $emp['employment_status']) . ' ' . $emp['position'] . ' ' . $emp['formatted_id']) }}') }">
             <div class="card-body d-flex align-items-center gap-2.5">
                 <!-- Avatar / Photo -->
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0" style="margin-right: 10px;">
                     @if($emp['photo_url'])
                         <img src="{{ $emp['photo_url'] }}"
                              alt="{{ $emp['name'] }}"
