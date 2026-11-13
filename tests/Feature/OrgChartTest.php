@@ -94,7 +94,9 @@ it('renders the organization chart page with summary statistics and tree contain
 
     $response->assertOk();
     $response->assertSee('Organization Chart');
-    $response->assertSee('Divisions &amp; Departments', false);
+    $response->assertSee('Division &rarr; Department &rarr; Employee', false);
+    $response->assertDontSee('Supervisor Reporting');
+    $response->assertDontSee('id="reporting-root-tree"', false);
     $response->assertSee('Elena Reyes');
     $response->assertSee('Regular');
     $response->assertSee('Director');
@@ -102,7 +104,6 @@ it('renders the organization chart page with summary statistics and tree contain
     $response->assertSee('Chloe Diaz');
     $response->assertSee('Probationary');
     $response->assertSee('id="stat-total-employees"', false);
-    $response->assertSee('id="reporting-root-tree"', false);
     $response->assertSee('id="department-root-tree"', false);
     $response->assertSee('id="expandAllBtn"', false);
     $response->assertSee('id="collapseAllBtn"', false);
@@ -113,6 +114,25 @@ it('renders the organization chart page with summary statistics and tree contain
     $response->assertSee('openNodes: {}', false);
     $response->assertSee('style="list-style-type: none;"', false);
     $response->assertSee('style="gap: 20px;"', false);
+});
+
+it('removes supervisor reporting and mode buttons, always defaulting to division and department mode', function () {
+    $division = Division::create(['name' => 'Default Div', 'code' => 'DEF_DIV_' . uniqid()]);
+    $department = Department::create(['division_id' => $division->id, 'name' => 'Default Dept', 'code' => 'DEF_DEPT_' . uniqid()]);
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+
+    // Verify mode switch buttons are removed
+    $response->assertDontSee('Supervisor Reporting');
+    $response->assertDontSee('Divisions &amp; Departments', false);
+
+    // Verify reporting tree view is removed and department tree is rendered directly
+    $response->assertDontSee('id="reporting-root-tree"', false);
+    $response->assertDontSee('id="reporting-tree-view"', false);
+    $response->assertSee('id="department-tree-view"', false);
+    $response->assertSee('id="department-root-tree"', false);
+    $response->assertSee('Division &rarr; Department &rarr; Employee', false);
 });
 
 it('applies list-style-type none on lists and 20px gap on org icon and node name flex containers', function () {

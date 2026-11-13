@@ -16,24 +16,8 @@
                         </div>
                     </div>
 
-                    <!-- Mode Switch Buttons -->
+                    <!-- Header Actions -->
                     <div class="d-flex align-items-center gap-2">
-                        <div class="btn-group p-1 bg-body-tertiary rounded-3 border" role="group">
-                            <button type="button"
-                                    class="btn btn-sm rounded-2 d-flex align-items-center gap-1.5 px-3 py-1.5"
-                                    :class="activeView === 'department' ? 'btn-primary' : 'btn-ghost text-secondary'"
-                                    @click="activeView = 'department'">
-                                <i class="bi bi-buildings"></i>
-                                <span>Divisions &amp; Departments</span>
-                            </button>
-                            <button type="button"
-                                    class="btn btn-sm rounded-2 d-flex align-items-center gap-1.5 px-3 py-1.5"
-                                    :class="activeView === 'reporting' ? 'btn-primary' : 'btn-ghost text-secondary'"
-                                    @click="activeView = 'reporting'">
-                                <i class="bi bi-diagram-2"></i>
-                                <span>Supervisor Reporting</span>
-                            </button>
-                        </div>
                         <a href="{{ route('employees') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
                             <i class="bi bi-arrow-left"></i>
                             <span class="d-none d-sm-inline">Back to List</span>
@@ -133,18 +117,8 @@
         <div class="card shadow-sm border-0" id="org-chart-tree-card">
             <div class="card-header bg-body py-2.5 px-3 d-flex align-items-center justify-content-between">
                 <h2 class="h6 mb-0 fw-bold d-flex align-items-center gap-2">
-                    <template x-if="activeView === 'department'">
-                        <span class="d-inline-flex align-items-center gap-2">
-                            <i class="bi bi-buildings text-primary"></i>
-                            <span>Division &rarr; Department &rarr; Employee (Status &amp; Position)</span>
-                        </span>
-                    </template>
-                    <template x-if="activeView === 'reporting'">
-                        <span class="d-inline-flex align-items-center gap-2">
-                            <i class="bi bi-diagram-2 text-primary"></i>
-                            <span>Supervisor Reporting Hierarchy</span>
-                        </span>
-                    </template>
+                    <i class="bi bi-buildings text-primary"></i>
+                    <span>Division &rarr; Department &rarr; Employee (Status &amp; Position)</span>
                 </h2>
 
                 <div class="small text-secondary">
@@ -154,8 +128,8 @@
             </div>
 
             <div class="card-body p-3 p-md-4 org-chart-canvas">
-                <!-- VIEW 1 (Default): Organizational Divisions -> Departments -> Employees -->
-                <div x-show="activeView === 'department'" id="department-tree-view">
+                <!-- Divisions -> Departments -> Employees -->
+                <div id="department-tree-view">
                     @if(empty($departmentTree))
                         <div class="text-center py-5 text-secondary">
                             <div class="fs-1 mb-2"><i class="bi bi-buildings"></i></div>
@@ -165,22 +139,6 @@
                         <ul class="org-tree list-unstyled" id="department-root-tree" style="list-style-type: none;">
                             @foreach($departmentTree as $division)
                                 @include('org_chart.partials.department-node', ['division' => $division])
-                            @endforeach
-                        </ul>
-                    @endif
-                </div>
-
-                <!-- VIEW 2: Supervisor Reporting Hierarchy -->
-                <div x-show="activeView === 'reporting'" id="reporting-tree-view">
-                    @if(empty($reportingTree))
-                        <div class="text-center py-5 text-secondary">
-                            <div class="fs-1 mb-2"><i class="bi bi-people"></i></div>
-                            <p class="mb-0">No active employees found to display in the reporting tree.</p>
-                        </div>
-                    @else
-                        <ul class="org-tree list-unstyled" id="reporting-root-tree" style="list-style-type: none;">
-                            @foreach($reportingTree as $rootNode)
-                                @include('org_chart.partials.reporting-node', ['node' => $rootNode, 'level' => 0])
                             @endforeach
                         </ul>
                     @endif

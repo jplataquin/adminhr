@@ -29,12 +29,10 @@ class OrgChartController extends Controller
             'total_positions'   => Position::count(),
         ];
 
-        $reportingTree = $this->buildReportingTree();
         $departmentTree = $this->buildDepartmentTree();
 
         return view('org_chart/index', [
             'stats'          => $stats,
-            'reportingTree'  => $reportingTree,
             'departmentTree' => $departmentTree,
         ]);
     }
