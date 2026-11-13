@@ -56,5 +56,7 @@
             <div class="drawer_modal_body p-3">
             </div>
         </div>
+
+        @stack('scripts')
     </body>
 </html>

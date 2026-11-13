@@ -163,7 +163,6 @@
         </div>
     </div>
 
-    @push('scripts')
     <script>
         function uppercaseFirstLetter(val) {
             return String(val || '').charAt(0).toUpperCase() + String(val || '').slice(1);
@@ -179,10 +178,20 @@
             if (!textarea.value) return;
             textarea.select();
             navigator.clipboard.writeText(textarea.value);
-            alert('Copied to clipboard!');
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Copied!',
+                    text: 'Base64 data URI copied to clipboard.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('Copied to clipboard!');
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function initIdGenerator() {
             const btnGenerate = document.getElementById('btnGenerate');
             const frontCanvas = document.getElementById('frontCanvas');
             const backCanvas = document.getElementById('backCanvas');
@@ -195,6 +204,8 @@
             const btnDownloadFront = document.getElementById('btnDownloadFront');
             const btnDownloadBack = document.getElementById('btnDownloadBack');
 
+            if (!btnGenerate) return;
+
             // Setup canvas dimensions
             frontCanvas.width = 1276 * 0.55;
             frontCanvas.height = 2032 * 0.55;
@@ -203,26 +214,46 @@
 
             let uploadedPhotoDataUrl = null;
 
-            document.getElementById('photo').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(evt) {
-                        uploadedPhotoDataUrl = evt.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    uploadedPhotoDataUrl = null;
-                }
-            });
+            const photoInput = document.getElementById('photo');
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(evt) {
+                            uploadedPhotoDataUrl = evt.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        uploadedPhotoDataUrl = null;
+                    }
+                });
+            }
 
             btnGenerate.addEventListener('click', async () => {
-                const firstname = document.getElementById('firstname').value.trim();
-                const middlename = document.getElementById('middlename').value.trim();
-                const lastname = document.getElementById('lastname').value.trim();
-                const suffix = document.getElementById('suffix').value.trim();
-                const employeeId = document.getElementById('employee_id').value.trim();
-                const position = document.getElementById('position').value.trim();
+                const firstname = (document.getElementById('firstname')?.value || '').trim();
+                const middlename = (document.getElementById('middlename')?.value || '').trim();
+                const lastname = (document.getElementById('lastname')?.value || '').trim();
+                const suffix = (document.getElementById('suffix')?.value || '').trim();
+                const employeeId = (document.getElementById('employee_id')?.value || '').trim();
+                const position = (document.getElementById('position')?.value || '').trim();
+
+                if (!firstname || !lastname || !employeeId) {
+                    const frontTabBtn = document.getElementById('pills-front-tab');
+                    if (frontTabBtn && window.bootstrap && window.bootstrap.Tab) {
+                        bootstrap.Tab.getOrCreateInstance(frontTabBtn).show();
+                    }
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Required Information',
+                            text: 'Please provide at least First Name, Last Name, and Employee ID.'
+                        });
+                    } else {
+                        alert('Please provide at least First Name, Last Name, and Employee ID.');
+                    }
+                    return;
+                }
 
                 let fullName = [
                     uppercaseFirstLetter(firstname),
@@ -231,29 +262,53 @@
                     uppercaseFirstLetter(suffix)
                 ].filter(Boolean).join(' ').trim();
 
-                // Generate Front
-                await renderFront({
-                    name: fullName,
-                    position: position,
-                    employeeId: employeeId,
-                    photoDataUrl: uploadedPhotoDataUrl
-                });
+                const originalBtnHtml = btnGenerate.innerHTML;
+                btnGenerate.disabled = true;
+                btnGenerate.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...';
 
-                // Generate Back
-                await renderBack({
-                    tin: document.getElementById('tin').value.trim() || 'n/a',
-                    sss: document.getElementById('sss').value.trim() || 'n/a',
-                    pagIbig: document.getElementById('pag_ibig').value.trim() || 'n/a',
-                    expiryYear: document.getElementById('expiry_year').value.trim() || (new Date().getFullYear() + 2)
-                });
+                try {
+                    // Generate Front
+                    await renderFront({
+                        name: fullName,
+                        position: position,
+                        employeeId: employeeId,
+                        photoDataUrl: uploadedPhotoDataUrl
+                    });
+
+                    // Generate Back
+                    await renderBack({
+                        tin: (document.getElementById('tin')?.value || '').trim() || 'n/a',
+                        sss: (document.getElementById('sss')?.value || '').trim() || 'n/a',
+                        pagIbig: (document.getElementById('pag_ibig')?.value || '').trim() || 'n/a',
+                        expiryYear: (document.getElementById('expiry_year')?.value || '').trim() || (new Date().getFullYear() + 2)
+                    });
+                } catch (err) {
+                    console.error('Error generating ID card:', err);
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Generation Failed',
+                            text: err.message || 'An error occurred while generating the ID card.'
+                        });
+                    } else {
+                        alert('Error generating ID card: ' + (err.message || err));
+                    }
+                } finally {
+                    btnGenerate.disabled = false;
+                    btnGenerate.innerHTML = originalBtnHtml;
+                }
             });
 
             function loadImage(src) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
-                    img.crossOrigin = 'anonymous';
+                    // Only set crossOrigin for remote absolute HTTP(S) URLs that differ from current origin.
+                    // Setting crossOrigin on data: URIs or same-origin paths causes CORS failures or blocks canvas export.
+                    if (typeof src === 'string' && src.startsWith('http') && !src.startsWith(window.location.origin)) {
+                        img.crossOrigin = 'anonymous';
+                    }
                     img.onload = () => resolve(img);
-                    img.onerror = (e) => reject(e);
+                    img.onerror = () => reject(new Error('Failed to load image: ' + src));
                     img.src = src;
                 });
             }
@@ -262,128 +317,139 @@
                 const ctx = frontCanvas.getContext('2d');
                 ctx.clearRect(0, 0, frontCanvas.width, frontCanvas.height);
 
-                try {
-                    // Draw Template Front Background
-                    const templateImg = await loadImage('/employee/id_template/front');
-                    let pheight = frontCanvas.width * (templateImg.height / templateImg.width);
-                    ctx.drawImage(templateImg, 0, 0, frontCanvas.width, pheight);
+                // Draw Template Front Background
+                const templateImg = await loadImage('/employee/id_template/front');
+                let pheight = frontCanvas.width * (templateImg.height / templateImg.width);
+                ctx.drawImage(templateImg, 0, 0, frontCanvas.width, pheight);
 
-                    // Name
-                    ctx.fillStyle = 'blue';
-                    ctx.font = '50px Arial';
-                    let nameMetrics = ctx.measureText(data.name);
-                    let nameX = (frontCanvas.width / 2) - (nameMetrics.width / 2);
-                    ctx.fillText(data.name, nameX, 500);
+                // Name
+                ctx.fillStyle = 'blue';
+                ctx.font = '50px Arial';
+                let nameMetrics = ctx.measureText(data.name);
+                let nameX = (frontCanvas.width / 2) - (nameMetrics.width / 2);
+                ctx.fillText(data.name, nameX, 500);
 
-                    // Position
-                    ctx.fillStyle = 'grey';
-                    ctx.font = '30px Arial';
-                    let posMetrics = ctx.measureText(data.position);
-                    let posX = (frontCanvas.width / 2) - (posMetrics.width / 2);
-                    ctx.fillText(data.position, posX, 535);
+                // Position
+                ctx.fillStyle = 'grey';
+                ctx.font = '30px Arial';
+                let posMetrics = ctx.measureText(data.position);
+                let posX = (frontCanvas.width / 2) - (posMetrics.width / 2);
+                ctx.fillText(data.position, posX, 535);
 
-                    // Draw Photo if available
-                    if (data.photoDataUrl) {
-                        try {
-                            const photoImg = await loadImage(data.photoDataUrl);
-                            ctx.drawImage(photoImg, 43, 100, photoImg.width, photoImg.height);
-                        } catch (err) {
-                            console.error('Failed to load user photo', err);
+                // Draw Photo if available
+                if (data.photoDataUrl) {
+                    try {
+                        const photoImg = await loadImage(data.photoDataUrl);
+                        // Fit & center-crop photo to 300x300 box at (43, 100)
+                        const targetX = 43;
+                        const targetY = 100;
+                        const targetSize = 300;
+
+                        let sx = 0, sy = 0, sWidth = photoImg.width, sHeight = photoImg.height;
+                        if (sWidth > sHeight) {
+                            sx = (sWidth - sHeight) / 2;
+                            sWidth = sHeight;
+                        } else if (sHeight > sWidth) {
+                            sy = (sHeight - sWidth) / 2;
+                            sHeight = sWidth;
                         }
+                        ctx.drawImage(photoImg, sx, sy, sWidth, sHeight, targetX, targetY, targetSize, targetSize);
+                    } catch (err) {
+                        console.error('Failed to load user photo', err);
                     }
-
-                    // Draw QR Code and ID
-                    if (data.employeeId) {
-                        try {
-                            const qrUrl = '/generate-qrcode?d=' + encodeURIComponent(window.location.origin + '/public/employee/' + data.employeeId);
-                            const qrImg = await loadImage(qrUrl);
-                            let qrX = (frontCanvas.width / 2) - (290 / 2);
-                            ctx.drawImage(qrImg, qrX, 583, 290, 290);
-                        } catch (err) {
-                            console.error('Failed to load QR code', err);
-                        }
-
-                        ctx.fillStyle = 'black';
-                        ctx.font = '30px Arial';
-                        let idText = String(data.employeeId).padStart(4, '0');
-                        let idMetrics = ctx.measureText(idText);
-                        let idX = (frontCanvas.width / 2) - (idMetrics.width / 2);
-                        ctx.fillText(idText, idX, 572);
-                    }
-
-                    // Convert to base64
-                    const dataUrl = frontCanvas.toDataURL('image/png');
-                    frontBase64.value = dataUrl;
-                    frontImgPreview.src = dataUrl;
-                    frontImgPreview.style.display = 'block';
-                    frontPlaceholder.style.display = 'none';
-
-                    btnDownloadFront.disabled = false;
-                    btnDownloadFront.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `id_front_${data.employeeId || 'card'}.png`;
-                        link.href = dataUrl;
-                        link.click();
-                    };
-                } catch (e) {
-                    console.error('Error rendering front ID:', e);
                 }
+
+                // Draw QR Code and ID
+                if (data.employeeId) {
+                    try {
+                        const baseUrl = window.$base_url || window.location.origin;
+                        const qrUrl = '/generate-qrcode?d=' + encodeURIComponent(baseUrl + '/public/employee/' + data.employeeId);
+                        const qrImg = await loadImage(qrUrl);
+                        let qrX = (frontCanvas.width / 2) - (290 / 2);
+                        ctx.drawImage(qrImg, qrX, 583, 290, 290);
+                    } catch (err) {
+                        console.error('Failed to load QR code', err);
+                    }
+
+                    ctx.fillStyle = 'black';
+                    ctx.font = '30px Arial';
+                    let idText = String(data.employeeId).padStart(4, '0');
+                    let idMetrics = ctx.measureText(idText);
+                    let idX = (frontCanvas.width / 2) - (idMetrics.width / 2);
+                    ctx.fillText(idText, idX, 572);
+                }
+
+                // Convert to base64
+                const dataUrl = frontCanvas.toDataURL('image/png');
+                frontBase64.value = dataUrl;
+                frontImgPreview.src = dataUrl;
+                frontImgPreview.style.display = 'block';
+                frontPlaceholder.style.display = 'none';
+
+                btnDownloadFront.disabled = false;
+                btnDownloadFront.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `id_front_${data.employeeId || 'card'}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                };
             }
 
             async function renderBack(data) {
                 const ctx = backCanvas.getContext('2d');
                 ctx.clearRect(0, 0, backCanvas.width, backCanvas.height);
 
-                try {
-                    // Draw Template Back Background
-                    const templateImg = await loadImage('/employee/id_template/back');
-                    let pheight = backCanvas.width * (templateImg.height / templateImg.width);
-                    ctx.drawImage(templateImg, 0, 0, backCanvas.width, pheight);
+                // Draw Template Back Background
+                const templateImg = await loadImage('/employee/id_template/back');
+                let pheight = backCanvas.width * (templateImg.height / templateImg.width);
+                ctx.drawImage(templateImg, 0, 0, backCanvas.width, pheight);
 
-                    ctx.fillStyle = 'grey';
-                    ctx.font = '30px Arial';
+                ctx.fillStyle = 'grey';
+                ctx.font = '30px Arial';
 
-                    const tin = 'TIN: ' + data.tin;
-                    let tinMetrics = ctx.measureText(tin);
-                    let tinX = (backCanvas.width / 2) - (tinMetrics.width / 2);
-                    ctx.fillText(tin, tinX, 750);
+                const tin = 'TIN: ' + data.tin;
+                let tinMetrics = ctx.measureText(tin);
+                let tinX = (backCanvas.width / 2) - (tinMetrics.width / 2);
+                ctx.fillText(tin, tinX, 750);
 
-                    const sss = 'SSS: ' + data.sss;
-                    let sssMetrics = ctx.measureText(sss);
-                    let sssX = (backCanvas.width / 2) - (sssMetrics.width / 2);
-                    ctx.fillText(sss, sssX, 800);
+                const sss = 'SSS: ' + data.sss;
+                let sssMetrics = ctx.measureText(sss);
+                let sssX = (backCanvas.width / 2) - (sssMetrics.width / 2);
+                ctx.fillText(sss, sssX, 800);
 
-                    const pagIbig = 'Pag-IBIG: ' + data.pagIbig;
-                    let pagIbigMetrics = ctx.measureText(pagIbig);
-                    let pagIbigX = (backCanvas.width / 2) - (pagIbigMetrics.width / 2);
-                    ctx.fillText(pagIbig, pagIbigX, 850);
+                const pagIbig = 'Pag-IBIG: ' + data.pagIbig;
+                let pagIbigMetrics = ctx.measureText(pagIbig);
+                let pagIbigX = (backCanvas.width / 2) - (pagIbigMetrics.width / 2);
+                ctx.fillText(pagIbig, pagIbigX, 850);
 
-                    ctx.fillStyle = 'black';
-                    ctx.font = '30px Arial';
-                    const expiry = 'EXP: ' + data.expiryYear;
-                    let expiryMetrics = ctx.measureText(expiry);
-                    let expiryX = (backCanvas.width / 2) - (expiryMetrics.width / 2);
-                    ctx.fillText(expiry, expiryX, 920);
+                ctx.fillStyle = 'black';
+                ctx.font = '30px Arial';
+                const expiry = 'EXP: ' + data.expiryYear;
+                let expiryMetrics = ctx.measureText(expiry);
+                let expiryX = (backCanvas.width / 2) - (expiryMetrics.width / 2);
+                ctx.fillText(expiry, expiryX, 920);
 
-                    // Convert to base64
-                    const dataUrl = backCanvas.toDataURL('image/png');
-                    backBase64.value = dataUrl;
-                    backImgPreview.src = dataUrl;
-                    backImgPreview.style.display = 'block';
-                    backPlaceholder.style.display = 'none';
+                // Convert to base64
+                const dataUrl = backCanvas.toDataURL('image/png');
+                backBase64.value = dataUrl;
+                backImgPreview.src = dataUrl;
+                backImgPreview.style.display = 'block';
+                backPlaceholder.style.display = 'none';
 
-                    btnDownloadBack.disabled = false;
-                    btnDownloadBack.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `id_back.png`;
-                        link.href = dataUrl;
-                        link.click();
-                    };
-                } catch (e) {
-                    console.error('Error rendering back ID:', e);
-                }
+                btnDownloadBack.disabled = false;
+                btnDownloadBack.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `id_back.png`;
+                    link.href = dataUrl;
+                    link.click();
+                };
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initIdGenerator);
+        } else {
+            initIdGenerator();
+        }
     </script>
-    @endpush
 </x-app-layout>
