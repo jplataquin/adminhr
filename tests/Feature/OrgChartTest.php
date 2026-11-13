@@ -621,3 +621,29 @@ it('arranges employee node with 10px margin bottom on name and position, 50px ph
     expect($content)->toContain('Regular');
     expect($content)->not->toContain('<i class="bi bi-briefcase me-1 text-primary"></i>');
 });
+
+it('ensures org nodes have min-width 300px and removes short codes beside division and department names', function () {
+    $division = Division::create(['name' => 'Logistics Core', 'code' => 'LOGCORE_CODE']);
+    $dept = Department::create(['division_id' => $division->id, 'name' => 'Fleet Management', 'code' => 'FLEET_CODE']);
+
+    $response = $this->actingAs($this->user)->get('/organization-chart');
+    $response->assertOk();
+
+    $content = $response->getContent();
+
+    // Verify division and department names are rendered
+    expect($content)->toContain('Logistics Core');
+    expect($content)->toContain('Fleet Management');
+
+    // Verify short code badges are NOT displayed beside division and department names
+    expect($content)->not->toContain('>LOGCORE_CODE</span>');
+    expect($content)->not->toContain('>FLEET_CODE</span>');
+
+    // Verify SCSS configures 300px min-width for org cards (division, department, employee)
+    $scssContent = file_get_contents(resource_path('css/app.scss'));
+    expect($scssContent)->toContain('.org-card {');
+    expect($scssContent)->toContain('min-width: 300px;');
+    expect($scssContent)->toContain('.org-card-division');
+    expect($scssContent)->toContain('.org-card-dept');
+    expect($scssContent)->toContain('.org-card-employee');
+});

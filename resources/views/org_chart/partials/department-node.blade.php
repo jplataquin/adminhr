@@ -30,7 +30,6 @@
                 <div class="min-w-0 flex-grow-1">
                     <div class="d-flex align-items-center gap-1.5 lh-1 mb-1">
                         <span class="fw-bold small text-body text-truncate">{{ $division['name'] }}</span>
-                        <span class="badge bg-primary-subtle text-primary px-1.5 py-0" style="font-size: 0.65rem;">{{ $division['code'] }}</span>
                     </div>
                     <div class="text-secondary lh-1" style="font-size: 0.72rem;">
                         <span>{{ count($division['departments']) }} departments</span>
@@ -84,7 +83,6 @@
                                 <div class="min-w-0 flex-grow-1">
                                     <div class="d-flex align-items-center gap-1.5 lh-1 mb-1">
                                         <span class="fw-semibold small text-body text-truncate">{{ $dept['name'] }}</span>
-                                        <span class="badge bg-secondary-subtle text-secondary px-1 py-0" style="font-size: 0.65rem;">{{ $dept['code'] }}</span>
                                     </div>
                                     <div class="text-secondary lh-1" style="font-size: 0.72rem;">
                                         <span>{{ $dept['employees_count'] }} employees</span>
